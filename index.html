@@ -1195,79 +1195,640 @@ const ACTIONS_ALL = [
 ];
 
 const EVENTS = [
-  { id:'e_meito',      title:'名刀との出会い',   prob:0.04,
-    text:'旅の刀鍛冶が珍しい刀を持ち込んだ。眺めるだけで武者震いがした。「この一振り、あなたに譲ろう」と老鍛冶が言った。',
-    result:{buki:5,money:-30}, cond:m=>m.money>=30 },
-  { id:'e_lord_praise',title:'主君の評価',       prob:0.06,
-    text:'上の者より「最近の働きは目を見張るものがある」と御言葉を賜った。これほどの光栄はない。仕官の道が開けたかもしれない。',
-    result:{fame:10,loyalty:5} },
-  { id:'e_meet_ronin', title:'流れ者との出会い', prob:0.07,
-    text:'辻で見知らぬ浪人と出会った。腕は確かだが仕える主を失ったという。その目に、かつての自分の姿が重なった。',
-    result:{},
+  // ===== 武 MILITARY / COMBAT =====
+  { id:'e_meito', title:'名刀との出会い', prob:0.04,
+    text:['旅の刀鍛冶が珍しい刀を持ち込んだ。眺めるだけで武者震いがした。「この一振り、あなたに譲ろう」と老鍛冶が言った。',
+          '廃寺の床下から美しい刀が見つかった。銘を見ると名工の作だという。'],
+    result:()=>({buki:ri(4,7),money:-30}), cond:m=>m.money>=30 },
+
+  { id:'e_duel_challenge', title:'果し合いの申し込み', prob:0.06,
+    text:'血気盛んな若侍が「名を上げたい」と決闘を申し込んできた。断れば臆病者と噂が立つかもしれない。',
     choices:[
-      { text:'家臣に誘う（30貫）', cost:{money:30}, gain:{retainers:1}, cond:m=>m.money>=30 },
+      { text:'受けて立つ', cost:{health:ri(5,20)}, gain:()=>({buki:ri(2,5),fame:ri(8,15)}) },
+      { text:'丁重に断る', cost:{}, gain:()=>({happiness:ri(-5,0)}) }
+    ]},
+
+  { id:'e_battlefield_hero', title:'戦場の一番槍', prob:0.05,
+    text:'小競り合いの中で誰もが躊躇う先陣の機会が来た。一番槍の名誉は武士の誉れ。しかし命懸けだ。',
+    choices:[
+      { text:'一番槍を名乗る', cost:{health:ri(10,25)}, gain:()=>({buki:ri(3,6),fame:ri(15,25),tosu:ri(1,3)}), cond:m=>m.buki>=20 },
+      { text:'様子を見る', cost:{}, gain:()=>({chie:1}) }
+    ]},
+
+  { id:'e_ambush_ninja', title:'忍者の夜襲', prob:0.06,
+    text:['深夜、足音もなく忍びが現れた。手練れの忍者だ。咄嗟の判断が生死を分ける。',
+          '屋根の上に人影が走った。忍者だ。寝込みを狙われた。'],
+    choices:[
+      { text:'迎え撃つ', cost:{health:ri(10,20)}, gain:()=>({buki:ri(2,4),chie:ri(1,3),fame:ri(5,10)}) },
+      { text:'叫んで家臣を呼ぶ', cost:{}, gain:()=>({tosu:1}), cond:m=>m.retainers>0 },
+      { text:'逃げる', cost:{happiness:-10}, gain:{} }
+    ]},
+
+  { id:'e_sword_master', title:'剣豪との稽古', prob:0.05,
+    text:'天下に名高い剣豪が近くに逗留しているという。一手ご指南を乞えるかもしれない。',
+    choices:[
+      { text:'稽古をつけてもらう（20貫）', cost:{money:20,health:ri(5,15)}, gain:()=>({buki:ri(4,8)}), cond:m=>m.money>=20 },
+      { text:'遠くから見学する', cost:{}, gain:()=>({chie:ri(1,2)}) }
+    ]},
+
+  { id:'e_enemy_spy', title:'敵の間者を発見', prob:0.05,
+    text:'怪しい人物を見かけた。尾行すると敵方の間者らしい。捕らえて情報を得るか、そのまま泳がせるか。',
+    choices:[
+      { text:'捕らえて尋問する', cost:{}, gain:()=>({chie:ri(2,5),tosu:ri(1,3),fame:ri(3,8)}) },
+      { text:'泳がせて本拠を探る', cost:{}, gain:()=>({chie:ri(3,7)}) },
+      { text:'見逃す', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_army_training', title:'兵の鍛錬', prob:0.06,
+    text:'手持ちの兵が怠惰になってきた。厳しく鍛え直すか、士気を高める褒美を与えるか。',
+    choices:[
+      { text:'厳しく鍛える', cost:{happiness:-5}, gain:()=>({troops:ri(5,15),buki:ri(1,3)}), cond:m=>m.troops>0 },
+      { text:'褒美を与えて鼓舞（20貫）', cost:{money:20}, gain:()=>({loyalty:ri(5,10),troops:ri(3,8)}), cond:m=>m.money>=20&&m.troops>0 },
+      { text:'放置する', cost:{troops:-ri(3,8)}, gain:{} }
+    ]},
+
+  { id:'e_weapon_cache', title:'武器の隠し場所', prob:0.04,
+    text:'古い蔵の奥から大量の武具が見つかった。前の主が隠しておいたものらしい。',
+    result:()=>({buki:ri(2,4),troops:ri(3,10),money:ri(10,30)}) },
+
+  { id:'e_battle_wound', title:'古傷が疼く', prob:0.05,
+    text:'昔の戦での傷が急に痛み出した。医者に診てもらうか、気合いで乗り越えるか。',
+    choices:[
+      { text:'医者に診てもらう（15貫）', cost:{money:15}, gain:()=>({health:ri(10,20)}) },
+      { text:'気合いで乗り越える', cost:{health:-ri(5,10)}, gain:()=>({buki:ri(1,2)}) }
+    ]},
+
+  { id:'e_ronin_gang', title:'浪人の群れ', prob:0.07,
+    text:'仕官先を失った浪人たちが近くをうろついている。放置すれば治安が乱れる。',
+    choices:[
+      { text:'まとめて家臣に取り立てる（50貫）', cost:{money:50}, gain:()=>({retainers:ri(1,3),troops:ri(10,20)}), cond:m=>m.money>=50 },
+      { text:'追い払う', cost:{buki:-1}, gain:()=>({fame:ri(2,5)}) },
+      { text:'見て見ぬふりをする', cost:{popularity:-ri(3,8)}, gain:{} }
+    ]},
+
+  { id:'e_castle_siege', title:'籠城の機会', prob:0.04,
+    text:'敵勢が押し寄せているという早馬が来た。籠城して援軍を待つか、打って出るか。',
+    choices:[
+      { text:'籠城する', cost:{health:-ri(5,15)}, gain:()=>({tosu:ri(2,4),loyalty:ri(3,8)}), cond:m=>m.troops>10 },
+      { text:'打って出る', cost:{health:-ri(15,30),troops:-ri(5,15)}, gain:()=>({buki:ri(3,7),fame:ri(10,20)}), cond:m=>m.buki>=30 }
+    ]},
+
+  { id:'e_horse_gift', title:'名馬の贈り物', prob:0.04,
+    text:'同盟者から見事な馬が贈られてきた。戦場での機動力が格段に上がる。',
+    result:()=>({buki:ri(2,4),tosu:ri(1,3),fame:ri(5,10)}) },
+
+  // ===== 政 POLITICAL / DIPLOMATIC =====
+  { id:'e_lord_praise', title:'主君の評価', prob:0.06,
+    text:['上の者より「最近の働きは目を見張るものがある」と御言葉を賜った。これほどの光栄はない。',
+          '主君から直々に感状が届いた。領内での評判が高まった。'],
+    result:()=>({fame:ri(8,15),loyalty:ri(3,8)}) },
+
+  { id:'e_alliance_offer', title:'同盟の申し込み', prob:0.05,
+    text:'隣の有力者から同盟の申し込みが来た。互いに利があるが、敵を増やす恐れもある。',
+    choices:[
+      { text:'同盟を結ぶ', cost:{money:30}, gain:()=>({fame:ri(5,12),sei:ri(2,5),tosu:ri(1,3)}), cond:m=>m.money>=30 },
+      { text:'断る', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_political_plot', title:'陰謀の気配', prob:0.05,
+    text:'権力者の周辺で陰謀が渦巻いているという噂が耳に入った。関わるか、距離を置くか。',
+    choices:[
+      { text:'陰謀に加担する', cost:{loyalty:-10}, gain:()=>({fame:ri(5,15),sei:ri(2,6)}), cond:m=>m.chie>=25 },
+      { text:'密告して信頼を得る', cost:{}, gain:()=>({loyalty:ri(5,10),sei:ri(1,3)}) },
+      { text:'距離を置く', cost:{}, gain:()=>({happiness:ri(0,5)}) }
+    ]},
+
+  { id:'e_land_grant', title:'知行の賜り', prob:0.04,
+    text:'主君より新たな知行地を賜った。収入が増え、民を治める責務も重くなった。',
+    result:()=>({money:ri(30,60),sei:ri(1,3),popularity:ri(3,8),fame:ri(5,10)}) },
+
+  { id:'e_rival_slander', title:'讒言の危機', prob:0.05,
+    text:'ライバルが主君に讒言を吹き込んだらしい。このままでは立場が危うくなる。',
+    choices:[
+      { text:'証拠を集めて反論する（知略必要）', cost:{chie:-2}, gain:()=>({loyalty:ri(3,8),fame:ri(2,5)}), cond:m=>m.chie>=30 },
+      { text:'主君に直訴する', cost:{}, gain:()=>({loyalty:ri(-5,5)}) },
+      { text:'忍耐して機を待つ', cost:{loyalty:-ri(3,8)}, gain:()=>({chie:ri(1,2)}) }
+    ]},
+
+  { id:'e_tribute_demand', title:'上納金の要求', prob:0.06,
+    text:'上から突然の上納金要求が来た。断れば関係が悪化する。',
+    choices:[
+      { text:'素直に納める（40貫）', cost:{money:40}, gain:()=>({loyalty:ri(3,7)}) },
+      { text:'半額だけ納める（20貫）', cost:{money:20}, gain:()=>({loyalty:-ri(2,5)}) },
+      { text:'断る', cost:{loyalty:-ri(8,15)}, gain:{} }
+    ]},
+
+  { id:'e_envoy_visit', title:'使者の来訪', prob:0.05,
+    text:'遠方の大名から使者が訪ねてきた。仕官の誘いかもしれない。今の主君への義理と未来への可能性が揺れる。',
+    choices:[
+      { text:'丁重に断り今の主に忠誠を誓う', cost:{}, gain:()=>({loyalty:ri(5,12),fame:ri(3,7)}) },
+      { text:'話だけ聞く', cost:{loyalty:-5}, gain:()=>({sei:ri(1,3),chie:ri(1,2)}) }
+    ]},
+
+  { id:'e_census_success', title:'検地の成功', prob:0.04,
+    text:'命じられた検地を滞りなく完了した。領民との摩擦もなく、正確な収量が把握できた。',
+    result:()=>({sei:ri(2,5),popularity:ri(3,8),fame:ri(5,10)}) },
+
+  { id:'e_political_marriage', title:'政略婚の打診', prob:0.04,
+    text:'有力者から縁談の申し入れが届いた。政治的に有利だが、相手の人柄は分からない。',
+    choices:[
+      { text:'縁談を受け入れる', cost:{}, gain:()=>({sei:ri(3,7),fame:ri(5,12),miryoku:ri(1,3)}), cond:m=>!m.married },
+      { text:'断る', cost:{sei:-ri(1,3)}, gain:{} }
+    ]},
+
+  { id:'e_spy_network', title:'忍び網の構築', prob:0.04,
+    text:'忍者を使って情報網を築く機会が来た。費用はかかるが、先手を打てるようになる。',
+    choices:[
+      { text:'忍び網を構築する（40貫）', cost:{money:40}, gain:()=>({chie:ri(3,6),sei:ri(2,4)}), cond:m=>m.money>=40 },
+      { text:'独力で情報収集', cost:{chie:-2}, gain:()=>({chie:ri(1,3)}) }
+    ]},
+
+  // ===== 交 SOCIAL / CULTURAL =====
+  { id:'e_meet_ronin', title:'流れ者との出会い', prob:0.07,
+    text:['辻で見知らぬ浪人と出会った。腕は確かだが仕える主を失ったという。その目に、かつての自分の姿が重なった。',
+          '道端に疲れ果てた浪人が座っていた。話を聞くと、かつては名のある武士だったという。'],
+    choices:[
+      { text:'家臣に誘う（30貫）', cost:{money:30}, gain:()=>({retainers:1,loyalty:ri(2,5)}), cond:m=>m.money>=30 },
+      { text:'せめて食事を恵む（5貫）', cost:{money:5}, gain:()=>({happiness:ri(5,10),fame:ri(1,3)}) },
       { text:'立ち去る', cost:{}, gain:{} }
     ]},
-  { id:'e_merchant_deal',title:'商人の取引',     prob:0.08,
-    text:'商人が持ち込んだ珍しい品々。南蛮渡来の品もある。今が買い時か、見送るか。',
-    result:{},
+
+  { id:'e_tea_master', title:'茶人との邂逅', prob:0.04,
+    text:['名高い茶人と出会う機会を得た。一服の茶を点てる所作の中に、乱世を生き抜く哲学が宿っていた。',
+          '名の知れた茶人が訪ねてきた。茶室での一刻は、戦の喧騒を忘れさせてくれた。'],
+    result:()=>({miryoku:ri(3,6),happiness:ri(10,20)}) },
+
+  { id:'e_tea_ceremony', title:'茶会への招待', prob:0.05,
+    text:'有力者の茶会に招かれた。作法を弁えて振る舞えば信頼が増す。粗相すれば笑いものになる。',
     choices:[
-      { text:'南蛮品を購入（50貫）', cost:{money:50}, gain:{fame:5,sei:2}, cond:m=>m.money>=50 },
+      { text:'礼儀正しく振る舞う', cost:{}, gain:()=>({miryoku:ri(2,5),sei:ri(1,3),fame:ri(3,8)}) },
+      { text:'気さくに話して打ち解ける', cost:{}, gain:()=>({happiness:ri(5,15),miryoku:ri(1,3)}) }
+    ]},
+
+  { id:'e_poet_visit', title:'連歌師の来訪', prob:0.04,
+    text:'流れの連歌師が立ち寄った。一句詠み合うことで心の垢が落ちる。文化人との交流は武士の品格を高める。',
+    result:()=>({miryoku:ri(2,4),happiness:ri(8,15),chie:ri(1,2)}) },
+
+  { id:'e_festival', title:'祭りの賑わい', prob:0.06,
+    text:['村の祭りに招かれた。太鼓の音、神楽の舞、美味い食べ物。束の間の平和な時を民とともに過ごした。',
+          '城下の夏祭りに顔を出した。賑やかな人混みの中で、民の笑顔に活力をもらった。'],
+    result:()=>({happiness:ri(15,25),popularity:ri(3,8)}) },
+
+  { id:'e_rumor_spread', title:'噂の広がり', prob:0.06,
+    text:'自分についての噂が城下に広まっているという。良い噂か悪い噂かは分からない。',
+    result:()=>({fame:ri(-5,15),popularity:ri(-8,10)}) },
+
+  { id:'e_sumo_tournament', title:'相撲大会', prob:0.04,
+    text:'城下で相撲大会が開かれた。力自慢たちが集まる壮観な催しだ。',
+    choices:[
+      { text:'力試しに参加する', cost:{health:ri(5,10)}, gain:()=>({buki:ri(1,3),popularity:ri(5,10),happiness:ri(5,10)}) },
+      { text:'見物して民と語らう', cost:{}, gain:()=>({popularity:ri(3,7),happiness:ri(5,8)}) }
+    ]},
+
+  { id:'e_calligraphy_lesson', title:'書の師との出会い', prob:0.04,
+    text:'著名な書家が近くに逗留している。文字は人の心を映すと言われる。',
+    choices:[
+      { text:'指南を仰ぐ（10貫）', cost:{money:10}, gain:()=>({sei:ri(1,3),miryoku:ri(2,4),chie:ri(1,2)}) },
+      { text:'遠慮する', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_storyteller', title:'語り部の話', prob:0.05,
+    text:'老いた語り部が昔の英雄譚を語ってくれた。かつての武将たちの生きざまに、胸が熱くなった。',
+    result:()=>({happiness:ri(10,15),tosu:ri(1,2),chie:ri(1,2)}) },
+
+  { id:'e_musician', title:'楽人との出会い', prob:0.04,
+    text:'旅の楽人が琵琶を爪弾いていた。その音色に足が止まった。乱世にも美しいものはある。',
+    result:()=>({happiness:ri(10,20),miryoku:ri(1,3)}) },
+
+  // ===== 難 NATURAL DISASTERS / HARDSHIPS =====
+  { id:'e_flood', title:'洪水の被害', prob:0.05,
+    text:'大雨が続き、近くの川が氾濫した。村々が水浸しになり、民の被害は甚大だ。',
+    choices:[
+      { text:'私財を投じて救済する（30貫）', cost:{money:30}, gain:()=>({popularity:ri(10,20),fame:ri(5,12)}) },
+      { text:'復興作業を指揮する', cost:{health:-ri(5,10)}, gain:()=>({tosu:ri(1,3),popularity:ri(5,12)}) },
+      { text:'傍観する', cost:{popularity:-ri(8,15)}, gain:{} }
+    ]},
+
+  { id:'e_famine', title:'飢饉の兆し', prob:0.05,
+    text:['今年の作物の出来が悪い。村々から飢える者が出始めた。このままでは暴動も起きかねない。',
+          '霜が早く来て、田畑が全滅した村もある。備蓄を放出するか、民に頑張らせるか。'],
+    choices:[
+      { text:'備蓄を放出して民を救う（20貫）', cost:{money:20}, gain:()=>({popularity:ri(10,18),fame:ri(3,7)}) },
+      { text:'近隣から買い入れて配給（35貫）', cost:{money:35}, gain:()=>({popularity:ri(15,25)}) },
+      { text:'放置する', cost:{popularity:-ri(10,20)}, gain:{} }
+    ]},
+
+  { id:'e_plague', title:'疫病の流行', prob:0.06,
+    text:'疫病が流行し始めた。熱が出て体が思うように動かない。床に伏す日々が続いた。',
+    result:()=>({health:-ri(15,25),buki:-ri(1,3)}) },
+
+  { id:'e_drought', title:'旱魃の苦しみ', prob:0.04,
+    text:'雨が降らない日が続き、田畑が干上がってきた。水の奪い合いで村々の関係も険悪になっている。',
+    result:()=>({popularity:-ri(5,12),money:-ri(10,20)}) },
+
+  { id:'e_earthquake', title:'大地震', prob:0.04,
+    text:'突然大きな揺れが来た。建物が崩れ、怪我人も出た。',
+    choices:[
+      { text:'先頭に立って救助活動をする', cost:{health:-ri(5,15)}, gain:()=>({fame:ri(5,12),popularity:ri(8,15)}) },
+      { text:'自分の身を守る', cost:{popularity:-ri(3,8)}, gain:{} }
+    ]},
+
+  { id:'e_fire', title:'火事の見廻り', prob:0.05,
+    text:'城下で火事が起きた。強い風に煽られ火の手が広がっている。',
+    choices:[
+      { text:'消火活動を指揮する', cost:{health:-ri(5,10)}, gain:()=>({fame:ri(5,10),tosu:ri(1,2)}) },
+      { text:'住民を誘導して逃がす', cost:{}, gain:()=>({popularity:ri(5,12),happiness:ri(5,10)}) }
+    ]},
+
+  { id:'e_cold_winter', title:'厳冬の試練', prob:0.05,
+    text:'記録的な大雪で道が閉ざされた。食料が底をつきそうだ。',
+    choices:[
+      { text:'狩りに出て食料を確保する', cost:{health:-ri(5,15)}, gain:()=>({buki:ri(1,2),money:ri(5,15)}) },
+      { text:'備蓄を切り崩す（15貫）', cost:{money:15}, gain:()=>({health:ri(5,10)}) }
+    ]},
+
+  // ===== 乱 UPRISINGS / INTERNAL STRIFE =====
+  { id:'e_ikki', title:'一揆の気配', prob:0.05,
+    text:'重い年貢に耐え兼ねた農民たちが不満を蓄えているという報告が来た。放置すれば一揆が起きる。',
+    choices:[
+      { text:'年貢を減らして懐柔する（20貫）', cost:{money:20}, gain:()=>({popularity:ri(10,20),loyalty:ri(3,7)}) },
+      { text:'首謀者を捕らえて見せしめにする', cost:{popularity:-ri(5,10)}, gain:()=>({tosu:ri(1,3)}) },
+      { text:'話し合いで解決を図る', cost:{}, gain:()=>({sei:ri(2,5),popularity:ri(3,8)}) }
+    ]},
+
+  { id:'e_betrayal', title:'家臣の裏切り', prob:0.04,
+    text:['信頼していた家臣が密かに敵方に通じていたという報告が入った。長年仕えた者の裏切りは胸に鋭い痛みを刻む。',
+          '側近の一人が私財を横領していたことが発覚した。'],
+    result:()=>({retainers:-1,loyalty:-ri(8,15),happiness:-ri(10,20)}), cond:m=>m.retainers>0 },
+
+  { id:'e_mutiny', title:'兵の反乱', prob:0.04,
+    text:'給金が払えず、兵たちの不満が頂点に達した。統率力で抑え込むか、銭で解決するか。',
+    choices:[
+      { text:'気合いで抑え込む（統率必要）', cost:{}, gain:()=>({tosu:ri(2,4),loyalty:ri(-3,5)}), cond:m=>m.tosu>=30 },
+      { text:'給金を払う（30貫）', cost:{money:30}, gain:()=>({loyalty:ri(5,10)}), cond:m=>m.money>=30 },
+      { text:'逃げ去る兵を見逃す', cost:{troops:-ri(5,15),fame:-ri(3,8)}, gain:{} }
+    ]},
+
+  { id:'e_corruption', title:'家中の腐敗', prob:0.04,
+    text:'家中で不正が横行しているという訴えが来た。このまま見逃せば権威が失墜する。',
+    choices:[
+      { text:'徹底的に摘発する', cost:{loyalty:-ri(3,8)}, gain:()=>({sei:ri(2,5),fame:ri(3,8)}) },
+      { text:'穏便に注意する', cost:{}, gain:()=>({sei:ri(1,2)}) }
+    ]},
+
+  // ===== 出会い ENCOUNTERS =====
+  { id:'e_princess', title:'姫との出会い', prob:0.04,
+    text:['城下を歩いていると、侍女を連れた高貴な女性と目が合った。身なりから武家の姫と見える。',
+          '縁日の人混みの中で、凛とした眼差しの姫君と言葉を交わした。'],
+    result:()=>({miryoku:ri(1,3),happiness:ri(8,15)}), cond:m=>!m.married },
+
+  { id:'e_hermit_sage', title:'仙人との出会い', prob:0.03,
+    text:'山奥の庵に不思議な老人が住んでいるという噂を聞いた。会いに行けば何か授かるかもしれない。',
+    choices:[
+      { text:'訪ねてみる', cost:{health:-ri(3,8)}, gain:()=>({chie:ri(3,7),happiness:ri(5,15)}) },
+      { text:'眉唾と思い行かない', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_merchant_deal', title:'商人の取引', prob:0.07,
+    text:['商人が持ち込んだ珍しい品々。南蛮渡来の品もある。今が買い時か、見送るか。',
+          '大商人が秘密の取引を持ち掛けてきた。危ない橋かもしれないが、利益は大きい。'],
+    choices:[
+      { text:'南蛮品を購入（50貫）', cost:{money:50}, gain:()=>({fame:ri(3,8),sei:ri(1,3)}), cond:m=>m.money>=50 },
+      { text:'少量だけ買う（20貫）', cost:{money:20}, gain:()=>({miryoku:ri(1,3)}) },
       { text:'見送る', cost:{}, gain:{} }
     ]},
-  { id:'e_good_harvest',title:'豊作の知らせ',    prob:0.05,
-    text:'今年は例年にない豊作だという。農村から喜びの声が聞こえてくる。これにより民心が安定し、兵糧も確保できた。',
-    result:{money:25,popularity:8} },
-  { id:'e_brave_deed', title:'義侠の行い',       prob:0.06,
-    text:'路上で押し込み強盗に襲われている商人を見かけた。剣を抜き、賊を退けた。商人は深く感謝し、謝礼を差し出した。',
-    result:{fame:8,buki:2,money:20} },
-  { id:'e_tea_master', title:'茶人との邂逅',     prob:0.04,
-    text:'名高い茶人と出会う機会を得た。一服の茶を点てる所作の中に、戦国の乱世を生き抜く哲学が宿っていた。深く感じ入った。',
-    result:{miryoku:4,happiness:15} },
-  { id:'e_bandits',    title:'盗賊の襲撃',       prob:0.08,
-    text:'夜道を歩いていると、突然複数の盗賊に囲まれた。「金を出せ」という声が闇の中に響く。抵抗するか、金を渡すか。',
-    result:{},
+
+  { id:'e_young_talent', title:'才能ある若者', prob:0.05,
+    text:'目を見張るほどの才能を持つ若者が仕えたいと申し出てきた。磨けば大きな力になるだろう。',
     choices:[
-      { text:'抵抗する', cost:{health:15}, gain:{buki:1,fame:3} },
-      { text:'金を渡す', cost:{money:20}, gain:{} }
+      { text:'家臣として取り立てる（15貫）', cost:{money:15}, gain:()=>({retainers:1,tosu:ri(1,3),fame:ri(2,6)}) },
+      { text:'他の主に紹介してやる', cost:{}, gain:()=>({sei:ri(1,2),fame:ri(1,3)}) },
+      { text:'断る', cost:{}, gain:{} }
     ]},
-  { id:'e_famine',     title:'飢饉の兆し',       prob:0.05,
-    text:'今年の作物の出来が悪い。村々から飢える者が出始めた。民の苦しむ声が耳に届く。このままでは暴動も起きかねない。',
-    result:{popularity:-10,money:-15} },
-  { id:'e_illness',    title:'病の流行',         prob:0.06,
-    text:'疫病が流行し始めた。熱が出て体が思うように動かない。床に伏す日々が続いた。養生に専念せざるを得なかった。',
-    result:{health:-20,buki:-2} },
-  { id:'e_betrayal',   title:'裏切りの影',       prob:0.04,
-    text:'信頼していた部下が密かに敵方に通じていたという報告が入った。長年仕えた者の裏切りは、胸に鋭い痛みを刻む。',
-    result:{retainers:-1,loyalty:-10,happiness:-15}, cond:m=>m.retainers>0 },
-  { id:'e_rival',      title:'ライバルの台頭',   prob:0.07,
-    text:'同じ時代を生きるライバルが目覚ましい活躍を見せているという噂が届いた。焦りはある。しかし、それが己を磨く糧にもなる。',
-    result:{happiness:-5} },
-  { id:'e_injury',     title:'負傷',             prob:0.05,
-    text:'稽古中に思わぬ怪我を負った。骨は折れていないが、しばらくは無理ができない。焦る気持ちを抑え、回復に努めた。',
-    result:{health:-15,buki:-1} },
-  { id:'e_wander',     title:'旅人との出会い',   prob:0.09,
-    text:'遠方から来た旅の僧と言葉を交わした。世の中の様々な話を聞かせてもらい、知見が広がった。別れ際に「また会おう」と言い残し去っていった。',
-    result:{chie:2,happiness:5} },
-  { id:'e_dream',      title:'不思議な夢',       prob:0.05,
-    text:'夜明け前、奇妙な夢を見た。霧の中に老人が現れ「お前の道はまだ始まったばかりだ」と告げた。目覚めた後も、その言葉が頭から離れなかった。',
-    result:{happiness:10} },
-  { id:'e_tournament', title:'武芸大会',         prob:0.05,
+
+  { id:'e_doctor_visit', title:'名医の来訪', prob:0.05,
+    text:'遠方から名医が訪れた。様々な病を治すことができるというが、診察料は高い。',
+    choices:[
+      { text:'診てもらう（25貫）', cost:{money:25}, gain:()=>({health:ri(15,30)}), cond:m=>m.money>=25 },
+      { text:'民の治療に当ててもらう', cost:{money:15}, gain:()=>({popularity:ri(8,15),fame:ri(3,7)}), cond:m=>m.money>=15 },
+      { text:'遠慮する', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_wandering_monk', title:'旅の僧との出会い', prob:0.07,
+    text:['遠方から来た旅の僧と言葉を交わした。世の中の様々な話を聞かせてもらい、知見が広がった。',
+          '托鉢の僧が立ち寄った。その静かな佇まいに心が洗われる思いがした。'],
+    result:()=>({chie:ri(1,3),happiness:ri(3,8)}) },
+
+  { id:'e_blacksmith', title:'鍛冶師との出会い', prob:0.04,
+    text:'技を持った鍛冶師が流れてきた。雇い入れれば武具の質が上がるかもしれない。',
+    choices:[
+      { text:'工房を用意して雇う（30貫）', cost:{money:30}, gain:()=>({buki:ri(2,5),troops:ri(3,8)}) },
+      { text:'一振り打ってもらう（15貫）', cost:{money:15}, gain:()=>({buki:ri(2,4)}) },
+      { text:'見送る', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_fortuneteller', title:'占い師の託宣', prob:0.05,
+    text:'辻の占い師に呼び止められた。「あなたの運命に転機が来る」と神妙な顔で言う。',
+    choices:[
+      { text:'占ってもらう（5貫）', cost:{money:5}, gain:()=>({happiness:ri(5,15), chie:ri(0,2)}) },
+      { text:'無視して通り過ぎる', cost:{}, gain:{} }
+    ]},
+
+  // ===== 心 PERSONAL / FAMILY =====
+  { id:'e_child_birth', title:'子の誕生', prob:0.05,
+    text:'待ち望んだ子が生まれた。産声が屋敷に響いた瞬間、思わず涙がこぼれた。',
+    result:()=>({happiness:ri(20,30),children:1,fame:ri(3,7)}), cond:m=>m.married },
+
+  { id:'e_spouse_ill', title:'妻の病', prob:0.04,
+    text:'妻が急に倒れた。医者を呼ぶ必要がある。何があっても守らなければならない。',
+    choices:[
+      { text:'名医を呼ぶ（30貫）', cost:{money:30}, gain:()=>({loyalty:ri(5,10),happiness:ri(-5,10)}) },
+      { text:'自分で看病する', cost:{health:-ri(3,8)}, gain:()=>({happiness:ri(5,15),loyalty:ri(3,7)}) }
+    ], cond:m=>m.married },
+
+  { id:'e_hometown_news', title:'故郷からの便り', prob:0.05,
+    text:['故郷から懐かしい文が届いた。かつての仲間が元気にしているという。胸が温かくなった。',
+          '故郷の親が亡くなったという知らせが届いた。すぐには帰れない。手を合わせることしかできない。'],
+    result:()=>({happiness:ri(-10,15)}) },
+
+  { id:'e_dream', title:'不思議な夢', prob:0.05,
+    text:['夜明け前、奇妙な夢を見た。霧の中に老人が現れ「お前の道はまだ始まったばかりだ」と告げた。',
+          '炎に包まれた城の夢を見た。目覚めると冷や汗をかいていた。何かの前兆か。',
+          '清らかな泉のほとりで亡き父と話す夢を見た。父の言葉が心に残った。'],
+    result:()=>({happiness:ri(-5,15)}) },
+
+  { id:'e_mentor_advice', title:'師の教え', prob:0.05,
+    text:'かつての師が訪ねてきた。近頃の自分の振る舞いについて、忌憚なく意見を伝えてくれた。',
+    result:()=>({chie:ri(2,4),tosu:ri(1,3),happiness:ri(5,15)}) },
+
+  { id:'e_old_friend', title:'旧友との再会', prob:0.05,
+    text:'長らく会っていなかった旧友と偶然再会した。昔話に花を咲かせ、互いの今を報告し合った。',
+    result:()=>({happiness:ri(10,20),miryoku:ri(1,3)}) },
+
+  { id:'e_regret', title:'後悔の念', prob:0.04,
+    text:'かつて見捨ててしまった人のことが急に思い出された。あの時違う選択ができたら、と悔いる夜があった。',
+    result:()=>({happiness:-ri(5,10),chie:ri(1,3)}) },
+
+  { id:'e_birthday_reflection', title:'誕生日の夜', prob:0.03,
+    text:'また一つ歳を重ねた。月を見上げながら、これまでの道と、これからを静かに思った。',
+    result:()=>({happiness:ri(5,15),chie:ri(0,2)}) },
+
+  // ===== 霊 SUPERNATURAL / RELIGIOUS =====
+  { id:'e_shrine_visit', title:'神社への参拝', prob:0.06,
+    text:['近くの神社に詣でた。拝殿の静けさの中で、心が澄んでいく気がした。',
+          '戦勝祈願に山の神社まで登った。険しい道のりの果てに、神々しい景色が広がっていた。'],
+    result:()=>({happiness:ri(8,15),health:ri(3,8)}) },
+
+  { id:'e_temple_oracle', title:'寺の神託', prob:0.04,
+    text:'高名な寺の住職に会いに行った。「水の流れに逆らうな」という言葉をもらった。その意味を考えながら帰路についた。',
+    result:()=>({chie:ri(2,5),happiness:ri(5,10)}) },
+
+  { id:'e_ghost_sighting', title:'亡霊の噂', prob:0.04,
+    text:'城の奥で夜な夜な亡霊が出るという噂が広まっている。調べるか放置するか。',
+    choices:[
+      { text:'直接確かめに行く', cost:{health:-ri(2,8)}, gain:()=>({chie:ri(1,3),fame:ri(2,5),happiness:ri(-10,5)}) },
+      { text:'僧を呼んで供養する（10貫）', cost:{money:10}, gain:()=>({popularity:ri(3,8),happiness:ri(5,12)}) },
+      { text:'無視する', cost:{popularity:-ri(2,5)}, gain:{} }
+    ]},
+
+  { id:'e_sacred_spring', title:'霊泉の発見', prob:0.03,
+    text:'山中で不思議な泉を見つけた。その水を飲むと体の奥から力が湧いてくる気がした。',
+    result:()=>({health:ri(15,25),happiness:ri(10,20)}) },
+
+  { id:'e_temple_build', title:'寺社の建立', prob:0.04,
+    text:'領内に寺社を建てようという話が出た。費用はかかるが、民の心の拠り所になる。',
+    choices:[
+      { text:'建立を支援する（60貫）', cost:{money:60}, gain:()=>({popularity:ri(15,25),fame:ri(8,15)}), cond:m=>m.money>=60 },
+      { text:'小さな堂を寄進する（20貫）', cost:{money:20}, gain:()=>({popularity:ri(5,12),happiness:ri(5,10)}), cond:m=>m.money>=20 },
+      { text:'今は無理だと断る', cost:{popularity:-ri(2,5)}, gain:{} }
+    ]},
+
+  { id:'e_prayer_rain', title:'雨乞いの祈祷', prob:0.04,
+    text:'日照りが続き、農民たちが雨乞いを頼んでいる。共に祈るか、費用を出すか。',
+    choices:[
+      { text:'先頭に立って祈祷を行う', cost:{health:-ri(3,7)}, gain:()=>({popularity:ri(8,15),fame:ri(3,8)}) },
+      { text:'祈祷費用を出す（10貫）', cost:{money:10}, gain:()=>({popularity:ri(5,10)}) }
+    ]},
+
+  // ===== 商 ECONOMIC =====
+  { id:'e_good_harvest', title:'豊作の知らせ', prob:0.06,
+    text:['今年は例年にない豊作だという。農村から喜びの声が聞こえてくる。',
+          '大豊作で年貢が例年の倍近く集まった。蔵が満ちる喜びは格別だ。'],
+    result:()=>({money:ri(20,40),popularity:ri(5,12)}) },
+
+  { id:'e_trade_route', title:'交易路の開通', prob:0.04,
+    text:'新たな交易路を開く機会が来た。初期投資は必要だが、長期的な利益が見込める。',
+    choices:[
+      { text:'交易路を開く（40貫）', cost:{money:40}, gain:()=>({money:ri(20,50),sei:ri(2,5),fame:ri(5,10)}) },
+      { text:'慎重に見送る', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_bandit_attack', title:'盗賊の村襲撃', prob:0.06,
+    text:['夜道を歩いていると、突然複数の盗賊に囲まれた。「金を出せ」という声が闇の中に響く。',
+          '村を盗賊が襲っているという報せが入った。すぐに駆けつけるか、軍勢をまとめてから向かうか。'],
+    choices:[
+      { text:'すぐに抵抗する', cost:{health:ri(5,20)}, gain:()=>({buki:ri(1,3),fame:ri(3,8)}) },
+      { text:'金を渡してやり過ごす', cost:{money:ri(10,25)}, gain:{} },
+      { text:'逃げる', cost:{fame:-ri(2,5)}, gain:{} }
+    ]},
+
+  { id:'e_market_boom', title:'市の好況', prob:0.05,
+    text:'城下の市が活況を呈している。商人が殺到し、税収が増えた。',
+    result:()=>({money:ri(15,35),popularity:ri(3,8)}) },
+
+  { id:'e_investment', title:'商売への投資', prob:0.05,
+    text:'儲け話を持ち込んできた商人がいる。うまくいけば大きな利益が見込めるが、失敗する可能性もある。',
+    choices:[
+      { text:'大きく投資する（50貫）', cost:{money:50}, gain:()=>({money:ri(-20,80)}), cond:m=>m.money>=50 },
+      { text:'少額だけ投資する（15貫）', cost:{money:15}, gain:()=>({money:ri(-5,25)}) },
+      { text:'断る', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_tax_reform', title:'年貢改革の提案', prob:0.04,
+    text:'家臣が新しい年貢の仕組みを提案してきた。短期的には収入が減るが、民の安定につながる。',
+    choices:[
+      { text:'改革を実施する', cost:{money:-ri(5,15)}, gain:()=>({popularity:ri(8,15),sei:ri(2,5)}) },
+      { text:'現状維持を選ぶ', cost:{}, gain:()=>({money:ri(3,8)}) }
+    ]},
+
+  { id:'e_treasure', title:'埋蔵金の発見', prob:0.03,
+    text:'古戦場を調べていると、地中から古い壺が出てきた。中には大量の金貨が入っていた。',
+    result:()=>({money:ri(30,80),happiness:ri(10,20)}) },
+
+  { id:'e_gamble', title:'賭け事の誘い', prob:0.05,
+    text:'宴席で賭け事が始まった。勝てば大きい。負ければ痛い。',
+    choices:[
+      { text:'勝負に出る', cost:{money:ri(5,20)}, gain:()=>({money:ri(-30,60)}) },
+      { text:'参加しない', cost:{}, gain:{} }
+    ]},
+
+  // ===== 武 MILITARY LEARNING =====
+  { id:'e_tactics_book', title:'兵法書の入手', prob:0.05,
+    text:['古本屋で埃を被った兵法書を見つけた。先人の知恵がぎっしり詰まっている。',
+          '荷物の中に古い文が見つかった。先人が残した兵法の要諦が記されていた。'],
+    result:()=>({chie:ri(2,4),tosu:ri(1,3)}) },
+
+  { id:'e_tournament', title:'武芸大会', prob:0.05,
     text:'近くの城下で武芸大会が催されるという知らせが入った。名を上げる絶好の機会だが、高い実力者も多く集まるだろう。',
-    result:{},
     choices:[
-      { text:'参加する', cost:{health:5}, gain:{buki:3,fame:12}, cond:m=>m.buki>=25 },
-      { text:'観戦のみ', cost:{}, gain:{chie:1} }
+      { text:'全力で参加する（上位狙い）', cost:{health:ri(5,15)}, gain:()=>({buki:ri(3,6),fame:ri(10,20)}), cond:m=>m.buki>=25 },
+      { text:'経験のために参加する', cost:{health:ri(3,8)}, gain:()=>({buki:ri(1,3),fame:ri(3,8)}) },
+      { text:'観戦のみ', cost:{}, gain:()=>({chie:ri(1,2)}) }
     ]},
-  { id:'e_princess',   title:'姫との出会い',     prob:0.04,
-    text:'城下を歩いていると、侍女を連れた高貴な女性と目が合った。身なりから武家の姫と見える。その美しさと気品に、思わず足が止まった。',
-    result:{miryoku:2,happiness:10}, cond:m=>!m.married },
-  { id:'e_letter',     title:'古い文の発見',     prob:0.04,
+
+  { id:'e_strategy_debate', title:'軍議での議論', prob:0.05,
+    text:'軍議の場で白熱した議論が起きた。自分の考えを堂々と主張するか、空気を読んで黙るか。',
+    choices:[
+      { text:'自分の意見を力強く主張する', cost:{}, gain:()=>({tosu:ri(2,4),fame:ri(3,7)}) },
+      { text:'場の空気を読んで調整役に回る', cost:{}, gain:()=>({sei:ri(2,4),loyalty:ri(2,5)}) }
+    ]},
+
+  { id:'e_rival', title:'ライバルの台頭', prob:0.06,
+    text:['同じ時代を生きるライバルが目覚ましい活躍を見せているという噂が届いた。焦りはある。しかし、それが己を磨く糧にもなる。',
+          '幼馴染のあいつが大きな戦功を立てたという。悔しいが、それが励みにもなる。'],
+    result:()=>({happiness:-ri(3,8),buki:ri(0,2),chie:ri(0,2)}) },
+
+  { id:'e_injury', title:'負傷', prob:0.05,
+    text:['稽古中に思わぬ怪我を負った。骨は折れていないが、しばらくは無理ができない。',
+          '馬から落ちて足を痛めた。大事には至らなかったが、動きが鈍くなった。'],
+    result:()=>({health:-ri(10,20),buki:-ri(1,2)}) },
+
+  { id:'e_brave_deed', title:'義侠の行い', prob:0.05,
+    text:['路上で押し込み強盗に襲われている商人を見かけた。剣を抜き、賊を退けた。',
+          '川で溺れている子どもを助けた。身を顧みない行動が噂になった。'],
+    result:()=>({fame:ri(6,12),buki:ri(1,3),money:ri(0,20)}) },
+
+  { id:'e_letter', title:'古い文の発見', prob:0.04,
     text:'荷物の中に古い文が見つかった。読んでみると、先人が残した兵法の要諦が記されていた。その知恵は今の時代にも十分通じるものだった。',
-    result:{chie:3,tosu:2} },
-  { id:'e_festival',   title:'祭りの賑わい',     prob:0.06,
-    text:'村の祭りに招かれた。太鼓の音、神楽の舞、美味い食べ物。束の間の平和な時を民とともに過ごした。英気を養うことができた。',
-    result:{happiness:20,popularity:5} },
+    result:()=>({chie:ri(2,5),tosu:ri(1,3)}) },
+
+  // ===== 特 SPECIAL RARE EVENTS =====
+  { id:'e_famous_general', title:'名将との謁見', prob:0.03,
+    text:'天下に名を轟かせる将が近くに来ているという。面会できれば、大きな刺激になるだろう。',
+    choices:[
+      { text:'会いに行く', cost:{money:10}, gain:()=>({tosu:ri(3,6),buki:ri(2,4),fame:ri(8,15)}) },
+      { text:'遠慮する', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_religious_conversion', title:'キリシタンの接触', prob:0.03,
+    text:'南蛮の宣教師が布教に来た。異国の宗教と文化に好奇心が湧く。',
+    choices:[
+      { text:'話を聞く', cost:{}, gain:()=>({chie:ri(2,4),sei:ri(1,3),miryoku:ri(1,2)}) },
+      { text:'追い払う', cost:{fame:-ri(1,3)}, gain:{} }
+    ]},
+
+  { id:'e_war_loot', title:'戦利品の分配', prob:0.05,
+    text:'合戦での戦利品が手元に届いた。分け方次第で家臣の忠誠が変わる。',
+    choices:[
+      { text:'家臣を優先する', cost:{money:-ri(10,20)}, gain:()=>({loyalty:ri(8,15),retainers:0}) },
+      { text:'均等に分ける', cost:{}, gain:()=>({loyalty:ri(3,8),money:ri(5,15)}) },
+      { text:'自分が多く取る', cost:{loyalty:-ri(3,8)}, gain:()=>({money:ri(15,30)}) }
+    ]},
+
+  { id:'e_assassination_attempt', title:'暗殺未遂', prob:0.03,
+    text:'夜中に何者かが屋敷に侵入した。間一髪で命をつなぎとめた。背後に誰かがいるのか。',
+    result:()=>({health:-ri(10,25),happiness:-ri(5,15),chie:ri(1,3),fame:ri(3,8)}) },
+
+  { id:'e_famous_poem', title:'名歌の一首', prob:0.04,
+    text:'ふと気持ちが昂り、一首詠んだ。その歌が人々の心に響き、広まっていった。',
+    result:()=>({miryoku:ri(2,5),fame:ri(3,8),happiness:ri(5,12)}) },
+
+  { id:'e_lord_test', title:'主君の試し', prob:0.04,
+    text:'主君が密かに忠誠を試しているという噂がある。今こそ本当の忠義を見せる時かもしれない。',
+    choices:[
+      { text:'忠誠を示す行動を取る（20貫捧呈）', cost:{money:20}, gain:()=>({loyalty:ri(8,15),fame:ri(5,10)}) },
+      { text:'自然体でいる', cost:{}, gain:()=>({loyalty:ri(0,5)}) }
+    ]},
+
+  { id:'e_foreign_trade', title:'南蛮交易の機会', prob:0.03,
+    text:'南蛮船が港に入ってきた。異国の物品を手に入れる絶好の機会だ。',
+    choices:[
+      { text:'積極的に交易する（50貫）', cost:{money:50}, gain:()=>({money:ri(20,80),sei:ri(2,4),fame:ri(5,12)}) },
+      { text:'様子見で少額取引（15貫）', cost:{money:15}, gain:()=>({money:ri(0,25)}) }
+    ]},
+
+  { id:'e_sutra_recital', title:'お経の声', prob:0.04,
+    text:'深夜、近くの寺からお経の声が聞こえてきた。誰かの供養らしい。思わず手を合わせた。',
+    result:()=>({happiness:ri(5,12)}) },
+
+  { id:'e_cherry_blossoms', title:'花見の宴', prob:0.05,
+    text:'満開の桜の下に人々が集まった。武士も農民も関係なく、花の前では皆同じだ。',
+    result:()=>({happiness:ri(15,25),miryoku:ri(1,3),popularity:ri(3,7)}) },
+
+  { id:'e_autumn_harvest', title:'実りの秋', prob:0.05,
+    text:'稲穂が黄金色に染まった。農民たちの喜びの声が野に満ちる。この瞬間のために戦国を生きている気がした。',
+    result:()=>({happiness:ri(10,18),popularity:ri(3,8),money:ri(10,20)}) },
+
+  { id:'e_mentor_death', title:'師の死', prob:0.03,
+    text:'若い頃に鍛えてもらった師が亡くなったという知らせが届いた。その教えは今も自分の中に生きている。',
+    result:()=>({happiness:-ri(10,20),buki:ri(1,3),chie:ri(1,3)}) },
+
+  { id:'e_victory_feast', title:'勝利の宴', prob:0.05,
+    text:'戦功の後、主君が宴を開いてくれた。酒と料理に囲まれ、仲間と笑い合った一夜は忘れられない。',
+    result:()=>({happiness:ri(15,25),loyalty:ri(3,7),fame:ri(3,8)}) },
+
+  { id:'e_moonlit_meditation', title:'月夜の黙想', prob:0.04,
+    text:'満月の夜、縁側で独り月を眺めた。生死を超えた何かが、静寂の中に流れていた。',
+    result:()=>({happiness:ri(8,15),chie:ri(1,3)}) },
+
+  { id:'e_child_prodigy', title:'神童の噂', prob:0.04,
+    text:'近くの村に驚くほど賢い子どもがいるという噂を聞いた。引き取って育てれば将来の宝になるかもしれない。',
+    choices:[
+      { text:'引き取って養育する（25貫）', cost:{money:25}, gain:()=>({sei:ri(1,3),fame:ri(3,7),happiness:ri(5,10)}) },
+      { text:'気にせず放置する', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_letter_from_enemy', title:'敵将からの書状', prob:0.04,
+    text:'戦の相手から書状が届いた。和睦の提案か、脅しか。内容次第では大きく情勢が変わる。',
+    choices:[
+      { text:'和睦を検討する', cost:{loyalty:-ri(2,5)}, gain:()=>({sei:ri(2,5),fame:ri(3,8)}) },
+      { text:'無視して備えを固める', cost:{}, gain:()=>({tosu:ri(1,3)}) }
+    ]},
+
+  { id:'e_art_collection', title:'珍品の収集', prob:0.04,
+    text:'珍しい絵画や陶器を手に入れる機会が来た。文化人としての格が上がるかもしれない。',
+    choices:[
+      { text:'積極的に集める（30貫）', cost:{money:30}, gain:()=>({miryoku:ri(3,6),fame:ri(3,7)}) },
+      { text:'少しだけ（10貫）', cost:{money:10}, gain:()=>({miryoku:ri(1,3)}) },
+      { text:'必要ない', cost:{}, gain:{} }
+    ]},
+
+  { id:'e_plague_prevention', title:'疫病の予防', prob:0.04,
+    text:'隣国で疫病が流行り始めているという情報が来た。今から手を打てば被害を抑えられるかもしれない。',
+    choices:[
+      { text:'検問を設けて封じ込める（20貫）', cost:{money:20}, gain:()=>({popularity:ri(5,12),sei:ri(1,3)}) },
+      { text:'医師を集めて備える（15貫）', cost:{money:15}, gain:()=>({health:ri(3,8),popularity:ri(3,7)}) },
+      { text:'様子を見る', cost:{health:-ri(0,15)}, gain:{} }
+    ]},
+
+  { id:'e_reward_retainer', title:'家臣への恩賞', prob:0.04,
+    text:'長年仕えてくれた家臣への恩賞を考えている。どう報いるかが、今後の忠誠心に影響する。',
+    choices:[
+      { text:'領地を与える（50貫相当）', cost:{money:50}, gain:()=>({loyalty:ri(10,20),retainers:0}), cond:m=>m.money>=50&&m.retainers>0 },
+      { text:'感謝の言葉と少しの金（15貫）', cost:{money:15}, gain:()=>({loyalty:ri(5,10)}), cond:m=>m.retainers>0 }
+    ]},
+
+  { id:'e_night_march', title:'夜陰の行軍', prob:0.04,
+    text:'深夜に急を告げる使者が来た。今夜中に遠くの城まで軍を動かさなければならない。',
+    choices:[
+      { text:'直ちに出立する', cost:{health:-ri(5,15)}, gain:()=>({tosu:ri(2,5),fame:ri(5,10)}), cond:m=>m.troops>5 },
+      { text:'夜明けを待つ', cost:{loyalty:-ri(2,5)}, gain:()=>({health:ri(3,7)}) }
+    ]},
+
+  { id:'e_bridge_repair', title:'橋の修繕', prob:0.04,
+    text:'領内の要所にある橋が老朽化して危険だ。修繕すれば民の生活が楽になるが、費用がかかる。',
+    choices:[
+      { text:'費用を出して修繕する（25貫）', cost:{money:25}, gain:()=>({popularity:ri(8,15),sei:ri(1,3)}) },
+      { text:'民に労役を課して修繕する', cost:{popularity:-ri(3,7)}, gain:()=>({sei:ri(1,2)}) }
+    ]},
+
+  { id:'e_map_discovery', title:'古地図の発見', prob:0.03,
+    text:'古い蔵の中から詳細な地図が見つかった。近辺の地形が詳しく記されており、軍事的に有用だ。',
+    result:()=>({chie:ri(2,4),tosu:ri(2,5)}) },
+
+  { id:'e_harvest_festival', title:'収穫の感謝祭', prob:0.04,
+    text:'秋の収穫を祝う感謝祭に領民と一緒に参加した。豊作の喜びを皆と分かち合った。',
+    result:()=>({happiness:ri(12,20),popularity:ri(5,10)}) },
 ];
 
 const RANKS = [
@@ -1541,36 +2102,27 @@ function advanceMonth() {
 
 // ==================== EVENTS ====================
 function triggerEvent() {
-  // Clear previous
   document.getElementById('eventResult').style.display = 'none';
   document.getElementById('eventChoice').style.display = 'none';
   pendingEvent = null;
 
-  // Filter eligible events
-  const eligible = EVENTS.filter(e => {
-    if(e.cond && !e.cond(G)) return false;
-    return true;
-  });
-
-  // Weighted random pick
+  const eligible = EVENTS.filter(e => !e.cond || e.cond(G));
   const totalProb = eligible.reduce((s,e) => s + e.prob, 0);
   let roll = Math.random() * totalProb;
   let chosen = null;
-  for(const e of eligible) {
-    roll -= e.prob;
-    if(roll <= 0) { chosen = e; break; }
-  }
+  for(const e of eligible) { roll -= e.prob; if(roll <= 0) { chosen = e; break; } }
   if(!chosen) chosen = pick(eligible);
 
+  const displayText = Array.isArray(chosen.text) ? pick(chosen.text) : chosen.text;
   document.getElementById('eventTitle').textContent = chosen.title;
-  document.getElementById('eventText').textContent = chosen.text;
+  document.getElementById('eventText').textContent = displayText;
 
   if(chosen.choices && chosen.choices.length) {
     pendingEvent = chosen;
     const choiceDiv = document.getElementById('eventChoice');
     choiceDiv.style.display = 'flex';
     choiceDiv.innerHTML = chosen.choices.map((c, i) => {
-      const costKeys = Object.keys(c.cost);
+      const costKeys = Object.keys(c.cost||{});
       const canAfford = costKeys.every(k => {
         if(k === 'money') return G.money >= (c.cost[k]||0);
         if(k === 'health') return G.health > (c.cost[k]||0);
@@ -1581,18 +2133,17 @@ function triggerEvent() {
       return `<button class="btn-choice" ${disabled} onclick="resolveChoice(${i})">${c.text}</button>`;
     }).join('');
   } else {
-    // Auto-apply result
-    if(chosen.result && Object.keys(chosen.result).length) {
-      applyEffect(chosen.result);
-      const resultStr = effectToString(chosen.result);
+    const rawResult = typeof chosen.result === 'function' ? chosen.result(G) : chosen.result;
+    if(rawResult && Object.keys(rawResult).length) {
+      applyEffect(rawResult);
+      const resultStr = effectToString(rawResult);
       if(resultStr) {
         document.getElementById('eventResult').textContent = resultStr;
         document.getElementById('eventResult').style.display = 'block';
       }
     }
-    // Record notable events
     if(chosen.prob <= 0.05) {
-      G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：【' + chosen.title + '】' + chosen.text.substring(0, 30) + '…');
+      G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：【' + chosen.title + '】' + displayText.substring(0, 30) + '…');
     }
   }
 }
@@ -1600,17 +2151,15 @@ function triggerEvent() {
 function resolveChoice(idx) {
   if(!pendingEvent) return;
   const choice = pendingEvent.choices[idx];
-  // Apply costs (as negative)
   const costEff = {};
-  for(const [k,v] of Object.entries(choice.cost)) {
-    costEff[k] = -(Math.abs(v));
-  }
+  for(const [k,v] of Object.entries(choice.cost||{})) { costEff[k] = -(Math.abs(v)); }
+  const rawGain = typeof choice.gain === 'function' ? choice.gain(G) : (choice.gain||{});
   applyEffect(costEff);
-  applyEffect(choice.gain);
+  applyEffect(rawGain);
 
   const parts = [];
   const costStr = effectToString(costEff);
-  const gainStr = effectToString(choice.gain);
+  const gainStr = effectToString(rawGain);
   if(costStr) parts.push(costStr);
   if(gainStr) parts.push(gainStr);
 
