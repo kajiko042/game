@@ -29,73 +29,186 @@ body{
 .screen.active{display:flex}
 
 /* ===== TITLE SCREEN ===== */
-#titleScreen{
-  background:radial-gradient(ellipse at 50% 40%, #3a0a0a 0%, #1a0505 40%, #0a0a0a 100%);
-  align-items:center;justify-content:center;
-  gap:0;
-}
-.title-grid-overlay{
+/* ===== TITLE SCREEN - FULL REDESIGN ===== */
+#titleScreen{background:#000;overflow:hidden;position:relative;}
+
+#titleCanvas{
   position:absolute;top:0;left:0;width:100%;height:100%;
-  background-image:
-    linear-gradient(rgba(201,168,76,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201,168,76,0.06) 1px, transparent 1px);
-  background-size:32px 32px;
+  z-index:1;pointer-events:none;
+}
+.ts-sky{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 100% 55% at 60% 0%,#220606 0%,transparent 55%),
+    radial-gradient(ellipse 70% 35% at 20% 15%,#180404 0%,transparent 45%),
+    linear-gradient(180deg,#000 0%,#060103 25%,#0d0306 55%,#030001 100%);
+}
+.ts-moon{
+  position:absolute;top:7%;right:18%;width:52px;height:52px;
+  border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 38% 38%,#fff9e8,#ffe090 45%,#c8980a);
+  box-shadow:0 0 18px 6px rgba(255,225,80,0.25),0 0 50px 16px rgba(200,150,20,0.12);
+}
+.ts-cloud{
+  position:absolute;z-index:3;
+  background:rgba(28,4,4,0.78);
+  border-radius:50%;filter:blur(14px);
+}
+.ts-cloud-1{width:220px;height:55px;top:10%;left:-25%;opacity:.7;animation:cDrift1 38s linear infinite;}
+.ts-cloud-2{width:300px;height:48px;top:19%;right:-35%;opacity:.6;animation:cDrift2 50s linear infinite;}
+.ts-cloud-3{width:170px;height:38px;top:6%;left:38%;opacity:.45;animation:cDrift3 30s linear infinite;}
+.ts-cloud-4{width:240px;height:42px;top:28%;left:-20%;opacity:.4;animation:cDrift1 60s linear infinite reverse;}
+@keyframes cDrift1{from{transform:translateX(0)}to{transform:translateX(150vw)}}
+@keyframes cDrift2{from{transform:translateX(0)}to{transform:translateX(-150vw)}}
+@keyframes cDrift3{from{transform:translateX(0)}to{transform:translateX(130vw)}}
+
+/* Castle */
+.ts-castle{
+  position:absolute;bottom:19%;left:50%;transform:translateX(-50%);
+  width:105%;max-width:440px;z-index:4;
+  filter:drop-shadow(0 0 28px rgba(160,30,0,.65)) drop-shadow(0 0 8px rgba(0,0,0,1));
+  opacity:.92;
+}
+/* Ground fire glow */
+.ts-ground-glow{
+  position:absolute;bottom:17%;left:0;right:0;height:130px;z-index:5;
+  background:radial-gradient(ellipse 85% 100% at 50% 100%,rgba(200,45,0,.38) 0%,transparent 70%);
   pointer-events:none;
 }
-.title-glow{
-  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
-  width:280px;height:280px;border-radius:50%;
-  background:radial-gradient(circle, rgba(139,0,0,0.35) 0%, transparent 70%);
-  pointer-events:none;
-  animation:pulseGlow 3s ease-in-out infinite;
+/* Flames */
+.ts-fire{
+  position:absolute;bottom:18%;left:0;right:0;height:90px;
+  z-index:5;pointer-events:none;overflow:hidden;
 }
-@keyframes pulseGlow{
-  0%,100%{opacity:0.7;transform:translate(-50%,-50%) scale(1)}
-  50%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}
+.flame{
+  position:absolute;bottom:0;
+  background:linear-gradient(to top,#ff7200,#ff2800 40%,#bb0000 72%,transparent);
+  border-radius:50% 50% 20% 20%;
+  animation:flicker var(--dur,.8s) ease-in-out infinite alternate;
+  transform-origin:bottom center;
 }
-.title-main{
-  font-size:56px;font-weight:900;
-  color:#c9a84c;
-  text-shadow:0 0 30px rgba(201,168,76,0.8),0 0 60px rgba(201,168,76,0.4),0 2px 4px rgba(0,0,0,0.8);
-  letter-spacing:0.12em;
-  position:relative;z-index:2;
-  margin-top:20px;
-  animation:titlePulse 4s ease-in-out infinite;
+@keyframes flicker{
+  0%{transform:scaleX(1) scaleY(1) rotate(var(--r,-2deg));opacity:.9}
+  50%{transform:scaleX(.82) scaleY(1.18) rotate(var(--r2,2deg));opacity:1}
+  100%{transform:scaleX(.94) scaleY(.93) rotate(var(--r,-2deg));opacity:.85}
 }
-@keyframes titlePulse{
-  0%,100%{text-shadow:0 0 30px rgba(201,168,76,0.8),0 0 60px rgba(201,168,76,0.4),0 2px 4px rgba(0,0,0,0.8)}
-  50%{text-shadow:0 0 45px rgba(201,168,76,1),0 0 90px rgba(201,168,76,0.6),0 2px 4px rgba(0,0,0,0.8)}
+/* Warrior */
+.ts-warrior{
+  position:absolute;bottom:16.5%;left:50%;transform:translateX(-50%);
+  width:240px;height:370px;z-index:6;
+  filter:drop-shadow(0 0 22px rgba(150,30,0,.55));
+  transition:opacity .75s ease;
 }
-.title-sub{
-  font-size:15px;color:#a0845a;letter-spacing:0.35em;
-  margin-top:10px;position:relative;z-index:2;
-  text-shadow:0 1px 4px rgba(0,0,0,0.8);
+.ts-warrior.fade-out{opacity:0}
+/* Sword flash */
+.ts-sword-flash{
+  position:absolute;inset:0;z-index:7;pointer-events:none;
+  background:linear-gradient(130deg,transparent 28%,rgba(255,245,185,.17) 50%,transparent 72%);
+  opacity:0;animation:sFlash 10s ease-in-out infinite;
 }
-.title-divider{
-  width:200px;height:1px;
-  background:linear-gradient(90deg,transparent,#c9a84c,transparent);
-  margin:28px 0 24px;position:relative;z-index:2;
+@keyframes sFlash{
+  0%,70%,100%{opacity:0;transform:translateX(-110%)}
+  72%{opacity:1;transform:translateX(0)}
+  76%{opacity:0;transform:translateX(110%)}
 }
-.title-buttons{
-  display:flex;flex-direction:column;gap:14px;
-  position:relative;z-index:2;width:220px;
+/* Vignette */
+.ts-vignette{
+  position:absolute;inset:0;z-index:8;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.72) 0%,transparent 32%,transparent 52%,rgba(0,0,0,.88) 100%),
+    radial-gradient(ellipse 110% 100% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%);
 }
-.btn-title{
-  padding:14px 0;border:1px solid #c9a84c;background:rgba(0,0,0,0.6);
-  color:#c9a84c;font-family:inherit;font-size:16px;font-weight:600;
-  letter-spacing:0.2em;cursor:pointer;
-  transition:all 0.25s;
-  position:relative;overflow:hidden;
+/* General display */
+.ts-general{
+  position:absolute;top:0;left:0;right:0;padding-top:14px;
+  text-align:center;z-index:10;pointer-events:none;
 }
-.btn-title::before{
+.ts-general-name{
+  font-size:21px;font-weight:700;color:#ede0b5;letter-spacing:.28em;
+  text-shadow:0 0 18px rgba(201,168,76,.65),0 1px 3px rgba(0,0,0,1);
+  animation:gFade .9s ease-in;
+}
+.ts-general-title{
+  font-size:11px;color:#c9a84c;letter-spacing:.32em;
+  text-shadow:0 1px 5px rgba(0,0,0,1);margin-top:3px;
+  animation:gFade .9s ease-in;
+}
+.ts-general-creed{
+  font-size:10px;color:#7a6038;letter-spacing:.18em;
+  margin-top:2px;animation:gFade .9s ease-in;
+}
+@keyframes gFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Main content */
+.ts-content{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:0 0 28px;
+  display:flex;flex-direction:column;align-items:center;
+  z-index:10;
+}
+/* Title logo */
+.ts-logo{text-align:center;margin-bottom:5px;}
+.ts-logo-main{
+  font-size:50px;font-weight:900;letter-spacing:.2em;
+  background:linear-gradient(175deg,#fff8d8 0%,#eecc50 28%,#c8a020 58%,#9a7010 82%,#c8a020 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 10px rgba(201,168,76,.9)) drop-shadow(0 3px 6px rgba(0,0,0,1));
+  animation:logoGlow 3.5s ease-in-out infinite;
+  position:relative;
+}
+@keyframes logoGlow{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(201,168,76,.9)) drop-shadow(0 3px 6px rgba(0,0,0,1))}
+  50%{filter:drop-shadow(0 0 22px rgba(255,220,60,1)) drop-shadow(0 0 38px rgba(201,168,76,.5)) drop-shadow(0 3px 6px rgba(0,0,0,1))}
+}
+.ts-logo-sub{
+  font-size:11px;color:#9a7a48;letter-spacing:.55em;
+  text-shadow:0 1px 4px rgba(0,0,0,1);margin-top:4px;
+}
+/* Divider */
+.ts-divider{display:flex;align-items:center;gap:7px;margin:7px 0 10px;width:260px;}
+.ts-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);}
+.ts-divider-diamond{width:5px;height:5px;background:#c9a84c;transform:rotate(45deg);flex-shrink:0;}
+/* Dots */
+.ts-dots{display:flex;gap:7px;justify-content:center;margin-bottom:9px;}
+.ts-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(201,168,76,.28);cursor:pointer;
+  transition:all .35s;
+}
+.ts-dot.active{background:#c9a84c;box-shadow:0 0 7px rgba(201,168,76,.85);}
+/* Buttons */
+.ts-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:272px;margin-bottom:10px;}
+.ts-btn{
+  padding:13px 0;background:rgba(0,0,0,.72);
+  border:1px solid rgba(201,168,76,.55);
+  color:#c9a84c;font-family:inherit;font-size:13px;font-weight:600;
+  letter-spacing:.22em;cursor:pointer;transition:all .22s;
+  position:relative;overflow:hidden;backdrop-filter:blur(3px);
+}
+.ts-btn::before{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(201,168,76,0.1),transparent);
-  opacity:0;transition:opacity 0.25s;
+  background:linear-gradient(135deg,rgba(201,168,76,.12),transparent);
+  opacity:0;transition:opacity .22s;
 }
-.btn-title:hover::before,.btn-title:active::before{opacity:1}
-.btn-title:hover{background:rgba(201,168,76,0.15);box-shadow:0 0 20px rgba(201,168,76,0.3)}
-.btn-title:disabled{opacity:0.35;cursor:not-allowed;border-color:#555}
-.btn-title:disabled::before{display:none}
+.ts-btn:active::before,.ts-btn:hover::before{opacity:1}
+.ts-btn:active,.ts-btn:hover{
+  border-color:#e8c84a;color:#f0d86a;
+  box-shadow:0 0 14px rgba(201,168,76,.3),inset 0 0 8px rgba(201,168,76,.05);
+}
+.ts-btn:disabled{opacity:.28;cursor:not-allowed;border-color:#2a2a2a;color:#444;}
+.ts-btn:disabled::before{display:none}
+.ts-btn:disabled:hover{box-shadow:none;border-color:#2a2a2a;color:#444;}
+.ts-btn-new{border-color:rgba(150,10,10,.85);color:#cc2828;}
+.ts-btn-new:hover,.ts-btn-new:active{border-color:#ff3838;color:#ff5858;box-shadow:0 0 14px rgba(180,0,0,.45);}
+.ts-btn-new::before{background:linear-gradient(135deg,rgba(139,0,0,.15),transparent);}
+/* BGM */
+.ts-bgm{
+  padding:7px 22px;background:transparent;
+  border:1px solid rgba(201,168,76,.28);color:rgba(201,168,76,.55);
+  font-family:inherit;font-size:11px;letter-spacing:.22em;cursor:pointer;transition:all .22s;
+}
+.ts-bgm:hover{border-color:rgba(201,168,76,.6);color:#c9a84c;}
+.ts-bgm.on{border-color:#c9a84c;color:#c9a84c;background:rgba(201,168,76,.1);}
 
 /* ===== START SCREEN ===== */
 #startScreen{
@@ -560,14 +673,84 @@ body{
 
   <!-- TITLE SCREEN -->
   <div class="screen active" id="titleScreen">
-    <div class="title-grid-overlay"></div>
-    <div class="title-glow"></div>
-    <div class="title-main">戦国乱世</div>
-    <div class="title-sub">我が道を征け</div>
-    <div class="title-divider"></div>
-    <div class="title-buttons">
-      <button class="btn-title" onclick="showScreen('startScreen'); rollOrigin()">新たな物語</button>
-      <button class="btn-title" id="btnContinue" onclick="continueGame()">続きから</button>
+    <canvas id="titleCanvas"></canvas>
+    <div class="ts-sky"></div>
+    <div class="ts-moon"></div>
+    <div class="ts-cloud ts-cloud-1"></div>
+    <div class="ts-cloud ts-cloud-2"></div>
+    <div class="ts-cloud ts-cloud-3"></div>
+    <div class="ts-cloud ts-cloud-4"></div>
+
+    <!-- Himeji-style castle SVG -->
+    <svg class="ts-castle" viewBox="0 0 420 230" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+      <!-- Stone base & walls -->
+      <path d="M0,230 L0,170 Q18,158 42,152 L42,140 L60,125 L78,140 L78,118 L95,100 L112,118 L112,90 L138,62 L155,48 L172,62 L172,90 L188,90 L188,62 L205,48 L222,62 L222,90 L240,118 L257,100 L274,118 L274,140 L292,125 L310,140 L310,152 L340,158 Q380,165 420,170 L420,230 Z" fill="#160305"/>
+      <!-- Main tenshu (keep) - center 5-tier -->
+      <rect x="182" y="48" width="56" height="44" fill="#160305"/>
+      <polygon points="160,48 210,35 260,48" fill="#1e0408"/>
+      <rect x="170" y="86" width="80" height="32" fill="#160305"/>
+      <polygon points="148,86 210,75 272,86" fill="#1e0408"/>
+      <rect x="158" y="113" width="104" height="28" fill="#160305"/>
+      <polygon points="134,113 210,103 286,113" fill="#1e0408"/>
+      <rect x="145" y="136" width="130" height="22" fill="#160305"/>
+      <polygon points="118,136 210,127 302,136" fill="#1e0408"/>
+      <!-- Small turrets (yagura) flanking -->
+      <rect x="80" y="75" width="32" height="48" fill="#160305"/>
+      <polygon points="70,75 96,64 112,75" fill="#1e0408"/>
+      <rect x="308" y="75" width="32" height="48" fill="#160305"/>
+      <polygon points="308,75 324,64 340,75" fill="#1e0408"/>
+      <!-- Corner towers -->
+      <rect x="30" y="110" width="28" height="42" fill="#160305"/>
+      <polygon points="22,110 44,100 60,110" fill="#1e0408"/>
+      <rect x="362" y="110" width="28" height="42" fill="#160305"/>
+      <polygon points="362,110 376,100 392,110" fill="#1e0408"/>
+      <!-- Connecting walls (enshu) -->
+      <rect x="58" y="152" width="364" height="16" fill="#130204"/>
+      <rect x="30" y="165" width="360" height="14" fill="#100103"/>
+      <!-- Wall embrasures (small crenellations) -->
+      <rect x="68" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="88" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="128" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="158" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="248" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="278" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="318" y="148" width="8" height="10" fill="#100103"/>
+      <rect x="338" y="148" width="8" height="10" fill="#100103"/>
+    </svg>
+
+    <div class="ts-ground-glow"></div>
+    <div class="ts-fire" id="tsFireContainer"></div>
+    <div class="ts-warrior" id="tsWarrior"></div>
+    <div class="ts-sword-flash"></div>
+    <div class="ts-vignette"></div>
+
+    <!-- General info (top) -->
+    <div class="ts-general" id="tsGeneral">
+      <div class="ts-general-name" id="tsGeneralName"></div>
+      <div class="ts-general-title" id="tsGeneralTitle"></div>
+      <div class="ts-general-creed" id="tsGeneralCreed"></div>
+    </div>
+
+    <!-- Main content (bottom) -->
+    <div class="ts-content">
+      <div class="ts-logo">
+        <div class="ts-logo-main">戦国乱世</div>
+        <div class="ts-logo-sub">我が道を征け</div>
+      </div>
+      <div class="ts-divider">
+        <div class="ts-divider-line"></div>
+        <div class="ts-divider-diamond"></div>
+        <div class="ts-divider-line"></div>
+      </div>
+      <div class="ts-dots" id="tsDots"></div>
+      <div class="ts-buttons">
+        <button class="ts-btn ts-btn-new" onclick="showScreen('startScreen');rollOrigin()">はじめから</button>
+        <button class="ts-btn" id="btnContinue" onclick="continueGame()">続きから</button>
+        <button class="ts-btn" onclick="showTitleRanking()">ランキング</button>
+        <button class="ts-btn" onclick="showTitleSettings()">設定</button>
+      </div>
+      <button class="ts-bgm" id="tsBgmBtn" onclick="toggleBGM()">BGM オフ</button>
+      <div style="margin-top:10px;font-size:9px;color:rgba(100,80,50,.5);letter-spacing:.15em;">&copy; 2026 Kodai Kajitani25</div>
     </div>
   </div>
 
@@ -1691,10 +1874,25 @@ function renderRecordsScreen() {
   }).join('');
 }
 
+// Title screen state (declared early for showScreen access)
+let _curGeneral = 0, _genTimer = null;
+let _bgmOn = false, _audioCtx = null, _bgmGain = null;
+let _titleAF = null;
+let _bgmNextTime = 0, _bgmTimeout = null;
+const _petals = [], _embers = [];
+
 // ==================== SCREEN / TAB MANAGEMENT ====================
 function showScreen(id) {
+  // Stop title animation when leaving title screen
+  if (id !== 'titleScreen') {
+    if (_titleAF) { cancelAnimationFrame(_titleAF); _titleAF = null; }
+    clearInterval(_genTimer);
+    if (_bgmOn) _stopBGM();
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // Re-init title screen when returning to it
+  if (id === 'titleScreen') setTimeout(initTitleScreen, 30);
 }
 
 function switchTab(tab) {
@@ -1844,18 +2042,294 @@ function showNotification(text) {
   notifTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
+// ==================== TITLE SCREEN ====================
+const GENERALS = [
+  { name:'織田信長', title:'第六天魔王', creed:'是非に及ばず',
+    helmet:`<ellipse cx="100" cy="38" rx="27" ry="31" fill="#111"/>
+    <rect x="92" y="8" width="16" height="22" rx="3" fill="#0f0f0f"/>
+    <rect x="80" y="16" width="40" height="9" rx="3" fill="#0f0f0f"/>
+    <rect x="88" y="19" width="24" height="3" fill="#c9a84c" opacity=".8"/>
+    <rect x="97" y="10" width="6" height="3" fill="#c9a84c" opacity=".8"/>` },
+  { name:'豊臣秀吉', title:'天下人', creed:'人生は夢のごとく',
+    helmet:`<ellipse cx="100" cy="42" rx="27" ry="29" fill="#111"/>
+    <ellipse cx="100" cy="17" rx="9" ry="10" fill="#0f0f0f"/>
+    <ellipse cx="100" cy="5" rx="7" ry="8" fill="#0f0f0f"/>
+    <ellipse cx="68" cy="50" rx="8" ry="13" fill="#111"/>
+    <ellipse cx="132" cy="50" rx="8" ry="13" fill="#111"/>` },
+  { name:'徳川家康', title:'江戸幕府初代将軍', creed:'人の一生は重荷を負うて',
+    helmet:`<ellipse cx="100" cy="42" rx="30" ry="27" fill="#111"/>
+    <path d="M66,42 Q48,30 55,58 L68,63 Z" fill="#111"/>
+    <path d="M134,42 Q152,30 145,58 L132,63 Z" fill="#111"/>
+    <rect x="72" y="36" width="56" height="5" rx="2" fill="#c9a84c" opacity=".6"/>` },
+  { name:'真田幸村', title:'日本一の兵', creed:'我が志は天に届かん',
+    helmet:`<ellipse cx="100" cy="40" rx="26" ry="30" fill="#5a0505"/>
+    <path d="M87,13 Q80,-2 74,-14 M87,13 Q82,2 75,1" stroke="#5a0505" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M113,13 Q120,-2 126,-14 M113,13 Q118,2 125,1" stroke="#5a0505" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="40" rx="10" ry="11" fill="#8b0000" opacity=".5"/>` },
+  { name:'伊達政宗', title:'奥州の独眼竜', creed:'馬上少年過ぐ',
+    helmet:`<ellipse cx="100" cy="40" rx="27" ry="30" fill="#111"/>
+    <path d="M68,26 Q100,8 132,26 Q110,16 100,14 Q90,16 68,26 Z" fill="#c9a84c" opacity=".92"/>
+    <rect x="74" y="57" width="11" height="22" fill="#222" rx="2"/>
+    <rect x="115" y="57" width="11" height="22" fill="#222" rx="2"/>
+    <circle cx="85" cy="62" r="5" fill="#111"/>` }
+];
+
+function initTitleScreen() {
+  const canvas = document.getElementById('titleCanvas');
+  if (!canvas) return;
+  const app = document.getElementById('app');
+  canvas.width = app.offsetWidth || 390;
+  canvas.height = app.offsetHeight || window.innerHeight;
+
+  _buildFire();
+  _initPetals(canvas);
+  _initEmbers(canvas);
+  _animTitle(canvas);
+
+  _showGeneral(0);
+  _buildDots();
+  clearInterval(_genTimer);
+  _genTimer = setInterval(() => _cycleGeneral((_curGeneral + 1) % GENERALS.length), 5500);
+}
+
+function _buildFire() {
+  const c = document.getElementById('tsFireContainer');
+  if (!c) return; c.innerHTML = '';
+  const defs = [
+    {l:4,w:38,h:70,dur:.72,r:-3,r2:3},{l:11,w:26,h:56,dur:.56,r:2,r2:-2},
+    {l:20,w:22,h:48,dur:.88,r:-4,r2:1},{l:32,w:32,h:65,dur:.64,r:1,r2:-3},
+    {l:44,w:28,h:55,dur:.76,r:-2,r2:4},{l:56,w:36,h:68,dur:.60,r:3,r2:-1},
+    {l:68,w:24,h:50,dur:.92,r:-1,r2:2},{l:80,w:30,h:62,dur:.70,r:2,r2:-4},
+    {r:4,w:38,h:70,dur:.72,r:-3,r2:3},{r:11,w:26,h:56,dur:.56,r:2,r2:-2},
+    {r:20,w:22,h:48,dur:.88,r:-4,r2:1},{r:32,w:32,h:65,dur:.64,r:1,r2:-3},
+    {r:44,w:28,h:55,dur:.76,r:-2,r2:4}
+  ];
+  defs.forEach(f => {
+    const d = document.createElement('div');
+    d.className = 'flame';
+    d.style.cssText = `${f.l!==undefined?'left:'+f.l+'%':'right:'+f.r+'%'};width:${f.w}px;height:${f.h}px;--dur:${f.dur}s;--r:${f.r||0}deg;--r2:${f.r2||0}deg`;
+    c.appendChild(d);
+  });
+}
+
+function _warriorSVG(idx) {
+  const g = GENERALS[idx];
+  const flip = idx % 2 === 1;
+  return `<svg viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <defs>
+    <radialGradient id="wg${idx}" cx="50%" cy="85%" r="50%">
+      <stop offset="0%" stop-color="rgba(200,40,0,.28)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="100" cy="354" rx="72" ry="10" fill="url(#wg${idx})" opacity=".8"/>
+  <g fill="#0a0202" ${flip?'transform="scale(-1,1) translate(-200,0)"':''}>
+    ${g.helmet}
+    <ellipse cx="100" cy="63" rx="20" ry="22"/>
+    <rect x="90" y="83" width="20" height="17" rx="2"/>
+    <rect x="17" y="76" width="40" height="52" rx="4"/>
+    <rect x="15" y="74" width="44" height="8" rx="2"/>
+    <rect x="143" y="76" width="40" height="52" rx="4"/>
+    <rect x="141" y="74" width="44" height="8" rx="2"/>
+    <path d="M57,86 L143,86 L150,178 L50,178 Z"/>
+    <rect x="25" y="124" width="28" height="68" rx="10"/>
+    <rect x="147" y="124" width="28" height="68" rx="10"/>
+    <path d="M50,178 L38,250 L80,252 L100,182 L120,252 L162,250 L150,178 Z"/>
+    <rect x="57" y="252" width="34" height="100" rx="7"/>
+    <rect x="109" y="252" width="34" height="100" rx="7"/>
+    <path d="M54,348 L91,348 L87,360 L50,360 Z"/>
+    <path d="M109,348 L146,348 L150,360 L113,360 Z"/>
+  </g>
+  ${idx===3?
+    `<rect x="158" y="18" width="7" height="195" rx="3" fill="#1a0808" transform="rotate(-5,161,115)"/>
+     <polygon points="155,18 162,0 169,18" fill="#333"/>`
+    :
+    `<rect x="160" y="50" width="6" height="175" rx="2" fill="#0c0202" transform="rotate(-9,163,138)"/>
+     <rect x="157" y="48" width="12" height="16" rx="2" fill="#1a1a1a" transform="rotate(-9,163,56)"/>`
+  }
+</svg>`;
+}
+
+function _showGeneral(idx) {
+  _curGeneral = idx;
+  const g = GENERALS[idx];
+  const nameEl = document.getElementById('tsGeneralName');
+  const titleEl = document.getElementById('tsGeneralTitle');
+  const creedEl = document.getElementById('tsGeneralCreed');
+  const wEl = document.getElementById('tsWarrior');
+  if (nameEl) { nameEl.style.animation='none'; void nameEl.offsetWidth; nameEl.style.animation=''; nameEl.textContent = g.name; }
+  if (titleEl) { titleEl.style.animation='none'; void titleEl.offsetWidth; titleEl.style.animation=''; titleEl.textContent = g.title; }
+  if (creedEl) { creedEl.style.animation='none'; void creedEl.offsetWidth; creedEl.style.animation=''; creedEl.textContent = g.creed; }
+  if (wEl) wEl.innerHTML = _warriorSVG(idx);
+  document.querySelectorAll('.ts-dot').forEach((d,i) => d.classList.toggle('active', i === idx));
+}
+
+function _cycleGeneral(idx) {
+  const wEl = document.getElementById('tsWarrior');
+  const gEl = document.getElementById('tsGeneral');
+  if (wEl) wEl.classList.add('fade-out');
+  if (gEl) { gEl.style.transition='opacity .5s'; gEl.style.opacity='0'; }
+  setTimeout(() => {
+    _showGeneral(idx);
+    if (wEl) wEl.classList.remove('fade-out');
+    if (gEl) gEl.style.opacity='1';
+  }, 600);
+}
+
+function _buildDots() {
+  const el = document.getElementById('tsDots');
+  if (!el) return; el.innerHTML = '';
+  GENERALS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'ts-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => {
+      clearInterval(_genTimer);
+      _cycleGeneral(i);
+      _genTimer = setInterval(() => _cycleGeneral((_curGeneral+1)%GENERALS.length), 5500);
+    };
+    el.appendChild(d);
+  });
+}
+
+function _newPetal(canvas, randY) {
+  return {
+    x: Math.random()*canvas.width, y: randY ? Math.random()*canvas.height : -12,
+    sz: Math.random()*5+3, vx: (Math.random()-.5)*.8, vy: Math.random()*1.2+.4,
+    rot: Math.random()*Math.PI*2, vr: (Math.random()-.5)*.04,
+    a: Math.random()*.55+.3, wb: Math.random()*Math.PI*2, wv: Math.random()*.02+.01
+  };
+}
+
+function _initPetals(canvas) {
+  _petals.length = 0;
+  for (let i=0;i<26;i++) _petals.push(_newPetal(canvas, true));
+}
+
+function _initEmbers(canvas) {
+  _embers.length = 0;
+  for (let i=0;i<45;i++) _embers.push(_newEmber(canvas));
+}
+
+function _newEmber(canvas) {
+  const h = canvas.height;
+  return {
+    x: canvas.width*.25 + Math.random()*canvas.width*.5,
+    y: h*.65 + Math.random()*h*.18,
+    sz: Math.random()*1.6+.3,
+    vx: (Math.random()-.5)*.65, vy: -(Math.random()*2+.5),
+    life: Math.random(), decay: Math.random()*.007+.003
+  };
+}
+
+function _animTitle(canvas) {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  if (_titleAF) cancelAnimationFrame(_titleAF);
+
+  function frame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Sakura petals
+    _petals.forEach(p => {
+      p.wb += p.wv; p.x += p.vx + Math.sin(p.wb)*.55; p.y += p.vy; p.rot += p.vr;
+      if (p.y > canvas.height + 15) Object.assign(p, _newPetal(canvas, false));
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.globalAlpha = p.a;
+      ctx.beginPath(); ctx.ellipse(0, 0, p.sz*1.6, p.sz*.85, 0, 0, Math.PI*2);
+      const gr = ctx.createRadialGradient(0,0,0,0,0,p.sz*1.6);
+      gr.addColorStop(0,'rgba(255,200,210,.95)');
+      gr.addColorStop(.5,'rgba(255,155,175,.75)');
+      gr.addColorStop(1,'rgba(200,90,120,.2)');
+      ctx.fillStyle = gr; ctx.fill(); ctx.restore();
+    });
+
+    // Embers/sparks
+    _embers.forEach((p, i) => {
+      p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+      if (p.life <= 0 || p.y < canvas.height*.08) {
+        _embers[i] = _newEmber(canvas); return;
+      }
+      ctx.save();
+      ctx.globalAlpha = p.life * .85;
+      ctx.fillStyle = p.life > .55
+        ? `rgba(255,${Math.floor(180*p.life)},10,1)`
+        : `rgba(200,90,0,1)`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.sz*p.life, 0, Math.PI*2);
+      ctx.fill(); ctx.restore();
+    });
+
+    _titleAF = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// BGM
+function toggleBGM() {
+  _bgmOn = !_bgmOn;
+  const btn = document.getElementById('tsBgmBtn');
+  if (_bgmOn) {
+    _startBGM();
+    if (btn) { btn.textContent='BGM オン'; btn.classList.add('on'); }
+  } else {
+    _stopBGM();
+    if (btn) { btn.textContent='BGM オフ'; btn.classList.remove('on'); }
+  }
+}
+
+
+
+function _startBGM() {
+  try {
+    if (!_audioCtx) _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    _bgmGain = _audioCtx.createGain();
+    _bgmGain.gain.setValueAtTime(.055, _audioCtx.currentTime);
+    _bgmGain.connect(_audioCtx.destination);
+    const scale = [261,294,330,349,392,440,494,523,587,659,698,784];
+    const mel = [0,2,4,3,2,0,2,4,7,6,4,2,0,4,3,2,4,5,7,6,4,2,0];
+    _bgmNextTime = _audioCtx.currentTime;
+    function playLoop() {
+      if (!_bgmOn) return;
+      const noteDur = .48;
+      mel.forEach((n, i) => {
+        const osc = _audioCtx.createOscillator();
+        const g = _audioCtx.createGain();
+        osc.connect(g); g.connect(_bgmGain);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(scale[n], _bgmNextTime + i*noteDur);
+        g.gain.setValueAtTime(0, _bgmNextTime + i*noteDur);
+        g.gain.linearRampToValueAtTime(.35, _bgmNextTime + i*noteDur+.04);
+        g.gain.exponentialRampToValueAtTime(.001, _bgmNextTime + i*noteDur+noteDur*.82);
+        osc.start(_bgmNextTime + i*noteDur);
+        osc.stop(_bgmNextTime + i*noteDur + noteDur);
+      });
+      const loopDur = mel.length * noteDur;
+      _bgmNextTime += loopDur;
+      const wait = Math.max(0, (_bgmNextTime - _audioCtx.currentTime - 1.5) * 1000);
+      _bgmTimeout = setTimeout(playLoop, wait);
+    }
+    playLoop();
+  } catch(e) { console.log('Audio err', e); }
+}
+
+function _stopBGM() {
+  clearTimeout(_bgmTimeout);
+  if (_bgmGain) { try { _bgmGain.gain.setValueAtTime(0, _audioCtx.currentTime); } catch(e){} }
+}
+
+function showTitleRanking() { showNotification('ランキング機能は準備中です'); }
+function showTitleSettings() { showNotification('設定画面はゲーム内からご利用ください'); }
+
 // ==================== INIT ====================
 function init() {
   rollOrigin();
-
-  // Check if save exists
   const hasSave = !!localStorage.getItem('sengoku_save');
   document.getElementById('btnContinue').disabled = !hasSave;
-
-  // Default tab setup for game screen
   document.getElementById('actionsSection').style.display = '';
   document.getElementById('eventPanel').style.display = '';
   document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+  initTitleScreen();
 }
 
 init();
