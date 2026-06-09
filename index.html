@@ -36,12 +36,11 @@ body{
   position:absolute;top:0;left:0;width:100%;height:100%;
   z-index:1;pointer-events:none;
 }
-.ts-sky{
+/* Dynamic background */
+.ts-bg{
   position:absolute;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 100% 55% at 60% 0%,#220606 0%,transparent 55%),
-    radial-gradient(ellipse 70% 35% at 20% 15%,#180404 0%,transparent 45%),
-    linear-gradient(180deg,#000 0%,#060103 25%,#0d0306 55%,#030001 100%);
+  background:radial-gradient(ellipse 110% 55% at 50% 0%,#3a0505 0%,#1e0202 45%,#050001 100%);
+  transition:background 1.2s ease;
 }
 .ts-moon{
   position:absolute;top:7%;right:18%;width:52px;height:52px;
@@ -64,20 +63,20 @@ body{
 
 /* Castle */
 .ts-castle{
-  position:absolute;bottom:19%;left:50%;transform:translateX(-50%);
-  width:105%;max-width:440px;z-index:4;
-  filter:drop-shadow(0 0 28px rgba(160,30,0,.65)) drop-shadow(0 0 8px rgba(0,0,0,1));
-  opacity:.92;
+  position:absolute;bottom:10%;left:50%;transform:translateX(-50%);
+  width:130%;max-width:550px;z-index:4;
+  filter:drop-shadow(0 0 32px rgba(160,30,0,.7)) drop-shadow(0 0 10px rgba(0,0,0,1));
+  opacity:.97;
 }
 /* Ground fire glow */
 .ts-ground-glow{
-  position:absolute;bottom:17%;left:0;right:0;height:130px;z-index:5;
-  background:radial-gradient(ellipse 85% 100% at 50% 100%,rgba(200,45,0,.38) 0%,transparent 70%);
+  position:absolute;bottom:8%;left:0;right:0;height:140px;z-index:5;
+  background:radial-gradient(ellipse 85% 100% at 50% 100%,rgba(200,45,0,.42) 0%,transparent 70%);
   pointer-events:none;
 }
 /* Flames */
 .ts-fire{
-  position:absolute;bottom:18%;left:0;right:0;height:90px;
+  position:absolute;bottom:9%;left:0;right:0;height:95px;
   z-index:5;pointer-events:none;overflow:hidden;
 }
 .flame{
@@ -92,14 +91,6 @@ body{
   50%{transform:scaleX(.82) scaleY(1.18) rotate(var(--r2,2deg));opacity:1}
   100%{transform:scaleX(.94) scaleY(.93) rotate(var(--r,-2deg));opacity:.85}
 }
-/* Warrior */
-.ts-warrior{
-  position:absolute;bottom:16.5%;left:50%;transform:translateX(-50%);
-  width:240px;height:370px;z-index:6;
-  filter:drop-shadow(0 0 22px rgba(150,30,0,.55));
-  transition:opacity .75s ease;
-}
-.ts-warrior.fade-out{opacity:0}
 /* Sword flash */
 .ts-sword-flash{
   position:absolute;inset:0;z-index:7;pointer-events:none;
@@ -115,13 +106,22 @@ body{
 .ts-vignette{
   position:absolute;inset:0;z-index:8;pointer-events:none;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.72) 0%,transparent 32%,transparent 52%,rgba(0,0,0,.88) 100%),
-    radial-gradient(ellipse 110% 100% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%);
+    linear-gradient(180deg,rgba(0,0,0,.72) 0%,transparent 32%,transparent 48%,rgba(0,0,0,.92) 100%),
+    radial-gradient(ellipse 110% 100% at 50% 50%,transparent 50%,rgba(0,0,0,.6) 100%);
+}
+/* Portrait wrapper */
+.ts-portrait-wrap{
+  width:160px;height:165px;
+  margin:0 auto 6px;
+  position:relative;
+  filter:drop-shadow(0 0 15px rgba(201,168,76,0.4)) drop-shadow(0 4px 12px rgba(0,0,0,0.9));
+  transition:opacity 0.7s ease;
 }
 /* General display */
 .ts-general{
-  position:absolute;top:0;left:0;right:0;padding-top:14px;
+  position:absolute;top:0;left:0;right:0;padding-top:10px;
   text-align:center;z-index:10;pointer-events:none;
+  height:50%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
 }
 .ts-general-name{
   font-size:21px;font-weight:700;color:#ede0b5;letter-spacing:.28em;
@@ -133,39 +133,65 @@ body{
   text-shadow:0 1px 5px rgba(0,0,0,1);margin-top:3px;
   animation:gFade .9s ease-in;
 }
-.ts-general-creed{
-  font-size:10px;color:#7a6038;letter-spacing:.18em;
-  margin-top:2px;animation:gFade .9s ease-in;
+/* Quote */
+.ts-quote{
+  font-size:12px;color:rgba(232,213,160,0.85);
+  letter-spacing:0.25em;line-height:1.8;
+  text-shadow:0 1px 4px rgba(0,0,0,1);
+  max-width:260px;text-align:center;
+  margin:0 auto;
+  border-left:2px solid rgba(201,168,76,0.5);
+  border-right:2px solid rgba(201,168,76,0.5);
+  padding:4px 12px;
+  animation:gFade 0.9s ease-in;
+}
+.ts-quote-line{
+  width:120px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.6),transparent);
+  margin:4px auto;
 }
 @keyframes gFade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 
 /* Main content */
 .ts-content{
   position:absolute;bottom:0;left:0;right:0;
-  padding:0 0 28px;
+  padding:0 0 22px;
   display:flex;flex-direction:column;align-items:center;
   z-index:10;
 }
 /* Title logo */
 .ts-logo{text-align:center;margin-bottom:5px;}
-.ts-logo-main{
-  font-size:50px;font-weight:900;letter-spacing:.2em;
-  background:linear-gradient(175deg,#fff8d8 0%,#eecc50 28%,#c8a020 58%,#9a7010 82%,#c8a020 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 10px rgba(201,168,76,.9)) drop-shadow(0 3px 6px rgba(0,0,0,1));
-  animation:logoGlow 3.5s ease-in-out infinite;
+.ts-logo-stroke-top,.ts-logo-stroke-bottom{
+  width:200px;height:3px;margin:0 auto;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.8),rgba(201,168,76,0.4),rgba(201,168,76,0.8),transparent);
   position:relative;
 }
-@keyframes logoGlow{
-  0%,100%{filter:drop-shadow(0 0 10px rgba(201,168,76,.9)) drop-shadow(0 3px 6px rgba(0,0,0,1))}
-  50%{filter:drop-shadow(0 0 22px rgba(255,220,60,1)) drop-shadow(0 0 38px rgba(201,168,76,.5)) drop-shadow(0 3px 6px rgba(0,0,0,1))}
+.ts-logo-stroke-top::before,.ts-logo-stroke-bottom::before{
+  content:'';
+  position:absolute;top:-2px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent);
+}
+.ts-logo-main{
+  font-size:76px;font-weight:900;
+  letter-spacing:0.22em;
+  background:linear-gradient(175deg,#fff8e0 0%,#ffd84a 15%,#e8b820 35%,#c49010 55%,#a07010 70%,#c49010 85%,#e8d060 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  -webkit-text-stroke:0.5px rgba(180,120,0,0.4);
+  filter:drop-shadow(0 0 8px rgba(255,200,0,0.9)) drop-shadow(0 0 25px rgba(201,168,76,0.7)) drop-shadow(0 4px 8px rgba(0,0,0,1));
+  animation:logoGlow2 3.5s ease-in-out infinite;
+  line-height:1;
+  position:relative;
+}
+@keyframes logoGlow2{
+  0%,100%{filter:drop-shadow(0 0 8px rgba(255,200,0,.9)) drop-shadow(0 0 25px rgba(201,168,76,.7)) drop-shadow(0 4px 8px rgba(0,0,0,1));}
+  50%{filter:drop-shadow(0 0 15px rgba(255,220,50,1)) drop-shadow(0 0 45px rgba(201,168,76,.9)) drop-shadow(0 0 80px rgba(180,120,0,.4)) drop-shadow(0 4px 8px rgba(0,0,0,1));}
 }
 .ts-logo-sub{
   font-size:11px;color:#9a7a48;letter-spacing:.55em;
   text-shadow:0 1px 4px rgba(0,0,0,1);margin-top:4px;
 }
 /* Divider */
-.ts-divider{display:flex;align-items:center;gap:7px;margin:7px 0 10px;width:260px;}
+.ts-divider{display:flex;align-items:center;gap:7px;margin:6px 0 8px;width:260px;}
 .ts-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#c9a84c,transparent);}
 .ts-divider-diamond{width:5px;height:5px;background:#c9a84c;transform:rotate(45deg);flex-shrink:0;}
 /* Dots */
@@ -209,6 +235,15 @@ body{
 }
 .ts-bgm:hover{border-color:rgba(201,168,76,.6);color:#c9a84c;}
 .ts-bgm.on{border-color:#c9a84c;color:#c9a84c;background:rgba(201,168,76,.1);}
+/* Copyright */
+.ts-copyright{
+  font-size:10px;
+  color:rgba(201,168,76,0.65);
+  letter-spacing:0.18em;
+  margin-top:8px;
+  text-shadow:0 1px 3px rgba(0,0,0,0.9);
+  font-family:'Noto Sans JP',sans-serif;
+}
 
 /* ===== START SCREEN ===== */
 #startScreen{
@@ -674,83 +709,230 @@ body{
   <!-- TITLE SCREEN -->
   <div class="screen active" id="titleScreen">
     <canvas id="titleCanvas"></canvas>
-    <div class="ts-sky"></div>
-    <div class="ts-moon"></div>
+
+    <!-- Dynamic background (changes per general) -->
+    <div class="ts-bg" id="tsBg"></div>
+
+    <!-- Moon -->
+    <div class="ts-moon" id="tsMoon"></div>
+
+    <!-- Clouds -->
     <div class="ts-cloud ts-cloud-1"></div>
     <div class="ts-cloud ts-cloud-2"></div>
     <div class="ts-cloud ts-cloud-3"></div>
     <div class="ts-cloud ts-cloud-4"></div>
 
-    <!-- Himeji-style castle SVG -->
-    <svg class="ts-castle" viewBox="0 0 420 230" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
-      <!-- Stone base & walls -->
-      <path d="M0,230 L0,170 Q18,158 42,152 L42,140 L60,125 L78,140 L78,118 L95,100 L112,118 L112,90 L138,62 L155,48 L172,62 L172,90 L188,90 L188,62 L205,48 L222,62 L222,90 L240,118 L257,100 L274,118 L274,140 L292,125 L310,140 L310,152 L340,158 Q380,165 420,170 L420,230 Z" fill="#160305"/>
-      <!-- Main tenshu (keep) - center 5-tier -->
-      <rect x="182" y="48" width="56" height="44" fill="#160305"/>
-      <polygon points="160,48 210,35 260,48" fill="#1e0408"/>
-      <rect x="170" y="86" width="80" height="32" fill="#160305"/>
-      <polygon points="148,86 210,75 272,86" fill="#1e0408"/>
-      <rect x="158" y="113" width="104" height="28" fill="#160305"/>
-      <polygon points="134,113 210,103 286,113" fill="#1e0408"/>
-      <rect x="145" y="136" width="130" height="22" fill="#160305"/>
-      <polygon points="118,136 210,127 302,136" fill="#1e0408"/>
-      <!-- Small turrets (yagura) flanking -->
-      <rect x="80" y="75" width="32" height="48" fill="#160305"/>
-      <polygon points="70,75 96,64 112,75" fill="#1e0408"/>
-      <rect x="308" y="75" width="32" height="48" fill="#160305"/>
-      <polygon points="308,75 324,64 340,75" fill="#1e0408"/>
-      <!-- Corner towers -->
-      <rect x="30" y="110" width="28" height="42" fill="#160305"/>
-      <polygon points="22,110 44,100 60,110" fill="#1e0408"/>
-      <rect x="362" y="110" width="28" height="42" fill="#160305"/>
-      <polygon points="362,110 376,100 392,110" fill="#1e0408"/>
-      <!-- Connecting walls (enshu) -->
-      <rect x="58" y="152" width="364" height="16" fill="#130204"/>
-      <rect x="30" y="165" width="360" height="14" fill="#100103"/>
-      <!-- Wall embrasures (small crenellations) -->
-      <rect x="68" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="88" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="128" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="158" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="248" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="278" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="318" y="148" width="8" height="10" fill="#100103"/>
-      <rect x="338" y="148" width="8" height="10" fill="#100103"/>
+    <!-- Large detailed Himeji-style castle SVG -->
+    <svg class="ts-castle" viewBox="0 0 420 280" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+      <!-- ISHIGAKI (Stone foundation walls) -->
+      <path d="M0,280 L0,210 L30,195 L60,188 L80,183 L80,172 L95,162 L110,172 L110,160 L130,148 L150,160 L150,148 L168,133 L186,148 L186,130 L210,115 L234,130 L234,148 L252,133 L270,148 L270,160 L290,148 L310,160 L310,172 L325,162 L340,172 L340,183 L360,188 L390,195 L420,210 L420,280 Z" fill="#0f0204"/>
+      <!-- Ishigaki texture lines -->
+      <line x1="0" y1="240" x2="420" y2="240" stroke="#160306" stroke-width="1.5" opacity=".6"/>
+      <line x1="0" y1="260" x2="420" y2="260" stroke="#160306" stroke-width="1.5" opacity=".5"/>
+      <line x1="30" y1="215" x2="390" y2="215" stroke="#160306" stroke-width="1" opacity=".5"/>
+      <line x1="60" y1="200" x2="360" y2="200" stroke="#160306" stroke-width="1" opacity=".4"/>
+
+      <!-- CONNECTING WALLS (nagaya/enshu) -->
+      <rect x="58" y="183" width="55" height="26" fill="#110204"/>
+      <rect x="307" y="183" width="55" height="26" fill="#110204"/>
+      <!-- Wall windows/slits -->
+      <rect x="66" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="78" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="90" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="102" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="315" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="327" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="339" y="188" width="5" height="10" fill="#060001"/>
+      <rect x="351" y="188" width="5" height="10" fill="#060001"/>
+      <!-- Wall roof -->
+      <path d="M56,183 Q57,178 113,175 Q114,178 115,183 Z" fill="#1a0408"/>
+      <path d="M305,183 Q306,178 362,175 Q363,178 364,183 Z" fill="#1a0408"/>
+
+      <!-- CORNER TOWERS (隅櫓) LEFT -->
+      <rect x="28" y="150" width="38" height="45" fill="#100203"/>
+      <path d="M22,150 Q47,138 66,150 Z" fill="#1c0407"/>
+      <!-- corner tower roof overhang -->
+      <path d="M20,150 L28,150 L28,153 L47,151 L66,153 L66,150 L74,150 Q73,157 47,158 Q21,157 20,150 Z" fill="#1c0407"/>
+      <rect x="34" y="162" width="6" height="10" fill="#060001"/>
+      <rect x="44" y="162" width="6" height="10" fill="#060001"/>
+      <rect x="28" y="175" width="38" height="12" rx="0" fill="#0c0102"/>
+      <!-- 2nd tier of corner tower -->
+      <rect x="32" y="138" width="30" height="14" fill="#0f0203"/>
+      <path d="M26,138 Q47,128 68,138 Z" fill="#1c0407"/>
+      <path d="M24,138 L32,138 L32,141 L47,139 L62,141 L62,138 L70,138 Q69,145 47,146 Q25,145 24,138 Z" fill="#1c0407"/>
+
+      <!-- CORNER TOWERS RIGHT -->
+      <rect x="354" y="150" width="38" height="45" fill="#100203"/>
+      <path d="M346,150 Q373,138 392,150 Z" fill="#1c0407"/>
+      <path d="M344,150 L354,150 L354,153 L373,151 L392,153 L392,150 L400,150 Q399,157 373,158 Q347,157 344,150 Z" fill="#1c0407"/>
+      <rect x="360" y="162" width="6" height="10" fill="#060001"/>
+      <rect x="370" y="162" width="6" height="10" fill="#060001"/>
+      <rect x="354" y="175" width="38" height="12" fill="#0c0102"/>
+      <rect x="358" y="138" width="30" height="14" fill="#0f0203"/>
+      <path d="M352,138 Q373,128 394,138 Z" fill="#1c0407"/>
+      <path d="M350,138 L358,138 L358,141 L373,139 L388,141 L388,138 L396,138 Q395,145 373,146 Q351,145 350,138 Z" fill="#1c0407"/>
+
+      <!-- FLANKING YAGURA LEFT (小天守) -->
+      <!-- Tier 1 base -->
+      <rect x="95" y="168" width="55" height="18" fill="#100203"/>
+      <!-- Tier 1 roof -->
+      <path d="M88,168 Q122,156 163,168 Z" fill="#1c0407"/>
+      <path d="M86,168 L95,168 L95,171 L122,169 L150,171 L150,168 L163,168 Q162,175 122,176 Q82,175 86,168 Z" fill="#1c0407"/>
+      <!-- Tier 2 -->
+      <rect x="100" y="150" width="45" height="20" fill="#0f0203"/>
+      <path d="M93,150 Q122,140 151,150 Z" fill="#1c0407"/>
+      <path d="M91,150 L100,150 L100,153 L122,151 L145,153 L145,150 L153,150 Q152,157 122,158 Q92,157 91,150 Z" fill="#1c0407"/>
+      <!-- Tier 3 top -->
+      <rect x="106" y="133" width="33" height="19" fill="#0e0202"/>
+      <path d="M99,133 Q122,124 145,133 Z" fill="#1c0407"/>
+      <path d="M97,133 L106,133 L106,136 L122,134 L139,136 L139,133 L147,133 Q146,140 122,141 Q98,140 97,133 Z" fill="#1c0407"/>
+      <!-- Windows -->
+      <rect x="108" y="138" width="6" height="10" fill="#060001"/>
+      <rect x="120" y="138" width="6" height="10" fill="#060001"/>
+      <rect x="132" y="138" width="6" height="10" fill="#060001"/>
+      <rect x="102" y="157" width="6" height="8" fill="#060001"/>
+      <rect x="114" y="157" width="6" height="8" fill="#060001"/>
+      <rect x="128" y="157" width="6" height="8" fill="#060001"/>
+      <rect x="140" y="157" width="6" height="8" fill="#060001"/>
+
+      <!-- FLANKING YAGURA RIGHT -->
+      <rect x="270" y="168" width="55" height="18" fill="#100203"/>
+      <path d="M257,168 Q298,156 332,168 Z" fill="#1c0407"/>
+      <path d="M255,168 L270,168 L270,171 L298,169 L325,171 L325,168 L334,168 Q333,175 298,176 Q263,175 255,168 Z" fill="#1c0407"/>
+      <rect x="275" y="150" width="45" height="20" fill="#0f0203"/>
+      <path d="M267,150 Q298,140 329,150 Z" fill="#1c0407"/>
+      <path d="M265,150 L275,150 L275,153 L298,151 L320,153 L320,150 L330,150 Q329,157 298,158 Q267,157 265,150 Z" fill="#1c0407"/>
+      <rect x="281" y="133" width="33" height="19" fill="#0e0202"/>
+      <path d="M273,133 Q298,124 323,133 Z" fill="#1c0407"/>
+      <path d="M271,133 L281,133 L281,136 L298,134 L314,136 L314,133 L324,133 Q323,140 298,141 Q273,140 271,133 Z" fill="#1c0407"/>
+      <rect x="283" y="138" width="6" height="10" fill="#060001"/>
+      <rect x="295" y="138" width="6" height="10" fill="#060001"/>
+      <rect x="307" y="138" width="6" height="10" fill="#060001"/>
+      <rect x="277" y="157" width="6" height="8" fill="#060001"/>
+      <rect x="289" y="157" width="6" height="8" fill="#060001"/>
+      <rect x="303" y="157" width="6" height="8" fill="#060001"/>
+      <rect x="315" y="157" width="6" height="8" fill="#060001"/>
+
+      <!-- MAIN TENSHU (大天守) - 5-tier central keep -->
+      <!-- Tier 1 base (widest) -->
+      <rect x="154" y="196" width="112" height="26" fill="#100203"/>
+      <path d="M143,196 Q210,182 277,196 Z" fill="#1c0407"/>
+      <path d="M140,196 L154,196 L154,200 L210,197 L266,200 L266,196 L280,196 Q278,205 210,206 Q142,205 140,196 Z" fill="#1e0508"/>
+      <rect x="158" y="213" width="104" height="9" fill="#0c0102"/>
+      <!-- Tier 1 windows -->
+      <rect x="162" y="200" width="7" height="12" fill="#060001"/>
+      <rect x="176" y="200" width="7" height="12" fill="#060001"/>
+      <rect x="192" y="200" width="7" height="12" fill="#060001"/>
+      <rect x="208" y="200" width="7" height="12" fill="#060001"/>
+      <rect x="225" y="200" width="7" height="12" fill="#060001"/>
+      <rect x="241" y="200" width="7" height="12" fill="#060001"/>
+      <rect x="255" y="200" width="7" height="12" fill="#060001"/>
+
+      <!-- Tier 2 -->
+      <rect x="162" y="170" width="96" height="28" fill="#0f0203"/>
+      <path d="M152,170 Q210,157 268,170 Z" fill="#1c0407"/>
+      <path d="M149,170 L162,170 L162,174 L210,171 L258,174 L258,170 L271,170 Q269,179 210,180 Q151,179 149,170 Z" fill="#1e0508"/>
+      <rect x="165" y="188" width="90" height="9" fill="#0c0102"/>
+      <!-- Tier 2 windows -->
+      <rect x="168" y="175" width="7" height="10" fill="#060001"/>
+      <rect x="182" y="175" width="7" height="10" fill="#060001"/>
+      <rect x="197" y="175" width="7" height="10" fill="#060001"/>
+      <rect x="212" y="175" width="7" height="10" fill="#060001"/>
+      <rect x="227" y="175" width="7" height="10" fill="#060001"/>
+      <rect x="242" y="175" width="7" height="10" fill="#060001"/>
+
+      <!-- Tier 3 -->
+      <rect x="170" y="147" width="80" height="25" fill="#0e0202"/>
+      <path d="M161,147 Q210,135 259,147 Z" fill="#1c0407"/>
+      <path d="M158,147 L170,147 L170,151 L210,148 L250,151 L250,147 L262,147 Q260,156 210,157 Q160,156 158,147 Z" fill="#1e0508"/>
+      <rect x="173" y="163" width="74" height="8" fill="#0c0102"/>
+      <rect x="176" y="152" width="7" height="9" fill="#060001"/>
+      <rect x="189" y="152" width="7" height="9" fill="#060001"/>
+      <rect x="203" y="152" width="7" height="9" fill="#060001"/>
+      <rect x="217" y="152" width="7" height="9" fill="#060001"/>
+      <rect x="231" y="152" width="7" height="9" fill="#060001"/>
+      <rect x="245" y="152" width="7" height="9" fill="#060001"/>
+
+      <!-- Tier 4 -->
+      <rect x="178" y="126" width="64" height="23" fill="#0d0202"/>
+      <path d="M170,126 Q210,115 250,126 Z" fill="#1c0407"/>
+      <path d="M167,126 L178,126 L178,130 L210,127 L242,130 L242,126 L253,126 Q251,135 210,136 Q169,135 167,126 Z" fill="#1e0508"/>
+      <rect x="181" y="141" width="58" height="7" fill="#0c0102"/>
+      <rect x="183" y="131" width="6" height="8" fill="#060001"/>
+      <rect x="195" y="131" width="6" height="8" fill="#060001"/>
+      <rect x="207" y="131" width="6" height="8" fill="#060001"/>
+      <rect x="219" y="131" width="6" height="8" fill="#060001"/>
+      <rect x="231" y="131" width="6" height="8" fill="#060001"/>
+
+      <!-- Tier 5 (top) -->
+      <rect x="187" y="106" width="46" height="22" fill="#0c0101"/>
+      <path d="M179,106 Q210,95 241,106 Z" fill="#1c0407"/>
+      <path d="M177,106 L187,106 L187,110 L210,107 L233,110 L233,106 L243,106 Q241,115 210,116 Q179,115 177,106 Z" fill="#1e0508"/>
+      <rect x="190" y="120" width="40" height="6" fill="#0c0102"/>
+      <!-- Top tier windows -->
+      <rect x="192" y="110" width="6" height="8" fill="#060001"/>
+      <rect x="204" y="110" width="6" height="8" fill="#060001"/>
+      <rect x="216" y="110" width="6" height="8" fill="#060001"/>
+      <rect x="228" y="110" width="6" height="8" fill="#060001"/>
+
+      <!-- Finial/shibi at top -->
+      <rect x="208" y="88" width="4" height="18" fill="#1a0408"/>
+      <polygon points="200,95 210,82 220,95" fill="#1a0408"/>
+      <path d="M206,82 Q210,74 214,82 Q212,78 210,77 Q208,78 206,82 Z" fill="#1e0508"/>
     </svg>
 
+    <!-- Fire effects -->
     <div class="ts-ground-glow"></div>
     <div class="ts-fire" id="tsFireContainer"></div>
-    <div class="ts-warrior" id="tsWarrior"></div>
+
+    <!-- Sword flash -->
     <div class="ts-sword-flash"></div>
+
+    <!-- Vignette -->
     <div class="ts-vignette"></div>
 
-    <!-- General info (top) -->
+    <!-- GENERAL DISPLAY (top half) -->
     <div class="ts-general" id="tsGeneral">
+      <!-- Portrait: large circular illustration -->
+      <div class="ts-portrait-wrap" id="tsPortraitWrap"></div>
+      <!-- General name -->
       <div class="ts-general-name" id="tsGeneralName"></div>
       <div class="ts-general-title" id="tsGeneralTitle"></div>
-      <div class="ts-general-creed" id="tsGeneralCreed"></div>
+      <!-- Decorative line -->
+      <div class="ts-quote-line"></div>
+      <!-- Quote -->
+      <div class="ts-quote" id="tsQuote"></div>
     </div>
 
-    <!-- Main content (bottom) -->
+    <!-- TITLE CONTENT (bottom half) -->
     <div class="ts-content">
+      <!-- Title logo with brush stroke feel -->
       <div class="ts-logo">
+        <div class="ts-logo-stroke-top"></div>
         <div class="ts-logo-main">戦国乱世</div>
+        <div class="ts-logo-stroke-bottom"></div>
         <div class="ts-logo-sub">我が道を征け</div>
       </div>
+
       <div class="ts-divider">
         <div class="ts-divider-line"></div>
         <div class="ts-divider-diamond"></div>
         <div class="ts-divider-line"></div>
       </div>
+
       <div class="ts-dots" id="tsDots"></div>
+
       <div class="ts-buttons">
         <button class="ts-btn ts-btn-new" onclick="showScreen('startScreen');rollOrigin()">はじめから</button>
         <button class="ts-btn" id="btnContinue" onclick="continueGame()">続きから</button>
         <button class="ts-btn" onclick="showTitleRanking()">ランキング</button>
         <button class="ts-btn" onclick="showTitleSettings()">設定</button>
       </div>
+
       <button class="ts-bgm" id="tsBgmBtn" onclick="toggleBGM()">BGM オフ</button>
-      <div style="margin-top:10px;font-size:9px;color:rgba(100,80,50,.5);letter-spacing:.15em;">&copy; 2026 Kodai Kajitani25</div>
+
+      <!-- Copyright - visible version -->
+      <div class="ts-copyright">&copy; 2026 Kodai Kajitani25</div>
     </div>
   </div>
 
@@ -2043,35 +2225,258 @@ function showNotification(text) {
 }
 
 // ==================== TITLE SCREEN ====================
+
+// --- Family Crests (mon) SVG strings ---
+const MON_NOBUNAGA = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<path d="M50,8 Q68,8 72,22 Q86,22 90,38 Q95,50 90,62 Q86,78 72,78 Q68,92 50,92 Q32,92 28,78 Q14,78 10,62 Q5,50 10,38 Q14,22 28,22 Q32,8 50,8 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+<circle cx="50" cy="50" r="14" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
+
+const MON_HIDEYOSHI = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<line x1="50" y1="88" x2="50" y2="40" stroke="currentColor" stroke-width="2"/>
+<circle cx="50" cy="18" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+<circle cx="38" cy="26" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+<circle cx="62" cy="26" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+<line x1="50" y1="60" x2="28" y2="48" stroke="currentColor" stroke-width="1.5"/>
+<line x1="50" y1="60" x2="72" y2="48" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="22" cy="35" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="78" cy="35" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<line x1="28" y1="48" x2="18" y2="42" stroke="currentColor" stroke-width="1.5"/>
+<line x1="28" y1="48" x2="30" y2="38" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="14" cy="32" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="32" cy="28" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<line x1="72" y1="48" x2="82" y2="42" stroke="currentColor" stroke-width="1.5"/>
+<line x1="72" y1="48" x2="70" y2="38" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="86" cy="32" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="68" cy="28" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M36,72 Q28,80 36,88 Q50,80 50,88 Q50,80 64,88 Q72,80 64,72 Q50,68 36,72 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
+
+const MON_IEYASU = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<circle cx="50" cy="50" r="5" fill="currentColor"/>
+<path d="M50,45 Q35,30 20,38 Q15,50 25,58 Q38,62 50,50 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+<path d="M50,45 Q65,30 80,38 Q85,50 75,58 Q62,62 50,50 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+<path d="M50,55 Q38,72 35,88 Q50,88 65,88 Q62,72 50,55 Z" fill="none" stroke="currentColor" stroke-width="2"/>`;
+
+const MON_YUKIMURA = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<circle cx="26" cy="36" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="36" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
+<circle cx="50" cy="36" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="36" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
+<circle cx="74" cy="36" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="74" cy="36" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
+<circle cx="26" cy="64" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="64" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
+<circle cx="50" cy="64" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="64" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
+<circle cx="74" cy="64" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="74" cy="64" r="6" fill="none" stroke="currentColor" stroke-width="1"/>`;
+
+const MON_MASAMUNE = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<line x1="38" y1="10" x2="38" y2="90" stroke="currentColor" stroke-width="2.5"/>
+<line x1="55" y1="15" x2="55" y2="90" stroke="currentColor" stroke-width="2.5"/>
+<line x1="35" y1="35" x2="41" y2="35" stroke="currentColor" stroke-width="2"/><line x1="35" y1="60" x2="41" y2="60" stroke="currentColor" stroke-width="2"/>
+<line x1="52" y1="42" x2="58" y2="42" stroke="currentColor" stroke-width="2"/><line x1="52" y1="67" x2="58" y2="67" stroke="currentColor" stroke-width="2"/>
+<path d="M38,35 Q52,20 62,22 Q55,30 38,35" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M38,60 Q25,45 18,50 Q28,55 38,60" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M55,42 Q70,28 78,32 Q68,40 55,42" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<ellipse cx="70" cy="62" rx="10" ry="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<circle cx="76" cy="58" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M80,56 L85,52" stroke="currentColor" stroke-width="1.5"/>`;
+
+const MON_KENSHIN = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<path d="M50,4 L50,96" stroke="currentColor" stroke-width="2"/>
+<path d="M50,10 Q72,18 82,35 Q88,50 82,65 Q72,82 50,90 Q28,82 18,65 Q12,50 18,35 Q28,18 50,10 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M50,20 Q65,26 72,40 Q76,50 72,60 Q65,74 50,80 Q35,74 28,60 Q24,50 28,40 Q35,26 50,20 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
+
+const MON_SHINGEN = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
+<polygon points="50,10 64,30 50,50 36,30" fill="none" stroke="currentColor" stroke-width="2"/>
+<polygon points="50,50 64,70 50,90 36,70" fill="none" stroke="currentColor" stroke-width="2"/>
+<polygon points="10,50 30,38 50,50 30,62" fill="none" stroke="currentColor" stroke-width="2"/>
+<polygon points="50,50 70,38 90,50 70,62" fill="none" stroke="currentColor" stroke-width="2"/>`;
+
+// --- Portrait builder ---
+function _buildPortrait(bgColor, armorColor, helmetSVG, monSVG, extraFace) {
+  return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <circle cx="100" cy="115" r="95" fill="${bgColor}"/>
+  ${helmetSVG}
+  <ellipse cx="100" cy="138" rx="32" ry="36" fill="#c8a060"/>
+  <path d="M68,138 Q70,165 100,172 Q130,165 132,138 Q115,145 100,144 Q85,145 68,138" fill="#a07840" opacity="0.4"/>
+  ${extraFace||''}
+  <ellipse cx="88" cy="128" rx="6" ry="5" fill="#1a1208"/>
+  <ellipse cx="112" cy="128" rx="6" ry="5" fill="#1a1208"/>
+  <circle cx="91" cy="126" r="2" fill="rgba(255,255,255,0.5)"/>
+  <circle cx="115" cy="126" r="2" fill="rgba(255,255,255,0.5)"/>
+  <path d="M80,120 Q88,115 96,119" stroke="#2a1808" stroke-width="2.5" fill="none"/>
+  <path d="M104,119 Q112,115 120,120" stroke="#2a1808" stroke-width="2.5" fill="none"/>
+  <path d="M97,132 L94,143 Q100,146 106,143 L103,132" fill="#a07040" opacity="0.6"/>
+  <path d="M90,153 Q100,158 110,153" stroke="#8a4828" stroke-width="1.5" fill="none"/>
+  <line x1="90" y1="153" x2="110" y2="153" stroke="#6a3820" stroke-width="1"/>
+  <path d="M68,148 Q72,170 100,175 Q128,170 132,148" fill="#c8a060" stroke="#a07840" stroke-width="0.5"/>
+  <path d="M68,128 Q65,138 68,148" fill="#2a1808" opacity="0.5"/>
+  <path d="M132,128 Q135,138 132,148" fill="#2a1808" opacity="0.5"/>
+  <path d="M10,215 L40,185 L160,185 L190,215" fill="${armorColor}"/>
+  <rect x="40" y="183" width="120" height="28" rx="3" fill="${armorColor}"/>
+  <circle cx="100" cy="115" r="95" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+  <circle cx="100" cy="115" r="88" fill="none" stroke="rgba(201,168,76,0.35)" stroke-width="1"/>
+  <circle cx="168" cy="192" r="20" fill="rgba(0,0,0,0.7)" stroke="#c9a84c" stroke-width="1.5"/>
+  <g transform="translate(148,172) scale(0.4)" color="#c9a84c">${monSVG}</g>
+</svg>`;
+}
+
+// --- Portraits ---
+const PORTRAIT_NOBUNAGA = _buildPortrait(
+  '#1a0202',
+  '#1a1218',
+  `<rect x="84" y="30" width="32" height="58" rx="4" fill="#111"/>
+   <rect x="76" y="50" width="48" height="14" rx="3" fill="#0e0e0e"/>
+   <rect x="96" y="8" width="8" height="26" rx="2" fill="#0a0a0a"/>
+   <rect x="92" y="8" width="16" height="6" rx="2" fill="#cc2020"/>
+   <line x1="100" y1="8" x2="100" y2="2" stroke="#c9a84c" stroke-width="2"/>
+   <polygon points="97,2 100,-4 103,2" fill="#c9a84c"/>
+   <rect x="80" y="44" width="40" height="3" fill="#cc2020" opacity=".7"/>
+   <path d="M68,85 Q76,95 100,97 Q124,95 132,85" fill="#111" stroke="#0a0a0a" stroke-width="1"/>`,
+  MON_NOBUNAGA
+);
+
+const PORTRAIT_HIDEYOSHI = _buildPortrait(
+  '#1a0e00',
+  '#2a1e08',
+  `<ellipse cx="100" cy="55" rx="30" ry="32" fill="#111"/>
+   <ellipse cx="100" cy="28" rx="14" ry="16" fill="#0f0f0f"/>
+   <ellipse cx="100" cy="12" rx="10" ry="12" fill="#0e0e0e"/>
+   <ellipse cx="68" cy="62" rx="10" ry="15" fill="#111"/>
+   <ellipse cx="132" cy="62" rx="10" ry="15" fill="#111"/>
+   <path d="M70,88 Q85,95 100,96 Q115,95 130,88" fill="#111"/>
+   <rect x="78" y="58" width="44" height="4" fill="#c89020" opacity=".6"/>`,
+  MON_HIDEYOSHI
+);
+
+const PORTRAIT_IEYASU = _buildPortrait(
+  '#020510',
+  '#0a1428',
+  `<ellipse cx="100" cy="55" rx="34" ry="30" fill="#111"/>
+   <path d="M60,55 Q42,40 48,70 L64,76 Z" fill="#0f0f0f"/>
+   <path d="M140,55 Q158,40 152,70 L136,76 Z" fill="#0f0f0f"/>
+   <rect x="66" y="48" width="68" height="5" rx="2" fill="#2060a0" opacity=".7"/>
+   <path d="M58,82 Q78,92 100,94 Q122,92 142,82" fill="#111"/>
+   <rect x="86" y="26" width="28" height="6" rx="2" fill="#1a1a1a"/>`,
+  MON_IEYASU
+);
+
+const PORTRAIT_YUKIMURA = _buildPortrait(
+  '#150101',
+  '#3a0808',
+  `<ellipse cx="100" cy="52" rx="28" ry="32" fill="#5a0808"/>
+   <path d="M88,22 Q78,5 70,-10 Q76,-8 80,2 Q86,16 88,22 Z" fill="#4a0606" stroke="#3a0404" stroke-width="1"/>
+   <path d="M88,22 Q75,8 68,-5 Q72,-3 78,6 Q84,16 88,22 Z" fill="#4a0606"/>
+   <path d="M112,22 Q122,5 130,-10 Q124,-8 120,2 Q114,16 112,22 Z" fill="#4a0606" stroke="#3a0404" stroke-width="1"/>
+   <path d="M112,22 Q125,8 132,-5 Q128,-3 122,6 Q116,16 112,22 Z" fill="#4a0606"/>
+   <path d="M80,82 Q90,90 100,91 Q110,90 120,82" fill="#5a0808"/>
+   <rect x="82" y="50" width="36" height="4" fill="#cc1010" opacity=".5"/>`,
+  MON_YUKIMURA
+);
+
+const PORTRAIT_MASAMUNE = _buildPortrait(
+  '#010308',
+  '#0a0f1e',
+  `<ellipse cx="100" cy="52" rx="28" ry="30" fill="#111"/>
+   <path d="M66,36 Q100,18 134,36 Q112,24 100,22 Q88,24 66,36 Z" fill="#c9a84c" opacity=".9"/>
+   <rect x="72" y="67" width="12" height="24" rx="2" fill="#1a1a1a"/>
+   <rect x="116" y="67" width="12" height="24" rx="2" fill="#1a1a1a"/>
+   <path d="M80,82 Q90,90 100,91 Q110,90 120,82" fill="#111"/>`,
+  MON_MASAMUNE,
+  `<rect x="68" y="118" width="22" height="14" rx="3" fill="#1a1208" opacity=".85"/>
+   <line x1="68" y1="125" x2="90" y2="125" stroke="#0a0a0a" stroke-width="1"/>`
+);
+
+const PORTRAIT_KENSHIN = _buildPortrait(
+  '#060a0f',
+  '#182430',
+  `<path d="M68,85 Q72,50 100,42 Q128,50 132,85" fill="#d8d0c0"/>
+   <path d="M68,85 Q64,70 66,55 Q72,38 100,32 Q128,38 134,55 Q136,70 132,85" fill="none" stroke="#b8b0a0" stroke-width="1.5"/>
+   <path d="M100,32 Q94,25 92,18 Q96,22 100,20 Q104,22 108,18 Q106,25 100,32 Z" fill="#c8c0b0"/>
+   <path d="M68,85 Q72,88 100,90 Q128,88 132,85" fill="#c8c0b0"/>
+   <rect x="82" y="78" width="36" height="8" rx="3" fill="#608090" opacity=".5"/>`,
+  MON_KENSHIN
+);
+
+const PORTRAIT_SHINGEN = _buildPortrait(
+  '#0e0602',
+  '#2a1808',
+  `<path d="M64,88 Q68,60 100,50 Q132,60 136,88" fill="#2a1a0a"/>
+   <path d="M64,88 Q60,70 62,55 Q70,35 100,28 Q130,35 138,55 Q140,70 136,88" fill="none" stroke="#3a2a18" stroke-width="1.5"/>
+   <rect x="76" y="28" width="48" height="8" rx="3" fill="#3a2010"/>
+   <rect x="74" y="56" width="52" height="5" rx="2" fill="#803010" opacity=".6"/>
+   <path d="M100,28 L100,15" stroke="#5a3010" stroke-width="3"/>
+   <path d="M70,50 Q65,42 100,38 Q135,42 130,50" fill="#2a1a0a"/>`,
+  MON_SHINGEN
+);
+
+// --- Generals data ---
 const GENERALS = [
-  { name:'織田信長', title:'第六天魔王', creed:'是非に及ばず',
-    helmet:`<ellipse cx="100" cy="38" rx="27" ry="31" fill="#111"/>
-    <rect x="92" y="8" width="16" height="22" rx="3" fill="#0f0f0f"/>
-    <rect x="80" y="16" width="40" height="9" rx="3" fill="#0f0f0f"/>
-    <rect x="88" y="19" width="24" height="3" fill="#c9a84c" opacity=".8"/>
-    <rect x="97" y="10" width="6" height="3" fill="#c9a84c" opacity=".8"/>` },
-  { name:'豊臣秀吉', title:'天下人', creed:'人生は夢のごとく',
-    helmet:`<ellipse cx="100" cy="42" rx="27" ry="29" fill="#111"/>
-    <ellipse cx="100" cy="17" rx="9" ry="10" fill="#0f0f0f"/>
-    <ellipse cx="100" cy="5" rx="7" ry="8" fill="#0f0f0f"/>
-    <ellipse cx="68" cy="50" rx="8" ry="13" fill="#111"/>
-    <ellipse cx="132" cy="50" rx="8" ry="13" fill="#111"/>` },
-  { name:'徳川家康', title:'江戸幕府初代将軍', creed:'人の一生は重荷を負うて',
-    helmet:`<ellipse cx="100" cy="42" rx="30" ry="27" fill="#111"/>
-    <path d="M66,42 Q48,30 55,58 L68,63 Z" fill="#111"/>
-    <path d="M134,42 Q152,30 145,58 L132,63 Z" fill="#111"/>
-    <rect x="72" y="36" width="56" height="5" rx="2" fill="#c9a84c" opacity=".6"/>` },
-  { name:'真田幸村', title:'日本一の兵', creed:'我が志は天に届かん',
-    helmet:`<ellipse cx="100" cy="40" rx="26" ry="30" fill="#5a0505"/>
-    <path d="M87,13 Q80,-2 74,-14 M87,13 Q82,2 75,1" stroke="#5a0505" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M113,13 Q120,-2 126,-14 M113,13 Q118,2 125,1" stroke="#5a0505" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <ellipse cx="100" cy="40" rx="10" ry="11" fill="#8b0000" opacity=".5"/>` },
-  { name:'伊達政宗', title:'奥州の独眼竜', creed:'馬上少年過ぐ',
-    helmet:`<ellipse cx="100" cy="40" rx="27" ry="30" fill="#111"/>
-    <path d="M68,26 Q100,8 132,26 Q110,16 100,14 Q90,16 68,26 Z" fill="#c9a84c" opacity=".92"/>
-    <rect x="74" y="57" width="11" height="22" fill="#222" rx="2"/>
-    <rect x="115" y="57" width="11" height="22" fill="#222" rx="2"/>
-    <circle cx="85" cy="62" r="5" fill="#111"/>` }
+  {
+    id: 'nobunaga',
+    name: '織田信長',
+    title: '第六天魔王',
+    quote: '是非に及ばず',
+    accent: '#cc2020',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #3a0505 0%, #1e0202 45%, #050001 100%)',
+    mon: MON_NOBUNAGA,
+    portrait: PORTRAIT_NOBUNAGA
+  },
+  {
+    id: 'hideyoshi',
+    name: '豊臣秀吉',
+    title: '天下人',
+    quote: '人の一生は夢のごとし',
+    accent: '#c89020',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 40% 0%, #2a1800 0%, #180d00 45%, #050200 100%)',
+    mon: MON_HIDEYOSHI,
+    portrait: PORTRAIT_HIDEYOSHI
+  },
+  {
+    id: 'ieyasu',
+    name: '徳川家康',
+    title: '江戸幕府初代将軍',
+    quote: '不自由を常と思えば不足なし',
+    accent: '#2060a0',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 60% 0%, #050a20 0%, #020510 45%, #000102 100%)',
+    mon: MON_IEYASU,
+    portrait: PORTRAIT_IEYASU
+  },
+  {
+    id: 'yukimura',
+    name: '真田幸村',
+    title: '日本一の兵',
+    quote: '我に七難八苦を与えたまえ',
+    accent: '#cc1010',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #350505 0%, #200303 45%, #080101 100%)',
+    mon: MON_YUKIMURA,
+    portrait: PORTRAIT_YUKIMURA
+  },
+  {
+    id: 'masamune',
+    name: '伊達政宗',
+    title: '奥州の独眼竜',
+    quote: '馬上少年過ぐ',
+    accent: '#203860',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 70% 0%, #030815 0%, #020510 45%, #000108 100%)',
+    mon: MON_MASAMUNE,
+    portrait: PORTRAIT_MASAMUNE
+  },
+  {
+    id: 'kenshin',
+    name: '上杉謙信',
+    title: '軍神',
+    quote: '義を以て志を立てよ',
+    accent: '#608090',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #0a1018 0%, #060b12 45%, #020408 100%)',
+    mon: MON_KENSHIN,
+    portrait: PORTRAIT_KENSHIN
+  },
+  {
+    id: 'shingen',
+    name: '武田信玄',
+    title: '甲斐の虎',
+    quote: '人は城、人は石垣、人は堀',
+    accent: '#803010',
+    skyGrad: 'radial-gradient(ellipse 110% 55% at 30% 0%, #1e0e04 0%, #120802 45%, #040200 100%)',
+    mon: MON_SHINGEN,
+    portrait: PORTRAIT_SHINGEN
+  }
 ];
 
 function initTitleScreen() {
@@ -2112,66 +2517,27 @@ function _buildFire() {
   });
 }
 
-function _warriorSVG(idx) {
-  const g = GENERALS[idx];
-  const flip = idx % 2 === 1;
-  return `<svg viewBox="0 0 200 360" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-  <defs>
-    <radialGradient id="wg${idx}" cx="50%" cy="85%" r="50%">
-      <stop offset="0%" stop-color="rgba(200,40,0,.28)"/>
-      <stop offset="100%" stop-color="transparent"/>
-    </radialGradient>
-  </defs>
-  <ellipse cx="100" cy="354" rx="72" ry="10" fill="url(#wg${idx})" opacity=".8"/>
-  <g fill="#0a0202" ${flip?'transform="scale(-1,1) translate(-200,0)"':''}>
-    ${g.helmet}
-    <ellipse cx="100" cy="63" rx="20" ry="22"/>
-    <rect x="90" y="83" width="20" height="17" rx="2"/>
-    <rect x="17" y="76" width="40" height="52" rx="4"/>
-    <rect x="15" y="74" width="44" height="8" rx="2"/>
-    <rect x="143" y="76" width="40" height="52" rx="4"/>
-    <rect x="141" y="74" width="44" height="8" rx="2"/>
-    <path d="M57,86 L143,86 L150,178 L50,178 Z"/>
-    <rect x="25" y="124" width="28" height="68" rx="10"/>
-    <rect x="147" y="124" width="28" height="68" rx="10"/>
-    <path d="M50,178 L38,250 L80,252 L100,182 L120,252 L162,250 L150,178 Z"/>
-    <rect x="57" y="252" width="34" height="100" rx="7"/>
-    <rect x="109" y="252" width="34" height="100" rx="7"/>
-    <path d="M54,348 L91,348 L87,360 L50,360 Z"/>
-    <path d="M109,348 L146,348 L150,360 L113,360 Z"/>
-  </g>
-  ${idx===3?
-    `<rect x="158" y="18" width="7" height="195" rx="3" fill="#1a0808" transform="rotate(-5,161,115)"/>
-     <polygon points="155,18 162,0 169,18" fill="#333"/>`
-    :
-    `<rect x="160" y="50" width="6" height="175" rx="2" fill="#0c0202" transform="rotate(-9,163,138)"/>
-     <rect x="157" y="48" width="12" height="16" rx="2" fill="#1a1a1a" transform="rotate(-9,163,56)"/>`
-  }
-</svg>`;
-}
-
 function _showGeneral(idx) {
   _curGeneral = idx;
   const g = GENERALS[idx];
+  const bg = document.getElementById('tsBg');
+  if (bg) bg.style.background = g.skyGrad;
   const nameEl = document.getElementById('tsGeneralName');
   const titleEl = document.getElementById('tsGeneralTitle');
-  const creedEl = document.getElementById('tsGeneralCreed');
-  const wEl = document.getElementById('tsWarrior');
+  const portraitEl = document.getElementById('tsPortraitWrap');
+  const quoteEl = document.getElementById('tsQuote');
   if (nameEl) { nameEl.style.animation='none'; void nameEl.offsetWidth; nameEl.style.animation=''; nameEl.textContent = g.name; }
   if (titleEl) { titleEl.style.animation='none'; void titleEl.offsetWidth; titleEl.style.animation=''; titleEl.textContent = g.title; }
-  if (creedEl) { creedEl.style.animation='none'; void creedEl.offsetWidth; creedEl.style.animation=''; creedEl.textContent = g.creed; }
-  if (wEl) wEl.innerHTML = _warriorSVG(idx);
+  if (portraitEl) portraitEl.innerHTML = g.portrait;
+  if (quoteEl) { quoteEl.style.animation='none'; void quoteEl.offsetWidth; quoteEl.style.animation=''; quoteEl.textContent = g.quote; }
   document.querySelectorAll('.ts-dot').forEach((d,i) => d.classList.toggle('active', i === idx));
 }
 
 function _cycleGeneral(idx) {
-  const wEl = document.getElementById('tsWarrior');
   const gEl = document.getElementById('tsGeneral');
-  if (wEl) wEl.classList.add('fade-out');
   if (gEl) { gEl.style.transition='opacity .5s'; gEl.style.opacity='0'; }
   setTimeout(() => {
     _showGeneral(idx);
-    if (wEl) wEl.classList.remove('fade-out');
     if (gEl) gEl.style.opacity='1';
   }, 600);
 }
