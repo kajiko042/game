@@ -5,6 +5,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
   enable-pages:
@@ -23,10 +25,12 @@ jobs:
           echo "HTTP Status: $HTTP_CODE"
           cat /tmp/pages_response.json
           if [ "$HTTP_CODE" = "201" ]; then
-            echo "GitHub Pages enabled! URL: https://kajiko042.github.io/game/"
+            echo "SUCCESS: GitHub Pages enabled!"
+            echo "Game URL: https://kajiko042.github.io/game/"
           elif [ "$HTTP_CODE" = "409" ]; then
             echo "GitHub Pages already enabled."
+            echo "Game URL: https://kajiko042.github.io/game/"
           else
-            echo "Error enabling Pages. Status: $HTTP_CODE"
+            echo "Error: Status $HTTP_CODE"
             exit 1
           fi
