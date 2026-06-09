@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>戦国乱世</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700;900&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a}
+body{
+  font-family:'Noto Serif JP','Yu Mincho','游明朝','MS Mincho','ＭＳ 明朝',serif;
+  color:#e8d5a3;
+  display:flex;justify-content:center;align-items:flex-start;
+  background:#0a0a0a;
+}
+#app{
+  width:100%;max-width:420px;height:100dvh;
+  position:relative;overflow:hidden;
+  background:#0a0a0a;
+}
+
+/* ===== SCREENS ===== */
+.screen{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:none;flex-direction:column;overflow:hidden;
+}
+.screen.active{display:flex}
+
+/* ===== TITLE SCREEN ===== */
+#titleScreen{
+  background:radial-gradient(ellipse at 50% 40%, #3a0a0a 0%, #1a0505 40%, #0a0a0a 100%);
+  align-items:center;justify-content:center;
+  gap:0;
+}
+.title-grid-overlay{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.06) 1px, transparent 1px);
+  background-size:32px 32px;
+  pointer-events:none;
+}
+.title-glow{
+  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle, rgba(139,0,0,0.35) 0%, transparent 70%);
+  pointer-events:none;
+  animation:pulseGlow 3s ease-in-out infinite;
+}
+@keyframes pulseGlow{
+  0%,100%{opacity:0.7;transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}
+}
+.title-main{
+  font-size:56px;font-weight:900;
+  color:#c9a84c;
+  text-shadow:0 0 30px rgba(201,168,76,0.8),0 0 60px rgba(201,168,76,0.4),0 2px 4px rgba(0,0,0,0.8);
+  letter-spacing:0.12em;
+  position:relative;z-index:2;
+  margin-top:20px;
+  animation:titlePulse 4s ease-in-out infinite;
+}
+@keyframes titlePulse{
+  0%,100%{text-shadow:0 0 30px rgba(201,168,76,0.8),0 0 60px rgba(201,168,76,0.4),0 2px 4px rgba(0,0,0,0.8)}
+  50%{text-shadow:0 0 45px rgba(201,168,76,1),0 0 90px rgba(201,168,76,0.6),0 2px 4px rgba(0,0,0,0.8)}
+}
+.title-sub{
+  font-size:15px;color:#a0845a;letter-spacing:0.35em;
+  margin-top:10px;position:relative;z-index:2;
+  text-shadow:0 1px 4px rgba(0,0,0,0.8);
+}
+.title-divider{
+  width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,#c9a84c,transparent);
+  margin:28px 0 24px;position:relative;z-index:2;
+}
+.title-buttons{
+  display:flex;flex-direction:column;gap:14px;
+  position:relative;z-index:2;width:220px;
+}
+.btn-title{
+  padding:14px 0;border:1px solid #c9a84c;background:rgba(0,0,0,0.6);
+  color:#c9a84c;font-family:inherit;font-size:16px;font-weight:600;
+  letter-spacing:0.2em;cursor:pointer;
+  transition:all 0.25s;
+  position:relative;overflow:hidden;
+}
+.btn-title::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,0.1),transparent);
+  opacity:0;transition:opacity 0.25s;
+}
+.btn-title:hover::before,.btn-title:active::before{opacity:1}
+.btn-title:hover{background:rgba(201,168,76,0.15);box-shadow:0 0 20px rgba(201,168,76,0.3)}
+.btn-title:disabled{opacity:0.35;cursor:not-allowed;border-color:#555}
+.btn-title:disabled::before{display:none}
+
+/* ===== START SCREEN ===== */
+#startScreen{
+  background:radial-gradient(ellipse at 50% 30%, #1a1a0a 0%, #0f0f05 50%, #0a0a0a 100%);
+  overflow-y:auto;padding:20px 16px 30px;gap:16px;
+}
+.start-title{
+  font-size:18px;color:#c9a84c;letter-spacing:0.2em;
+  text-align:center;padding-bottom:12px;
+  border-bottom:1px solid rgba(201,168,76,0.3);
+}
+.origin-card{
+  border:1px solid #8b0000;background:rgba(139,0,0,0.12);
+  padding:16px;position:relative;overflow:hidden;
+}
+.origin-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#8b0000,transparent);
+}
+.origin-name{
+  font-size:28px;font-weight:900;color:#c9a84c;
+  text-align:center;letter-spacing:0.15em;
+  text-shadow:0 0 20px rgba(201,168,76,0.5);
+}
+.origin-desc{font-size:12px;color:#9a8060;line-height:1.8;margin:8px 0 12px;text-align:center}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.stat-item{display:flex;flex-direction:column;gap:3px}
+.stat-label{font-size:10px;color:#7a6040;letter-spacing:0.1em}
+.stat-bar-bg{height:5px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.stat-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#8b0000,#c9a84c);transition:width 0.5s ease}
+.stat-val{font-size:11px;color:#c9a84c;font-weight:600}
+.name-section{display:flex;flex-direction:column;gap:8px}
+.input-label{font-size:11px;color:#7a6040;letter-spacing:0.1em}
+.name-input{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(201,168,76,0.3);
+  color:#e8d5a3;font-family:inherit;font-size:16px;padding:10px 12px;
+  width:100%;outline:none;
+  transition:border-color 0.2s;
+}
+.name-input:focus{border-color:#c9a84c;box-shadow:0 0 10px rgba(201,168,76,0.2)}
+.name-input::placeholder{color:#4a3a20}
+.start-actions{display:flex;flex-direction:column;gap:10px}
+.btn-action{
+  padding:12px;border:1px solid;font-family:inherit;font-size:14px;
+  letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;
+  font-weight:600;
+}
+.btn-primary{
+  border-color:#c9a84c;background:rgba(201,168,76,0.15);color:#c9a84c;
+}
+.btn-primary:hover{background:rgba(201,168,76,0.25);box-shadow:0 0 15px rgba(201,168,76,0.3)}
+.btn-secondary{
+  border-color:#555;background:rgba(255,255,255,0.04);color:#9a8060;
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.08);border-color:#888}
+
+/* ===== GAME SCREEN ===== */
+#gameScreen{
+  background:#0a0a0a;
+  flex-direction:column;overflow:hidden;
+}
+.status-bar{
+  background:rgba(0,0,0,0.85);
+  border-bottom:1px solid rgba(201,168,76,0.2);
+  padding:8px 10px;flex-shrink:0;
+  backdrop-filter:blur(4px);
+}
+.status-row1{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:7px;
+}
+.status-date{font-size:11px;color:#9a8060;letter-spacing:0.1em}
+.status-name{font-size:13px;color:#e8d5a3;font-weight:600;letter-spacing:0.08em}
+.class-badge{
+  font-size:10px;color:#0a0a0a;background:#c9a84c;
+  padding:2px 7px;font-weight:700;letter-spacing:0.05em;
+}
+.status-row2,.status-row3{
+  display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:4px;
+}
+.stat-cell{
+  background:rgba(255,255,255,0.04);
+  padding:5px 4px;text-align:center;
+  border:1px solid rgba(201,168,76,0.1);
+}
+.stat-cell-label{font-size:9px;color:#6a5030;letter-spacing:0.05em;display:block}
+.stat-cell-val{font-size:13px;color:#c9a84c;font-weight:700;display:block;line-height:1.3}
+.health-mini{
+  display:flex;align-items:center;justify-content:center;
+  gap:3px;flex-direction:column;padding:5px 4px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.1);
+}
+.health-bar-mini{width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.health-bar-fill{height:100%;border-radius:2px;transition:width 0.5s,background 0.5s}
+
+/* Scene area */
+.scene-area{
+  height:140px;flex-shrink:0;position:relative;overflow:hidden;
+  transition:background 1.2s ease;
+}
+.scene-bg{position:absolute;inset:0;transition:background 1.2s ease}
+.scene-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 40%,rgba(10,10,10,0.85) 100%);
+}
+.scene-particles{position:absolute;inset:0;pointer-events:none}
+.particle{
+  position:absolute;width:2px;height:2px;border-radius:50%;
+  animation:floatUp 4s linear infinite;opacity:0;
+}
+@keyframes floatUp{
+  0%{opacity:0;transform:translateY(0) translateX(0)}
+  10%{opacity:0.8}
+  90%{opacity:0.3}
+  100%{opacity:0;transform:translateY(-80px) translateX(20px)}
+}
+.scene-text{
+  position:absolute;bottom:14px;left:14px;right:14px;
+  font-size:11px;color:rgba(232,213,163,0.85);
+  line-height:1.6;letter-spacing:0.05em;
+  text-shadow:0 1px 6px rgba(0,0,0,0.9);
+}
+.scene-location-name{
+  font-size:13px;color:#c9a84c;font-weight:600;
+  letter-spacing:0.15em;display:block;margin-bottom:2px;
+}
+
+/* Main content area */
+.game-content{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.game-content::-webkit-scrollbar{width:3px}
+.game-content::-webkit-scrollbar-track{background:transparent}
+.game-content::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.3)}
+
+/* Event panel */
+.event-panel{
+  margin:10px;border:1px solid rgba(139,0,0,0.4);
+  background:rgba(139,0,0,0.08);
+  position:relative;overflow:hidden;
+}
+.event-panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,#8b0000 30%,#c9a84c 50%,#8b0000 70%,transparent);
+}
+.event-header{
+  padding:10px 14px 4px;
+  display:flex;align-items:center;gap:8px;
+}
+.event-icon{
+  width:8px;height:8px;background:#8b0000;
+  border-radius:50%;flex-shrink:0;
+  box-shadow:0 0 6px rgba(139,0,0,0.8);
+}
+.event-title{font-size:13px;color:#c9a84c;font-weight:700;letter-spacing:0.1em}
+.event-text{
+  padding:4px 14px 10px;
+  font-size:12px;color:#b09070;line-height:1.9;letter-spacing:0.04em;
+}
+.event-result{
+  padding:6px 14px 10px;
+  font-size:11px;color:#8b9a60;
+  border-top:1px solid rgba(201,168,76,0.1);
+  letter-spacing:0.04em;
+}
+.event-choice{
+  padding:0 14px 10px;display:flex;flex-direction:column;gap:6px;
+}
+.btn-choice{
+  padding:9px 12px;border:1px solid rgba(201,168,76,0.4);
+  background:rgba(0,0,0,0.4);color:#c9a84c;
+  font-family:inherit;font-size:12px;cursor:pointer;
+  text-align:left;letter-spacing:0.06em;transition:all 0.2s;
+}
+.btn-choice:hover{background:rgba(201,168,76,0.15);border-color:#c9a84c}
+.btn-choice:disabled{opacity:0.4;cursor:not-allowed}
+
+/* Action grid */
+.actions-section{padding:0 10px 10px}
+.actions-label{
+  font-size:10px;color:#6a5030;letter-spacing:0.15em;
+  margin-bottom:8px;padding-top:4px;
+  display:flex;align-items:center;gap:8px;
+}
+.actions-label::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(201,168,76,0.2),transparent);
+}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.action-card{
+  border:1px solid rgba(201,168,76,0.18);
+  background:rgba(255,255,255,0.03);
+  padding:10px 10px 9px;cursor:pointer;
+  transition:all 0.2s;position:relative;overflow:hidden;
+  min-height:72px;display:flex;flex-direction:column;
+  justify-content:space-between;
+}
+.action-card::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.2),transparent);
+}
+.action-card:hover{
+  background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.4);
+  transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+.action-card:active{transform:translateY(0)}
+.action-card.disabled{opacity:0.4;cursor:not-allowed;pointer-events:none}
+.action-name{font-size:13px;color:#c9a84c;font-weight:600;letter-spacing:0.08em}
+.action-desc{font-size:10px;color:#6a5030;line-height:1.5;margin-top:3px}
+.action-cost{font-size:10px;color:#8b5a30;margin-top:5px}
+.action-effect{font-size:10px;color:#607050;margin-top:2px}
+
+/* Bottom nav */
+.bottom-nav{
+  display:flex;border-top:1px solid rgba(201,168,76,0.2);
+  background:rgba(0,0,0,0.9);flex-shrink:0;
+  height:52px;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;cursor:pointer;
+  background:none;border:none;color:#5a4a2a;
+  font-family:inherit;font-size:10px;letter-spacing:0.08em;
+  transition:all 0.2s;position:relative;
+}
+.nav-btn.active{color:#c9a84c}
+.nav-btn.active::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:#c9a84c;
+}
+.nav-btn:hover{color:#9a7a3a}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:currentColor;margin-bottom:2px}
+
+/* ===== SUB SCREENS (tabs) ===== */
+.sub-screen{display:none;flex:1;overflow-y:auto;padding:14px}
+.sub-screen.active{display:block}
+.sub-title{
+  font-size:15px;color:#c9a84c;letter-spacing:0.2em;
+  padding-bottom:10px;margin-bottom:14px;
+  border-bottom:1px solid rgba(201,168,76,0.25);
+}
+
+/* Ability screen */
+.portrait-area{
+  background:linear-gradient(135deg,#0f0f0f,#1a0a0a);
+  border:1px solid rgba(201,168,76,0.25);
+  height:100px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.portrait-silhouette{
+  width:60px;height:80px;position:relative;
+}
+.portrait-silhouette svg{width:100%;height:100%}
+.ability-list{display:flex;flex-direction:column;gap:10px}
+.ability-row{display:flex;align-items:center;gap:10px}
+.ability-name{font-size:12px;color:#9a8060;width:32px;flex-shrink:0;letter-spacing:0.05em}
+.ability-bar-bg{flex:1;height:7px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.ability-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#8b0000,#c9a84c);transition:width 0.6s ease}
+.ability-val{font-size:12px;color:#c9a84c;font-weight:700;width:28px;text-align:right;flex-shrink:0}
+.secondary-stats{
+  margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.sec-stat{
+  background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);
+  padding:9px 10px;
+}
+.sec-stat-label{font-size:10px;color:#6a5030;letter-spacing:0.1em;display:block}
+.sec-stat-val{font-size:16px;color:#c9a84c;font-weight:700;display:block;margin-top:3px}
+
+/* Relations screen */
+.relations-list{display:flex;flex-direction:column;gap:8px}
+.relation-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.12);
+}
+.relation-role{font-size:10px;color:#6a5030;width:36px;flex-shrink:0}
+.relation-name{font-size:13px;color:#e8d5a3;flex:1}
+.relation-bar-bg{width:60px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.relation-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#8b0000,#c9a84c)}
+.relation-val{font-size:11px;color:#c9a84c;width:24px;text-align:right}
+.empty-state{text-align:center;color:#4a3a20;font-size:13px;padding:40px 0;letter-spacing:0.1em}
+
+/* Records screen */
+.records-rank{
+  text-align:center;padding:16px;
+  background:rgba(139,0,0,0.1);border:1px solid rgba(139,0,0,0.3);
+  margin-bottom:14px;
+}
+.records-rank-label{font-size:10px;color:#6a5030;letter-spacing:0.2em}
+.records-rank-val{font-size:20px;color:#c9a84c;font-weight:700;letter-spacing:0.15em;margin-top:4px}
+.history-list{display:flex;flex-direction:column;gap:6px}
+.history-item{
+  font-size:11px;color:#7a6040;line-height:1.7;
+  padding:7px 10px;border-left:2px solid rgba(139,0,0,0.4);
+  background:rgba(255,255,255,0.02);
+  letter-spacing:0.03em;
+}
+.history-item.notable{border-left-color:#c9a84c;color:#9a8050}
+
+/* ===== BATTLE SCREEN ===== */
+#battleScreen{
+  background:radial-gradient(ellipse at 50% 50%, #1a0000 0%, #0a0000 60%, #0a0a0a 100%);
+}
+.battle-top{
+  padding:10px;flex-shrink:0;
+  border-bottom:1px solid rgba(139,0,0,0.3);
+  background:rgba(0,0,0,0.5);
+}
+.battle-title{font-size:14px;color:#c9a84c;letter-spacing:0.2em;text-align:center;margin-bottom:10px}
+.battle-armies{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.army-block{
+  background:rgba(0,0,0,0.4);border:1px solid;padding:10px 8px;
+  text-align:center;
+}
+.army-block.player{border-color:rgba(201,168,76,0.4)}
+.army-block.enemy{border-color:rgba(139,0,0,0.4)}
+.army-name{font-size:11px;letter-spacing:0.1em;margin-bottom:6px}
+.army-troops{font-size:20px;font-weight:700}
+.army-morale-label{font-size:9px;color:#6a5030;margin-top:4px}
+.army-morale-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:4px;overflow:hidden}
+.army-morale-fill{height:100%;border-radius:2px;transition:width 0.5s}
+.battle-vs{font-size:20px;color:#8b0000;font-weight:900;text-shadow:0 0 10px rgba(139,0,0,0.8)}
+.battle-scene{
+  height:90px;flex-shrink:0;position:relative;
+  background:linear-gradient(135deg,#1a0000,#0a0000,#200000);
+  overflow:hidden;
+}
+.battle-dust{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 100%, rgba(139,0,0,0.3) 0%, transparent 70%);
+  animation:battleDust 2s ease-in-out infinite alternate;
+}
+@keyframes battleDust{
+  0%{opacity:0.5;transform:scale(1)}
+  100%{opacity:1;transform:scale(1.1)}
+}
+.battle-swords{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:28px;color:rgba(201,168,76,0.6);
+  animation:swordClash 1.5s ease-in-out infinite;
+  letter-spacing:0.1em;
+}
+@keyframes swordClash{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.6}
+  50%{transform:translate(-50%,-50%) scale(1.2);opacity:1}
+}
+.battle-log{
+  flex:1;overflow-y:auto;padding:10px;
+  -webkit-overflow-scrolling:touch;
+}
+.battle-log::-webkit-scrollbar{width:3px}
+.battle-log::-webkit-scrollbar-thumb{background:rgba(139,0,0,0.4)}
+.log-entry{font-size:12px;line-height:1.8;margin-bottom:3px;letter-spacing:0.04em}
+.log-entry.damage{color:#cc3333}
+.log-entry.info{color:#6a5030}
+.log-entry.good{color:#7a9060}
+.log-entry.system{color:#c9a84c;font-weight:600}
+.battle-commands{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding:10px;flex-shrink:0;
+  border-top:1px solid rgba(139,0,0,0.3);
+  background:rgba(0,0,0,0.5);
+}
+.btn-battle{
+  padding:13px 8px;border:1px solid;background:rgba(0,0,0,0.6);
+  font-family:inherit;font-size:13px;letter-spacing:0.1em;
+  cursor:pointer;font-weight:600;transition:all 0.2s;
+}
+.btn-battle.charge{border-color:#c9a84c;color:#c9a84c}
+.btn-battle.defense{border-color:#5a7a4a;color:#7a9a6a}
+.btn-battle.ambush{border-color:#8b0000;color:#cc4444}
+.btn-battle.retreat{border-color:#555;color:#7a6a5a}
+.btn-battle:hover{opacity:0.85;transform:scale(0.98)}
+.btn-battle:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+
+/* ===== GAME OVER SCREEN ===== */
+#gameOverScreen{
+  background:radial-gradient(ellipse at 50% 30%, #1a0505 0%, #0a0505 50%, #0a0a0a 100%);
+  align-items:center;justify-content:center;gap:0;
+  overflow-y:auto;
+  padding:30px 20px;
+}
+.gameover-title{
+  font-size:28px;color:#8b0000;font-weight:900;
+  letter-spacing:0.2em;text-align:center;
+  text-shadow:0 0 20px rgba(139,0,0,0.8);
+  margin-bottom:20px;
+}
+.gameover-age{text-align:center;margin-bottom:16px}
+.gameover-age-label{font-size:11px;color:#6a5030;letter-spacing:0.2em}
+.gameover-age-val{font-size:36px;color:#c9a84c;font-weight:700}
+.gameover-age-unit{font-size:14px;color:#9a8060;margin-left:4px}
+.gameover-divider{
+  width:160px;height:1px;
+  background:linear-gradient(90deg,transparent,#8b0000,transparent);
+  margin:16px auto;
+}
+.gameover-epitaph{
+  text-align:center;font-size:13px;color:#9a8060;
+  line-height:1.9;letter-spacing:0.08em;max-width:340px;
+  padding:16px;border:1px solid rgba(139,0,0,0.3);
+  background:rgba(139,0,0,0.08);margin-bottom:20px;
+}
+.gameover-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  width:100%;max-width:320px;margin-bottom:24px;
+}
+.gameover-stat{
+  text-align:center;padding:10px;
+  background:rgba(0,0,0,0.3);border:1px solid rgba(201,168,76,0.15);
+}
+.gameover-stat-label{font-size:10px;color:#6a5030;letter-spacing:0.1em}
+.gameover-stat-val{font-size:18px;color:#c9a84c;font-weight:700;margin-top:4px}
+
+/* ===== NOTIFICATION ===== */
+.notification{
+  position:absolute;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);
+  background:rgba(0,0,0,0.85);border:1px solid #c9a84c;
+  padding:8px 20px;font-size:12px;color:#c9a84c;
+  letter-spacing:0.1em;pointer-events:none;
+  opacity:0;transition:all 0.3s;z-index:1000;
+  white-space:nowrap;
+}
+.notification.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== SETTINGS PANEL ===== */
+.settings-content{padding:14px;display:flex;flex-direction:column;gap:12px}
+.settings-title{
+  font-size:15px;color:#c9a84c;letter-spacing:0.2em;
+  padding-bottom:10px;margin-bottom:4px;
+  border-bottom:1px solid rgba(201,168,76,0.25);
+}
+.settings-btn{
+  padding:12px;border:1px solid rgba(201,168,76,0.3);
+  background:rgba(0,0,0,0.3);color:#9a8060;
+  font-family:inherit;font-size:13px;letter-spacing:0.1em;
+  cursor:pointer;transition:all 0.2s;font-weight:600;
+}
+.settings-btn:hover{background:rgba(201,168,76,0.1);color:#c9a84c;border-color:#c9a84c}
+.settings-btn.danger{border-color:rgba(139,0,0,0.4);color:#8b5050}
+.settings-btn.danger:hover{background:rgba(139,0,0,0.15);color:#cc4444;border-color:#8b0000}
+
+/* Scroll fix */
+#gameScreen .game-content{
+  padding-bottom:60px;
+}
+
+/* Transition animation */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.screen.active{animation:fadeIn 0.35s ease}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- NOTIFICATION -->
+  <div class="notification" id="notification"></div>
+
+  <!-- TITLE SCREEN -->
+  <div class="screen active" id="titleScreen">
+    <div class="title-grid-overlay"></div>
+    <div class="title-glow"></div>
+    <div class="title-main">戦国乱世</div>
+    <div class="title-sub">我が道を征け</div>
+    <div class="title-divider"></div>
+    <div class="title-buttons">
+      <button class="btn-title" onclick="showScreen('startScreen'); rollOrigin()">新たな物語</button>
+      <button class="btn-title" id="btnContinue" onclick="continueGame()">続きから</button>
+    </div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="screen" id="startScreen">
+    <div class="start-title">出自の選択</div>
+    <div class="origin-card" id="originCard">
+      <div class="origin-name" id="originName">農民</div>
+      <div class="origin-desc" id="originDesc">田畑を耕し、慎ましく生きてきた。しかし乱世の風が、穏やかな日々を奪っていく。</div>
+      <div class="stat-grid" id="originStats"></div>
+    </div>
+    <div class="name-section">
+      <span class="input-label">名前を入力せよ</span>
+      <input class="name-input" id="nameInput" type="text" placeholder="例：田中 一郎" maxlength="12">
+    </div>
+    <div class="start-actions">
+      <button class="btn-action btn-secondary" onclick="rollOrigin()">出自を変える（再抽選）</button>
+      <button class="btn-action btn-primary" onclick="startGame()">この運命で歩む</button>
+      <button class="btn-action btn-secondary" onclick="showScreen('titleScreen')">戻る</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="gameScreen">
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-row1">
+        <span class="status-date" id="statusDate">天正元年 一月</span>
+        <span class="status-name" id="statusName">-</span>
+        <span class="class-badge" id="statusClass">農民</span>
+      </div>
+      <div class="status-row2">
+        <div class="stat-cell">
+          <span class="stat-cell-label">所持金</span>
+          <span class="stat-cell-val" id="statMoney">0貫</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-cell-label">家臣</span>
+          <span class="stat-cell-val" id="statRetainers">0人</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-cell-label">兵力</span>
+          <span class="stat-cell-val" id="statTroops">0</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-cell-label">名声</span>
+          <span class="stat-cell-val" id="statFame">0</span>
+        </div>
+      </div>
+      <div class="status-row3">
+        <div class="stat-cell">
+          <span class="stat-cell-label">年齢/寿命</span>
+          <span class="stat-cell-val" id="statAge">15/70</span>
+        </div>
+        <div class="health-mini">
+          <span class="stat-cell-label">健康</span>
+          <div class="health-bar-mini">
+            <div class="health-bar-fill" id="healthBarFill" style="width:80%"></div>
+          </div>
+          <span class="stat-cell-val" id="statHealth" style="font-size:11px">80</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-cell-label">人気</span>
+          <span class="stat-cell-val" id="statPop">0</span>
+        </div>
+        <div class="stat-cell">
+          <span class="stat-cell-label">幸福</span>
+          <span class="stat-cell-val" id="statHappy">50</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene Area -->
+    <div class="scene-area" id="sceneArea">
+      <div class="scene-bg" id="sceneBg"></div>
+      <div class="scene-overlay"></div>
+      <div class="scene-particles" id="sceneParticles"></div>
+      <div class="scene-text">
+        <span class="scene-location-name" id="sceneLocationName">村</span>
+        <span id="sceneDesc">春の風が村に吹き渡る。遠くから戦の噂が聞こえてきた。</span>
+      </div>
+    </div>
+
+    <!-- Game Content -->
+    <div class="game-content">
+      <!-- Event Panel -->
+      <div class="event-panel" id="eventPanel">
+        <div class="event-header">
+          <div class="event-icon"></div>
+          <div class="event-title" id="eventTitle">今月の出来事</div>
+        </div>
+        <div class="event-text" id="eventText">物語がここから始まる。</div>
+        <div class="event-result" id="eventResult" style="display:none"></div>
+        <div class="event-choice" id="eventChoice" style="display:none"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions-section" id="actionsSection">
+        <div class="actions-label">今月の行動を選べ</div>
+        <div class="action-grid" id="actionGrid"></div>
+      </div>
+
+      <!-- Sub screens (tabs) -->
+      <div class="sub-screen" id="abilityScreen">
+        <div class="sub-title">能力一覧</div>
+        <div class="portrait-area">
+          <div class="portrait-silhouette">
+            <svg viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="30" cy="14" r="10" fill="rgba(201,168,76,0.4)" stroke="rgba(201,168,76,0.6)" stroke-width="1"/>
+              <rect x="18" y="26" width="24" height="30" rx="2" fill="rgba(139,0,0,0.35)" stroke="rgba(201,168,76,0.4)" stroke-width="1"/>
+              <rect x="8" y="28" width="10" height="22" rx="1" fill="rgba(139,0,0,0.25)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <rect x="42" y="28" width="10" height="22" rx="1" fill="rgba(139,0,0,0.25)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <rect x="22" y="56" width="7" height="20" rx="1" fill="rgba(100,60,20,0.4)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <rect x="31" y="56" width="7" height="20" rx="1" fill="rgba(100,60,20,0.4)" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+              <line x1="30" y1="28" x2="30" y2="56" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+            </svg>
+          </div>
+        </div>
+        <div class="ability-list" id="abilityList"></div>
+        <div class="secondary-stats" id="secondaryStats"></div>
+      </div>
+
+      <div class="sub-screen" id="relationsScreen">
+        <div class="sub-title">人物関係</div>
+        <div class="relations-list" id="relationsList"></div>
+      </div>
+
+      <div class="sub-screen" id="recordsScreen">
+        <div class="sub-title">記録</div>
+        <div class="records-rank" id="recordsRank">
+          <div class="records-rank-label">現在の称号</div>
+          <div class="records-rank-val" id="rankDisplay">無名の若者</div>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+
+      <div class="sub-screen" id="settingsScreen">
+        <div class="settings-content">
+          <div class="settings-title">設定</div>
+          <button class="settings-btn" onclick="saveGame(); showNotification('記録しました')">手動保存</button>
+          <button class="settings-btn danger" onclick="confirmReset()">最初からやり直す</button>
+          <button class="settings-btn" onclick="showScreen('titleScreen')">タイトルに戻る</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <button class="nav-btn active" id="navAbility" onclick="switchTab('ability')">
+        <div class="nav-dot"></div>能力
+      </button>
+      <button class="nav-btn" id="navRelations" onclick="switchTab('relations')">
+        <div class="nav-dot"></div>人物
+      </button>
+      <button class="nav-btn" id="navRecords" onclick="switchTab('records')">
+        <div class="nav-dot"></div>記録
+      </button>
+      <button class="nav-btn" id="navSettings" onclick="switchTab('settings')">
+        <div class="nav-dot"></div>設定
+      </button>
+    </div>
+  </div>
+
+  <!-- BATTLE SCREEN -->
+  <div class="screen" id="battleScreen">
+    <div class="battle-top">
+      <div class="battle-title" id="battleTitle">合戦</div>
+      <div class="battle-armies">
+        <div class="army-block player">
+          <div class="army-name" style="color:#c9a84c" id="playerArmyName">我が軍</div>
+          <div class="army-troops" style="color:#c9a84c" id="playerTroops">0</div>
+          <div class="army-morale-label">士気</div>
+          <div class="army-morale-bar">
+            <div class="army-morale-fill" id="playerMorale" style="background:#c9a84c;width:80%"></div>
+          </div>
+        </div>
+        <div class="battle-vs">対</div>
+        <div class="army-block enemy">
+          <div class="army-name" style="color:#cc4444" id="enemyArmyName">敵軍</div>
+          <div class="army-troops" style="color:#cc4444" id="enemyTroops">0</div>
+          <div class="army-morale-label">士気</div>
+          <div class="army-morale-bar">
+            <div class="army-morale-fill" id="enemyMorale" style="background:#8b0000;width:80%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="battle-scene">
+      <div class="battle-dust"></div>
+      <div class="battle-swords">×</div>
+    </div>
+    <div class="battle-log" id="battleLog"></div>
+    <div class="battle-commands">
+      <button class="btn-battle charge" onclick="battleCommand('charge')">突撃</button>
+      <button class="btn-battle defense" onclick="battleCommand('defense')">防御</button>
+      <button class="btn-battle ambush" onclick="battleCommand('ambush')">奇襲</button>
+      <button class="btn-battle retreat" onclick="battleCommand('retreat')">退却</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="screen" id="gameOverScreen">
+    <div class="gameover-title">辞世</div>
+    <div class="gameover-age">
+      <div class="gameover-age-label">享年</div>
+      <span class="gameover-age-val" id="gameoverAge">0</span>
+      <span class="gameover-age-unit">歳</span>
+    </div>
+    <div class="gameover-divider"></div>
+    <div class="gameover-epitaph" id="gameoverEpitaph">その生涯は、戦国の世に消えた。</div>
+    <div class="gameover-stats" id="gameoverStats"></div>
+    <button class="btn-action btn-secondary" style="width:200px" onclick="showScreen('titleScreen')">タイトルへ戻る</button>
+  </div>
+
+</div>
+
+<script>
+// ==================== DATA ====================
+
+const ORIGINS = {
+  '農民': {
+    desc:'田畑を耕し、慎ましく生きてきた。しかし乱世の風が、穏やかな日々を奪っていく。力なき者の嘆きを、己の拳で打ち破れるか。',
+    money:5, troops:0, retainers:0, tosu:10, buki:12, chie:8, sei:15, miryoku:20, health:90, popularity:10
+  },
+  '足軽': {
+    desc:'兵として戦場を渡り歩いてきた。命令に従い、槍を振るい、仲間の屍を踏み越えてきた。今こそ己の道を切り開く時。',
+    money:10, troops:10, retainers:0, tosu:25, buki:35, chie:15, sei:10, miryoku:18, health:80, popularity:8
+  },
+  '浪人': {
+    desc:'かつて仕えた主君を失い、流浪の身となった。剣の腕は確かだが、孤独が胸に宿る。新たな主を見つけるか、独りで天下を狙うか。',
+    money:8, troops:5, retainers:0, tosu:30, buki:50, chie:25, sei:8, miryoku:22, health:75, popularity:5
+  },
+  '商人': {
+    desc:'銭の流れを読み、商売で生き抜いてきた。戦の世でも、金さえあれば何でも手に入る。財力で時代を動かす者となれ。',
+    money:80, troops:0, retainers:0, tosu:12, buki:8, chie:35, sei:45, miryoku:40, health:85, popularity:15
+  },
+  '忍者': {
+    desc:'闇に生き、闇に消える忍びの身。誰も知らぬ場所で、時代の歯車を動かしてきた。その力を、己の野望のために使う時が来た。',
+    money:20, troops:0, retainers:0, tosu:20, buki:40, chie:50, sei:12, miryoku:15, health:88, popularity:3
+  }
+};
+
+const ORIGIN_LIST = ['農民','足軽','浪人','商人','忍者'];
+
+const ACTIONS_ALL = [
+  { id:'sword',     name:'剣術修行',  desc:'剣の道を極める',           effectDesc:'+武力',   effect:(g)=>({ buki: ri(1,4) }),              cost:0,  location:'temple'  },
+  { id:'tactics',   name:'兵法修行',  desc:'兵法を学び統率力を高める',  effectDesc:'+統率',   effect:(g)=>({ tosu: ri(1,4) }),              cost:5,  location:'castle'  },
+  { id:'trade',     name:'商売',      desc:'商いで資金を増やす',        effectDesc:'+金',     effect:(g)=>({ money: ri(10,50), sei:1 }),     cost:0,  location:'town'    },
+  { id:'govern',    name:'内政',      desc:'領地の整備を行う',          effectDesc:'+政治+人気',effect:(g)=>({ sei: ri(1,3), popularity: ri(5,15) }), cost:10, location:'castle' },
+  { id:'recruit',   name:'兵の募集',  desc:'兵を集める',               effectDesc:'+兵力',   effect:(g)=>({ troops: ri(5,20) }),            cost:20, location:'village' },
+  { id:'diplomacy', name:'外交',      desc:'近隣との関係を築く',        effectDesc:'+魅力+名声',effect:(g)=>({ miryoku: 1, fame: ri(2,8) }), cost:5,  location:'castle'  },
+  { id:'tea',       name:'茶会を開く',desc:'文化人と交流する',          effectDesc:'+魅力+幸福',effect:(g)=>({ miryoku: ri(1,3), happiness:10 }), cost:15, location:'town' },
+  { id:'espionage', name:'忍者探索',  desc:'忍びを雇い情報を集める',    effectDesc:'+知略',   effect:(g)=>({ chie: ri(1,3) }),              cost:30, location:'temple'  },
+  { id:'marriage',  name:'婚活',      desc:'縁談を探す',               effectDesc:'縁談',    effect:(g)=>({}),                              cost:0,  location:'town',   special:'marriage' },
+  { id:'hunt',      name:'狩猟',      desc:'山で狩りをして心身を鍛える',effectDesc:'+武力+健康',effect:(g)=>({ buki:1, health:5 }),          cost:0,  location:'village' },
+  { id:'study',     name:'学問修行',  desc:'書を読み知恵を磨く',        effectDesc:'+知略',   effect:(g)=>({ chie: ri(1,4) }),              cost:5,  location:'temple'  },
+  { id:'battle',    name:'合戦',      desc:'近隣の敵と戦う',            effectDesc:'戦闘',    effect:(g)=>({}),                              cost:0,  location:'battle', special:'battle'   },
+  { id:'rest',      name:'静養',      desc:'体を休め健康を回復する',    effectDesc:'+健康',   effect:(g)=>({ health: ri(10,25) }),           cost:0,  location:'village' },
+  { id:'pilgrimage',name:'寺参り',    desc:'神仏に祈りを捧げる',        effectDesc:'+幸福+健康',effect:(g)=>({ happiness:15, health:5 }),    cost:2,  location:'temple'  },
+];
+
+const EVENTS = [
+  { id:'e_meito',      title:'名刀との出会い',   prob:0.04,
+    text:'旅の刀鍛冶が珍しい刀を持ち込んだ。眺めるだけで武者震いがした。「この一振り、あなたに譲ろう」と老鍛冶が言った。',
+    result:{buki:5,money:-30}, cond:m=>m.money>=30 },
+  { id:'e_lord_praise',title:'主君の評価',       prob:0.06,
+    text:'上の者より「最近の働きは目を見張るものがある」と御言葉を賜った。これほどの光栄はない。仕官の道が開けたかもしれない。',
+    result:{fame:10,loyalty:5} },
+  { id:'e_meet_ronin', title:'流れ者との出会い', prob:0.07,
+    text:'辻で見知らぬ浪人と出会った。腕は確かだが仕える主を失ったという。その目に、かつての自分の姿が重なった。',
+    result:{},
+    choices:[
+      { text:'家臣に誘う（30貫）', cost:{money:30}, gain:{retainers:1}, cond:m=>m.money>=30 },
+      { text:'立ち去る', cost:{}, gain:{} }
+    ]},
+  { id:'e_merchant_deal',title:'商人の取引',     prob:0.08,
+    text:'商人が持ち込んだ珍しい品々。南蛮渡来の品もある。今が買い時か、見送るか。',
+    result:{},
+    choices:[
+      { text:'南蛮品を購入（50貫）', cost:{money:50}, gain:{fame:5,sei:2}, cond:m=>m.money>=50 },
+      { text:'見送る', cost:{}, gain:{} }
+    ]},
+  { id:'e_good_harvest',title:'豊作の知らせ',    prob:0.05,
+    text:'今年は例年にない豊作だという。農村から喜びの声が聞こえてくる。これにより民心が安定し、兵糧も確保できた。',
+    result:{money:25,popularity:8} },
+  { id:'e_brave_deed', title:'義侠の行い',       prob:0.06,
+    text:'路上で押し込み強盗に襲われている商人を見かけた。剣を抜き、賊を退けた。商人は深く感謝し、謝礼を差し出した。',
+    result:{fame:8,buki:2,money:20} },
+  { id:'e_tea_master', title:'茶人との邂逅',     prob:0.04,
+    text:'名高い茶人と出会う機会を得た。一服の茶を点てる所作の中に、戦国の乱世を生き抜く哲学が宿っていた。深く感じ入った。',
+    result:{miryoku:4,happiness:15} },
+  { id:'e_bandits',    title:'盗賊の襲撃',       prob:0.08,
+    text:'夜道を歩いていると、突然複数の盗賊に囲まれた。「金を出せ」という声が闇の中に響く。抵抗するか、金を渡すか。',
+    result:{},
+    choices:[
+      { text:'抵抗する', cost:{health:15}, gain:{buki:1,fame:3} },
+      { text:'金を渡す', cost:{money:20}, gain:{} }
+    ]},
+  { id:'e_famine',     title:'飢饉の兆し',       prob:0.05,
+    text:'今年の作物の出来が悪い。村々から飢える者が出始めた。民の苦しむ声が耳に届く。このままでは暴動も起きかねない。',
+    result:{popularity:-10,money:-15} },
+  { id:'e_illness',    title:'病の流行',         prob:0.06,
+    text:'疫病が流行し始めた。熱が出て体が思うように動かない。床に伏す日々が続いた。養生に専念せざるを得なかった。',
+    result:{health:-20,buki:-2} },
+  { id:'e_betrayal',   title:'裏切りの影',       prob:0.04,
+    text:'信頼していた部下が密かに敵方に通じていたという報告が入った。長年仕えた者の裏切りは、胸に鋭い痛みを刻む。',
+    result:{retainers:-1,loyalty:-10,happiness:-15}, cond:m=>m.retainers>0 },
+  { id:'e_rival',      title:'ライバルの台頭',   prob:0.07,
+    text:'同じ時代を生きるライバルが目覚ましい活躍を見せているという噂が届いた。焦りはある。しかし、それが己を磨く糧にもなる。',
+    result:{happiness:-5} },
+  { id:'e_injury',     title:'負傷',             prob:0.05,
+    text:'稽古中に思わぬ怪我を負った。骨は折れていないが、しばらくは無理ができない。焦る気持ちを抑え、回復に努めた。',
+    result:{health:-15,buki:-1} },
+  { id:'e_wander',     title:'旅人との出会い',   prob:0.09,
+    text:'遠方から来た旅の僧と言葉を交わした。世の中の様々な話を聞かせてもらい、知見が広がった。別れ際に「また会おう」と言い残し去っていった。',
+    result:{chie:2,happiness:5} },
+  { id:'e_dream',      title:'不思議な夢',       prob:0.05,
+    text:'夜明け前、奇妙な夢を見た。霧の中に老人が現れ「お前の道はまだ始まったばかりだ」と告げた。目覚めた後も、その言葉が頭から離れなかった。',
+    result:{happiness:10} },
+  { id:'e_tournament', title:'武芸大会',         prob:0.05,
+    text:'近くの城下で武芸大会が催されるという知らせが入った。名を上げる絶好の機会だが、高い実力者も多く集まるだろう。',
+    result:{},
+    choices:[
+      { text:'参加する', cost:{health:5}, gain:{buki:3,fame:12}, cond:m=>m.buki>=25 },
+      { text:'観戦のみ', cost:{}, gain:{chie:1} }
+    ]},
+  { id:'e_princess',   title:'姫との出会い',     prob:0.04,
+    text:'城下を歩いていると、侍女を連れた高貴な女性と目が合った。身なりから武家の姫と見える。その美しさと気品に、思わず足が止まった。',
+    result:{miryoku:2,happiness:10}, cond:m=>!m.married },
+  { id:'e_letter',     title:'古い文の発見',     prob:0.04,
+    text:'荷物の中に古い文が見つかった。読んでみると、先人が残した兵法の要諦が記されていた。その知恵は今の時代にも十分通じるものだった。',
+    result:{chie:3,tosu:2} },
+  { id:'e_festival',   title:'祭りの賑わい',     prob:0.06,
+    text:'村の祭りに招かれた。太鼓の音、神楽の舞、美味い食べ物。束の間の平和な時を民とともに過ごした。英気を養うことができた。',
+    result:{happiness:20,popularity:5} },
+];
+
+const RANKS = [
+  {min:0,   name:'無名の若者'},
+  {min:10,  name:'名の知られ始めた者'},
+  {min:30,  name:'地域に名を馳せる者'},
+  {min:60,  name:'広く知られた武者'},
+  {min:100, name:'名のある武将'},
+  {min:150, name:'猛将'},
+  {min:200, name:'高名な将'},
+  {min:300, name:'大名'},
+  {min:500, name:'天下人への道'},
+];
+
+const LOCATION_SCENES = {
+  village:{
+    bg:'linear-gradient(160deg, #1a2a0a 0%, #0f1a05 40%, #0a1200 100%)',
+    name:'村里',
+    descs:[
+      '田畑が広がり、農民たちが働いている。遠くに山が霞んでいた。',
+      '村の辻に人々が集まり、話し込んでいる。風に麦の穂が揺れる。',
+      '子供たちの笑い声が聞こえる。戦の影は、ここではまだ遠い。',
+    ]
+  },
+  castle:{
+    bg:'linear-gradient(160deg, #1a0a0a 0%, #150505 40%, #0a0505 100%)',
+    name:'城郭',
+    descs:[
+      '天守閣が夕日に染まっている。武士たちが忙しそうに行き交う。',
+      '石垣の上から領地を見渡す。広大な野原の先に、敵の影が見えた。',
+      '城内は緊張感に満ちていた。軍議の声が廊下に漏れてくる。',
+    ]
+  },
+  town:{
+    bg:'linear-gradient(160deg, #1a1000 0%, #150d00 40%, #0a0800 100%)',
+    name:'城下町',
+    descs:[
+      '賑やかな市が立ち、商人たちが声を張り上げている。活気に満ちた町だ。',
+      '様々な品物が並ぶ。南蛮渡来の珍しいものも見かけた。',
+      '酒屋から三味線の音が流れてくる。戦国の世にも、人の温もりはある。',
+    ]
+  },
+  temple:{
+    bg:'linear-gradient(160deg, #0a0a1a 0%, #050510 40%, #020210 100%)',
+    name:'社寺',
+    descs:[
+      '境内に静寂が広がっている。線香の煙が空に漂う。',
+      '僧侶たちが経を唱えている。心が洗われるような静けさだった。',
+      '古い神社の鳥居の前に立つ。何かを祈らずにはいられなかった。',
+    ]
+  },
+  battle:{
+    bg:'linear-gradient(160deg, #2a0000 0%, #1a0000 40%, #0a0000 100%)',
+    name:'戦場',
+    descs:[
+      '轟く鬨の声、飛び交う矢。地を揺らす馬蹄の音が迫ってくる。',
+      '血と硝煙の匂いが漂う。生と死が隣り合う、乱世の現実がここにある。',
+      '戦場に屍が横たわる。勝者も敗者も、皆同じ土に帰っていく。',
+    ]
+  },
+  harbor:{
+    bg:'linear-gradient(160deg, #0a1020 0%, #050a15 40%, #020508 100%)',
+    name:'港',
+    descs:[
+      '潮風が頬を撫でる。遠くの水平線に南蛮船の影が見えた。',
+      '港には様々な人種が集まっている。世界の広さを実感する。',
+      '波音が心を落ち着かせる。海の向こうには、まだ知らぬ世界がある。',
+    ]
+  }
+};
+
+const ENEMY_NAMES = [
+  '山賊の頭目','国人領主 梶田家','土豪 河内衆','浪人集団','国境の守将','野武士の群れ',
+  '敵方の先鋒隊','土一揆の首魁','近隣の小領主','国侍 佐倉勢'
+];
+
+const SPOUSE_NAMES_F = ['春姫','梅姫','桜姫','千代','お市','お松','お花','お初','お夏','藤姫'];
+const RETAINER_NAMES = ['佐々木 右馬介','田中 孫兵衛','木村 伝七','山田 新助','中村 弥右衛門','鈴木 十郎','伊藤 小平太','渡辺 勘助'];
+
+// ==================== GLOBAL STATE ====================
+let G = null;
+let currentActions = [];
+let battleState = null;
+let pendingEvent = null;
+let currentTab = 'main';
+
+// ==================== UTILITY ====================
+function ri(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function monthToJapanese(m) {
+  const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  return months[(m-1) % 12];
+}
+
+function yearToJapanese(y) {
+  const era = y - 1568 + 1;
+  return '天正' + numberToKanji(era) + '年';
+}
+
+function numberToKanji(n) {
+  if(n <= 0) return '元';
+  const ones = ['','一','二','三','四','五','六','七','八','九'];
+  const tens = ['','十','二十','三十','四十','五十','六十','七十','八十','九十'];
+  if(n < 10) return ones[n];
+  if(n < 100) return tens[Math.floor(n/10)] + (n%10 > 0 ? ones[n%10] : '');
+  return String(n);
+}
+
+function getRank(fame) {
+  let r = RANKS[0];
+  for(const rank of RANKS) {
+    if(fame >= rank.min) r = rank;
+  }
+  return r.name;
+}
+
+function applyEffect(eff) {
+  if(!eff) return;
+  const keys = Object.keys(eff);
+  for(const k of keys) {
+    if(k === 'money')      G.money      = Math.max(0, G.money + eff[k]);
+    else if(k === 'troops')     G.troops     = Math.max(0, G.troops + eff[k]);
+    else if(k === 'retainers')  G.retainers  = Math.max(0, G.retainers + eff[k]);
+    else if(k === 'popularity') G.popularity = clamp(G.popularity + eff[k], 0, 100);
+    else if(k === 'fame')       G.fame       = Math.max(0, G.fame + eff[k]);
+    else if(k === 'tosu')       G.tosu       = clamp(G.tosu + eff[k], 0, 100);
+    else if(k === 'buki')       G.buki       = clamp(G.buki + eff[k], 0, 100);
+    else if(k === 'chie')       G.chie       = clamp(G.chie + eff[k], 0, 100);
+    else if(k === 'sei')        G.sei        = clamp(G.sei + eff[k], 0, 100);
+    else if(k === 'miryoku')    G.miryoku    = clamp(G.miryoku + eff[k], 0, 100);
+    else if(k === 'health')     G.health     = clamp(G.health + eff[k], 0, 100);
+    else if(k === 'loyalty')    G.loyalty    = clamp(G.loyalty + eff[k], 0, 100);
+    else if(k === 'happiness')  G.happiness  = clamp(G.happiness + eff[k], 0, 100);
+  }
+}
+
+function effectToString(eff) {
+  if(!eff || !Object.keys(eff).length) return '';
+  const labels = {
+    money:'金',troops:'兵力',retainers:'家臣',popularity:'人気',fame:'名声',
+    tosu:'統率',buki:'武力',chie:'知略',sei:'政治',miryoku:'魅力',
+    health:'健康',loyalty:'忠誠',happiness:'幸福'
+  };
+  return Object.entries(eff).map(([k,v]) => {
+    const sign = v >= 0 ? '+' : '';
+    return sign + v + ' ' + (labels[k]||k);
+  }).join('  ');
+}
+
+// ==================== GAME INIT ====================
+let rolledOrigin = '農民';
+
+function rollOrigin() {
+  rolledOrigin = pick(ORIGIN_LIST);
+  renderOriginCard();
+}
+
+function renderOriginCard() {
+  const o = ORIGINS[rolledOrigin];
+  document.getElementById('originName').textContent = rolledOrigin;
+  document.getElementById('originDesc').textContent = o.desc;
+  const stats = [
+    {label:'統率', val:o.tosu},
+    {label:'武力', val:o.buki},
+    {label:'知略', val:o.chie},
+    {label:'政治', val:o.sei},
+    {label:'魅力', val:o.miryoku},
+    {label:'所持金', val:o.money, max:100},
+  ];
+  const grid = document.getElementById('originStats');
+  grid.innerHTML = stats.map(s => {
+    const pct = Math.min(100, (s.val / (s.max||100)) * 100);
+    return `<div class="stat-item">
+      <span class="stat-label">${s.label}</span>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%"></div></div>
+      <span class="stat-val">${s.val}</span>
+    </div>`;
+  }).join('');
+}
+
+function startGame() {
+  const nameVal = document.getElementById('nameInput').value.trim();
+  const name = nameVal || pick(['信長','秀吉','家康','謙信','信玄','元就','道三','久秀','道雪']);
+  initGame(rolledOrigin, name);
+}
+
+function initGame(origin, name) {
+  const o = ORIGINS[origin];
+  G = {
+    name: name,
+    origin: origin,
+    age: 15,
+    lifespan: ri(55, 80),
+    year: 1569,
+    month: 1,
+    money: o.money,
+    troops: o.troops,
+    retainers: o.retainers,
+    popularity: o.popularity,
+    fame: 0,
+    tosu: o.tosu,
+    buki: o.buki,
+    chie: o.chie,
+    sei: o.sei,
+    miryoku: o.miryoku,
+    health: o.health,
+    loyalty: 50,
+    happiness: 50,
+    relations: [],
+    married: false,
+    spouse: null,
+    children: [],
+    rank: '無名の若者',
+    location: 'village',
+    history: [],
+    titles: [],
+    monthCount: 0,
+  };
+  G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：乱世に生を受けた' + G.origin + 'の若者として、物語が始まった。');
+  showScreen('gameScreen');
+  switchTab('main');
+  triggerEvent();
+  pickActions();
+  updateUI();
+  saveGame();
+}
+
+// ==================== MONTH ADVANCE ====================
+function advanceMonth() {
+  G.month++;
+  if(G.month > 12) {
+    G.month = 1;
+    G.year++;
+    G.age++;
+
+    // Children born sometimes
+    if(G.married && G.age < 55 && Math.random() < 0.25) {
+      const childName = pick(['太郎','次郎','三郎','竹丸','梅丸','鶴丸','松丸','千代丸']);
+      G.children.push({ name: childName, age: 0 });
+      G.history.push(yearToJapanese(G.year) + '：子供が生まれた。名を' + childName + 'とした。');
+      showNotification(childName + ' が生まれた');
+    }
+    // Children age up
+    G.children.forEach(c => c.age++);
+  }
+
+  G.monthCount++;
+
+  // Natural health decay slightly each month
+  if(G.health < 20) {
+    G.lifespan = Math.max(G.age + 1, G.lifespan - ri(0,2));
+  }
+
+  // Happiness drift toward 50 slowly
+  if(G.happiness > 55) G.happiness = Math.max(55, G.happiness - 1);
+  if(G.happiness < 45) G.happiness = Math.min(45, G.happiness + 1);
+
+  // Rank update
+  G.rank = getRank(G.fame);
+
+  checkDeath();
+  if(!G) return;
+
+  triggerEvent();
+  pickActions();
+  updateUI();
+  saveGame();
+}
+
+// ==================== EVENTS ====================
+function triggerEvent() {
+  // Clear previous
+  document.getElementById('eventResult').style.display = 'none';
+  document.getElementById('eventChoice').style.display = 'none';
+  pendingEvent = null;
+
+  // Filter eligible events
+  const eligible = EVENTS.filter(e => {
+    if(e.cond && !e.cond(G)) return false;
+    return true;
+  });
+
+  // Weighted random pick
+  const totalProb = eligible.reduce((s,e) => s + e.prob, 0);
+  let roll = Math.random() * totalProb;
+  let chosen = null;
+  for(const e of eligible) {
+    roll -= e.prob;
+    if(roll <= 0) { chosen = e; break; }
+  }
+  if(!chosen) chosen = pick(eligible);
+
+  document.getElementById('eventTitle').textContent = chosen.title;
+  document.getElementById('eventText').textContent = chosen.text;
+
+  if(chosen.choices && chosen.choices.length) {
+    pendingEvent = chosen;
+    const choiceDiv = document.getElementById('eventChoice');
+    choiceDiv.style.display = 'flex';
+    choiceDiv.innerHTML = chosen.choices.map((c, i) => {
+      const costKeys = Object.keys(c.cost);
+      const canAfford = costKeys.every(k => {
+        if(k === 'money') return G.money >= (c.cost[k]||0);
+        if(k === 'health') return G.health > (c.cost[k]||0);
+        return true;
+      });
+      const condOk = !c.cond || c.cond(G);
+      const disabled = (!canAfford || !condOk) ? 'disabled' : '';
+      return `<button class="btn-choice" ${disabled} onclick="resolveChoice(${i})">${c.text}</button>`;
+    }).join('');
+  } else {
+    // Auto-apply result
+    if(chosen.result && Object.keys(chosen.result).length) {
+      applyEffect(chosen.result);
+      const resultStr = effectToString(chosen.result);
+      if(resultStr) {
+        document.getElementById('eventResult').textContent = resultStr;
+        document.getElementById('eventResult').style.display = 'block';
+      }
+    }
+    // Record notable events
+    if(chosen.prob <= 0.05) {
+      G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：【' + chosen.title + '】' + chosen.text.substring(0, 30) + '…');
+    }
+  }
+}
+
+function resolveChoice(idx) {
+  if(!pendingEvent) return;
+  const choice = pendingEvent.choices[idx];
+  // Apply costs (as negative)
+  const costEff = {};
+  for(const [k,v] of Object.entries(choice.cost)) {
+    costEff[k] = -(Math.abs(v));
+  }
+  applyEffect(costEff);
+  applyEffect(choice.gain);
+
+  const parts = [];
+  const costStr = effectToString(costEff);
+  const gainStr = effectToString(choice.gain);
+  if(costStr) parts.push(costStr);
+  if(gainStr) parts.push(gainStr);
+
+  const resultEl = document.getElementById('eventResult');
+  resultEl.textContent = parts.join('  ') || '何もなかった。';
+  resultEl.style.display = 'block';
+  document.getElementById('eventChoice').style.display = 'none';
+
+  G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：【' + pendingEvent.title + '】' + choice.text);
+  pendingEvent = null;
+  updateUI();
+  saveGame();
+}
+
+// ==================== ACTIONS ====================
+function pickActions() {
+  // Shuffle and weight by origin
+  const weights = {
+    '農民':   { govern:2, trade:2, recruit:1.5, hunt:1.5 },
+    '足軽':   { sword:2, tactics:2, battle:2, recruit:2 },
+    '浪人':   { sword:2.5, battle:2.5, hunt:2, rest:1.5 },
+    '商人':   { trade:3, diplomacy:2, tea:2, espionage:1.5 },
+    '忍者':   { espionage:3, study:2, sword:2, ambush:2 },
+  };
+  const w = weights[G.origin] || {};
+
+  const pool = [...ACTIONS_ALL];
+  // Weighted shuffle
+  pool.sort((a,b) => {
+    const wa = (w[a.id]||1) + Math.random();
+    const wb = (w[b.id]||1) + Math.random();
+    return wb - wa;
+  });
+  currentActions = pool.slice(0, 8);
+
+  renderActions();
+}
+
+function renderActions() {
+  const grid = document.getElementById('actionGrid');
+  grid.innerHTML = currentActions.map(a => {
+    const canAfford = G.money >= a.cost;
+    const disabled = !canAfford ? ' disabled' : '';
+    const costText = a.cost > 0 ? `<div class="action-cost">費用: ${a.cost}貫</div>` : '';
+    return `<div class="action-card${disabled}" onclick="performAction('${a.id}')">
+      <div>
+        <div class="action-name">${a.name}</div>
+        <div class="action-desc">${a.desc}</div>
+      </div>
+      <div>
+        ${costText}
+        <div class="action-effect">${a.effectDesc}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function performAction(actionId) {
+  const action = ACTIONS_ALL.find(a => a.id === actionId);
+  if(!action) return;
+  if(G.money < action.cost) { showNotification('資金が不足している'); return; }
+
+  G.money -= action.cost;
+  G.location = action.location;
+
+  if(action.special === 'battle') {
+    // Start battle
+    const enemy = generateEnemy();
+    startBattle(enemy);
+    return;
+  }
+
+  if(action.special === 'marriage') {
+    handleMarriage();
+    advanceMonth();
+    return;
+  }
+
+  // Apply effect
+  const eff = action.effect(G);
+  applyEffect(eff);
+
+  // History entry
+  const effStr = effectToString(eff);
+  G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：' + action.name + 'を行った。' + (effStr ? '（' + effStr + '）' : ''));
+
+  // Show result in event panel
+  document.getElementById('eventTitle').textContent = action.name;
+  document.getElementById('eventText').textContent = getActionFlavor(action.id);
+  const resultEl = document.getElementById('eventResult');
+  if(effStr) {
+    resultEl.textContent = effStr;
+    resultEl.style.display = 'block';
+  }
+  document.getElementById('eventChoice').style.display = 'none';
+
+  advanceMonth();
+}
+
+function getActionFlavor(id) {
+  const flavors = {
+    sword: '来る日も来る日も剣を振り続けた。汗と努力が、確かな力となっていく。',
+    tactics: '兵法書を紐解き、古の戦の記録を学んだ。戦略眼が研ぎ澄まされていく。',
+    trade: '市場で商いを行い、利を得た。銭の動きを読む目が養われていく。',
+    govern: '領民のために道を整え、水を引いた。人々の信頼が積み重なっていく。',
+    recruit: '村々を回り、兵を集めた。それぞれの事情を抱えた者たちが集まってきた。',
+    diplomacy: '近隣の豪族のもとを訪れ、杯を交わした。言葉の力で、関係を結んでいく。',
+    tea: '名のある茶人を招き、茶を楽しんだ。文化の力が、乱世に潤いをもたらす。',
+    espionage: '忍びを放ち、敵の動向を探らせた。闇の中に光明が見えてきた。',
+    marriage: '縁談の席に臨んだ。人との縁が、人生を大きく変えることもある。',
+    hunt: '山野を駆け回り、獲物を追った。自然の中で、心と体が研ぎ澄まされた。',
+    study: '書を読み、師に問い、知恵を積み重ねた。学びに終わりはない。',
+    rest: '静かな場所で体を休めた。心の余白が、次の行動への英気を養う。',
+    pilgrimage: '神仏に手を合わせ、静かに祈った。魂が洗われるような清らかな時だった。',
+  };
+  return flavors[id] || 'その行いは、確かに何かを変えていった。';
+}
+
+function handleMarriage() {
+  if(G.married) {
+    document.getElementById('eventTitle').textContent = '縁談';
+    document.getElementById('eventText').textContent = 'すでに妻がいる身である。縁談は断らざるを得なかった。';
+    return;
+  }
+  if(G.miryoku < 20 && G.fame < 20 && G.money < 30) {
+    document.getElementById('eventTitle').textContent = '縁談';
+    document.getElementById('eventText').textContent = 'まだ縁談が来るほどの名声も財もない。時を待つしかなかった。';
+    return;
+  }
+  const spouseName = pick(SPOUSE_NAMES_F);
+  G.married = true;
+  G.spouse = spouseName;
+  G.relations.push({ name: spouseName, role: '妻', value: 80 });
+  G.happiness = clamp(G.happiness + 20, 0, 100);
+  G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：' + spouseName + 'と結婚した。新たな縁が結ばれた。');
+  document.getElementById('eventTitle').textContent = '婚礼の儀';
+  document.getElementById('eventText').textContent = spouseName + 'との縁が結ばれた。新しき伴侶を迎え、心が満たされた。これより二人で共に歩む道が始まる。';
+  const resultEl = document.getElementById('eventResult');
+  resultEl.textContent = '+幸福 20';
+  resultEl.style.display = 'block';
+  showNotification(spouseName + 'と結婚した');
+}
+
+// ==================== BATTLE SYSTEM ====================
+function generateEnemy() {
+  const myTroops = Math.max(G.troops, 10);
+  const ratio = 0.5 + Math.random() * 1.5;
+  return {
+    name: pick(ENEMY_NAMES),
+    troops: Math.max(5, Math.floor(myTroops * ratio)),
+    maxTroops: Math.max(5, Math.floor(myTroops * ratio)),
+    morale: ri(60, 100),
+  };
+}
+
+function startBattle(enemy) {
+  if(G.troops < 5) {
+    // Too few troops — auto-lose skirmish
+    document.getElementById('eventTitle').textContent = '合戦';
+    document.getElementById('eventText').textContent = '兵が少なすぎて正面から戦えない。やむなく退くことにした。しかし敵に見つかり、逃げ惑う途中で傷を負った。';
+    const eff = { health: -10, fame: -3 };
+    applyEffect(eff);
+    document.getElementById('eventResult').textContent = '-10 健康  -3 名声';
+    document.getElementById('eventResult').style.display = 'block';
+    advanceMonth();
+    return;
+  }
+
+  battleState = {
+    enemy: enemy,
+    playerTroops: G.troops,
+    playerMorale: 80,
+    enemyTroops: enemy.troops,
+    enemyMorale: enemy.morale,
+    round: 0,
+    over: false,
+  };
+
+  document.getElementById('playerArmyName').textContent = G.name + ' 軍';
+  document.getElementById('enemyArmyName').textContent = enemy.name;
+  document.getElementById('battleLog').innerHTML = '';
+  showScreen('battleScreen');
+  updateBattleUI();
+  battleLog('合戦が始まった。', 'system');
+  battleLog('我が軍 ' + battleState.playerTroops + ' 対 ' + enemy.name + ' ' + battleState.enemyTroops, 'info');
+}
+
+function battleLog(text, type) {
+  const div = document.createElement('div');
+  div.className = 'log-entry ' + (type||'info');
+  div.textContent = text;
+  const log = document.getElementById('battleLog');
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function updateBattleUI() {
+  if(!battleState) return;
+  document.getElementById('playerTroops').textContent = battleState.playerTroops;
+  document.getElementById('enemyTroops').textContent = battleState.enemyTroops;
+  document.getElementById('playerMorale').style.width = battleState.playerMorale + '%';
+  document.getElementById('enemyMorale').style.width = battleState.enemyMorale + '%';
+}
+
+function battleCommand(cmd) {
+  if(!battleState || battleState.over) return;
+  battleState.round++;
+
+  const st = battleState;
+  let playerDmg = 0, enemyDmg = 0;
+  let msg = '';
+
+  if(cmd === 'charge') {
+    // High damage both sides
+    const atkBonus = (G.tosu + G.buki) * 0.15;
+    playerDmg = Math.floor(ri(8,18) + atkBonus);
+    enemyDmg  = Math.floor(ri(6,16));
+    st.enemyTroops  = Math.max(0, st.enemyTroops  - playerDmg);
+    st.playerTroops = Math.max(0, st.playerTroops - enemyDmg);
+    st.enemyMorale  = Math.max(0, st.enemyMorale  - ri(3,10));
+    st.playerMorale = Math.max(0, st.playerMorale - ri(2,6));
+    battleLog('第' + st.round + '陣：突撃！ 敵に' + playerDmg + 'の損害。我に' + enemyDmg + 'の損害。', 'damage');
+  } else if(cmd === 'defense') {
+    // Reduce received damage
+    const defBonus = G.tosu * 0.1;
+    playerDmg = Math.floor(ri(4,10));
+    enemyDmg  = Math.max(1, Math.floor(ri(3,8) - defBonus));
+    st.enemyTroops  = Math.max(0, st.enemyTroops  - playerDmg);
+    st.playerTroops = Math.max(0, st.playerTroops - enemyDmg);
+    st.playerMorale = Math.min(100, st.playerMorale + ri(2,5));
+    battleLog('第' + st.round + '陣：防御陣形。敵に' + playerDmg + '。我に' + enemyDmg + 'の損害。', 'info');
+  } else if(cmd === 'ambush') {
+    // High variance, uses chie
+    const success = Math.random() < (0.4 + G.chie * 0.005);
+    if(success) {
+      playerDmg = Math.floor(ri(15, 30) + G.chie * 0.2);
+      enemyDmg  = Math.floor(ri(2, 8));
+      st.enemyTroops  = Math.max(0, st.enemyTroops  - playerDmg);
+      st.playerTroops = Math.max(0, st.playerTroops - enemyDmg);
+      st.enemyMorale  = Math.max(0, st.enemyMorale  - ri(10,20));
+      battleLog('第' + st.round + '陣：奇襲成功！ 敵に' + playerDmg + 'の大損害！', 'good');
+    } else {
+      playerDmg = 0;
+      enemyDmg  = Math.floor(ri(8, 18));
+      st.playerTroops = Math.max(0, st.playerTroops - enemyDmg);
+      st.playerMorale = Math.max(0, st.playerMorale - ri(5, 15));
+      battleLog('第' + st.round + '陣：奇襲失敗…逆に' + enemyDmg + 'の損害を受けた。', 'damage');
+    }
+  } else if(cmd === 'retreat') {
+    battleLog('退却を命じた。兵を引き連れ、戦場を離れた。', 'info');
+    st.playerTroops = Math.max(0, Math.floor(st.playerTroops * 0.85));
+    G.troops = st.playerTroops;
+    G.health = clamp(G.health - 5, 0, 100);
+    G.fame   = Math.max(0, G.fame - 3);
+    battleLog('味方の損失：' + Math.floor(battleState.playerTroops * 0.15) + '。名声が下がった。', 'damage');
+    st.over = true;
+    setTimeout(endBattle, 800);
+    return;
+  }
+
+  updateBattleUI();
+
+  // Check win/lose
+  if(st.enemyTroops <= 0) {
+    battleLog('敵軍を撃破した！ 勝利！', 'good');
+    st.over = true;
+    setTimeout(() => endBattle(true), 800);
+  } else if(st.playerTroops <= 0) {
+    battleLog('我が軍は壊滅した。敗北…', 'damage');
+    st.over = true;
+    setTimeout(() => endBattle(false), 800);
+  } else if(st.round >= 15) {
+    battleLog('両軍疲弊し、決着がつかなかった。引き分けとなった。', 'info');
+    st.over = true;
+    setTimeout(() => endBattle(null), 800);
+  }
+
+  // Disable buttons if battle over
+  if(st.over) {
+    document.querySelectorAll('.btn-battle').forEach(b => b.disabled = true);
+  }
+}
+
+function endBattle(won) {
+  const st = battleState;
+
+  if(won === true) {
+    const fameGain = ri(10, 25) + Math.floor(G.tosu * 0.1);
+    const moneyGain = ri(15, 50);
+    G.fame += fameGain;
+    G.money += moneyGain;
+    G.troops = st.playerTroops;
+    G.health = clamp(G.health - ri(5, 15), 0, 100);
+    G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：【合戦勝利】' + st.enemy.name + 'を破った。（+' + fameGain + ' 名声, +' + moneyGain + '貫）');
+    battleLog('戦利品：+' + moneyGain + '貫  +' + fameGain + ' 名声', 'good');
+    showNotification('合戦に勝利した');
+  } else if(won === false) {
+    const healthLoss = ri(10, 25);
+    G.health  = clamp(G.health - healthLoss, 0, 100);
+    G.troops  = Math.floor(st.playerTroops * 0.5);
+    G.fame    = Math.max(0, G.fame - ri(5, 15));
+    G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：【合戦敗北】' + st.enemy.name + 'に敗れた。');
+    showNotification('合戦に敗れた');
+  } else {
+    G.troops = st.playerTroops;
+    G.history.push(yearToJapanese(G.year) + monthToJapanese(G.month) + '：' + st.enemy.name + 'との合戦は引き分けに終わった。');
+    showNotification('引き分けとなった');
+  }
+
+  battleState = null;
+  document.querySelectorAll('.btn-battle').forEach(b => b.disabled = false);
+  showScreen('gameScreen');
+  switchTab('main');
+  advanceMonth();
+}
+
+// ==================== UI UPDATE ====================
+function updateUI() {
+  if(!G) return;
+
+  // Status bar
+  document.getElementById('statusDate').textContent = yearToJapanese(G.year) + ' ' + monthToJapanese(G.month);
+  document.getElementById('statusName').textContent = G.name;
+  document.getElementById('statusClass').textContent = G.origin;
+  document.getElementById('statMoney').textContent = G.money + '貫';
+  document.getElementById('statRetainers').textContent = G.retainers + '人';
+  document.getElementById('statTroops').textContent = G.troops;
+  document.getElementById('statFame').textContent = G.fame;
+  document.getElementById('statAge').textContent = G.age + '/' + G.lifespan;
+  document.getElementById('statHealth').textContent = G.health;
+  document.getElementById('statPop').textContent = G.popularity;
+  document.getElementById('statHappy').textContent = G.happiness;
+
+  // Health bar color
+  const hPct = G.health;
+  const hColor = hPct > 60 ? '#5a9a4a' : hPct > 30 ? '#c9a84c' : '#8b0000';
+  document.getElementById('healthBarFill').style.width = hPct + '%';
+  document.getElementById('healthBarFill').style.background = hColor;
+
+  // Scene
+  updateSceneBackground();
+
+  // Rank
+  G.rank = getRank(G.fame);
+  document.getElementById('rankDisplay').textContent = G.rank;
+
+  // Ability screen
+  renderAbilityScreen();
+
+  // Relations screen
+  renderRelationsScreen();
+
+  // Records screen
+  renderRecordsScreen();
+
+  // Actions (re-render to update disabled state)
+  renderActions();
+}
+
+function updateSceneBackground() {
+  const loc = LOCATION_SCENES[G.location] || LOCATION_SCENES.village;
+  const bg = document.getElementById('sceneBg');
+  bg.style.background = loc.bg;
+  document.getElementById('sceneLocationName').textContent = loc.name;
+  document.getElementById('sceneDesc').textContent = pick(loc.descs);
+
+  // Particles (embers for battle, pollen for village, etc.)
+  const particles = document.getElementById('sceneParticles');
+  particles.innerHTML = '';
+  const count = G.location === 'battle' ? 8 : G.location === 'temple' ? 5 : 3;
+  const pColor = G.location === 'battle' ? 'rgba(255,80,20,0.7)' :
+                 G.location === 'temple' ? 'rgba(200,200,180,0.5)' :
+                 'rgba(180,200,120,0.4)';
+  for(let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${ri(5,95)}%;
+      bottom:${ri(0,30)}%;
+      background:${pColor};
+      animation-delay:${(Math.random()*4).toFixed(1)}s;
+      animation-duration:${(3+Math.random()*3).toFixed(1)}s;
+    `;
+    particles.appendChild(p);
+  }
+}
+
+function renderAbilityScreen() {
+  const abilities = [
+    { name:'統率', val: G.tosu },
+    { name:'武力', val: G.buki },
+    { name:'知略', val: G.chie },
+    { name:'政治', val: G.sei  },
+    { name:'魅力', val: G.miryoku },
+  ];
+  document.getElementById('abilityList').innerHTML = abilities.map(a =>
+    `<div class="ability-row">
+      <span class="ability-name">${a.name}</span>
+      <div class="ability-bar-bg"><div class="ability-bar-fill" style="width:${a.val}%"></div></div>
+      <span class="ability-val">${a.val}</span>
+    </div>`
+  ).join('');
+
+  document.getElementById('secondaryStats').innerHTML = [
+    { label:'名声',   val: G.fame },
+    { label:'忠誠',   val: G.loyalty },
+    { label:'健康',   val: G.health },
+    { label:'幸福度', val: G.happiness },
+  ].map(s =>
+    `<div class="sec-stat">
+      <span class="sec-stat-label">${s.label}</span>
+      <span class="sec-stat-val">${s.val}</span>
+    </div>`
+  ).join('');
+}
+
+function renderRelationsScreen() {
+  const list = document.getElementById('relationsList');
+  if(!G.relations.length && !G.children.length) {
+    list.innerHTML = '<div class="empty-state">まだ知己はいない</div>';
+    return;
+  }
+  const all = [...G.relations];
+  G.children.forEach(c => all.push({ name: c.name + '（' + c.age + '歳）', role: '子', value: 90 }));
+  list.innerHTML = all.map(r =>
+    `<div class="relation-item">
+      <span class="relation-role">${r.role}</span>
+      <span class="relation-name">${r.name}</span>
+      <div class="relation-bar-bg">
+        <div class="relation-bar-fill" style="width:${r.value}%"></div>
+      </div>
+      <span class="relation-val">${r.value}</span>
+    </div>`
+  ).join('');
+}
+
+function renderRecordsScreen() {
+  document.getElementById('rankDisplay').textContent = G.rank;
+  const hist = [...G.history].reverse().slice(0, 30);
+  document.getElementById('historyList').innerHTML = hist.map(h => {
+    const notable = h.includes('【');
+    return `<div class="history-item${notable?' notable':''}">${h}</div>`;
+  }).join('');
+}
+
+// ==================== SCREEN / TAB MANAGEMENT ====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  // Hide all sub-screens and action section
+  document.getElementById('actionsSection').style.display = 'none';
+  document.getElementById('eventPanel').style.display   = 'none';
+  document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+
+  // Update nav
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+  if(tab === 'main') {
+    document.getElementById('actionsSection').style.display = '';
+    document.getElementById('eventPanel').style.display   = '';
+    document.getElementById('navAbility').classList.add('active');
+    // Show ability tab in nav-sense but main content
+  } else if(tab === 'ability') {
+    document.getElementById('abilityScreen').classList.add('active');
+    document.getElementById('navAbility').classList.add('active');
+    renderAbilityScreen();
+  } else if(tab === 'relations') {
+    document.getElementById('relationsScreen').classList.add('active');
+    document.getElementById('navRelations').classList.add('active');
+    renderRelationsScreen();
+  } else if(tab === 'records') {
+    document.getElementById('recordsScreen').classList.add('active');
+    document.getElementById('navRecords').classList.add('active');
+    renderRecordsScreen();
+  } else if(tab === 'settings') {
+    document.getElementById('settingsScreen').classList.add('active');
+    document.getElementById('navSettings').classList.add('active');
+  }
+
+  // Scroll content to top
+  const gc = document.querySelector('#gameScreen .game-content');
+  if(gc) gc.scrollTop = 0;
+}
+
+// clicking nav ability when already active goes to main
+document.getElementById('navAbility').addEventListener('click', function() {
+  if(currentTab === 'main') {
+    switchTab('ability');
+  } else if(currentTab === 'ability') {
+    switchTab('main');
+  } else {
+    switchTab('main');
+  }
+});
+
+// ==================== DEATH / GAME OVER ====================
+function checkDeath() {
+  if(!G) return;
+  if(G.age >= G.lifespan || G.health <= 0) {
+    triggerGameOver();
+  }
+}
+
+function triggerGameOver() {
+  const age = G.age;
+  const fame = G.fame;
+
+  let epitaph = '';
+  if(fame >= 500) {
+    epitaph = G.name + 'は天下に名を轟かせ、' + age + '歳でその生涯を閉じた。後の世の人々は、その偉業を長く語り継いだ。';
+  } else if(fame >= 300) {
+    epitaph = G.name + 'は大名として名を成し、' + age + '歳で逝去した。その治世は領民に慕われ、今も地に名が残る。';
+  } else if(fame >= 150) {
+    epitaph = G.name + 'は猛将として戦場に生き、' + age + '歳で果てた。剣を信じ、戦を愛した一生だった。';
+  } else if(fame >= 60) {
+    epitaph = G.name + 'は乱世を懸命に生き、' + age + '歳でその生を終えた。名を知る者は少なくとも、その歩みは確かだった。';
+  } else if(G.married) {
+    epitaph = G.name + 'は伴侶と共に' + age + '歳の生涯を送った。大きな名声はなくとも、愛する者と生きた日々は尊かった。';
+  } else {
+    epitaph = G.name + 'は' + age + '歳で静かに逝った。乱世の波に揉まれながら、それでも精一杯に生きた。それだけで十分だろう。';
+  }
+
+  document.getElementById('gameoverAge').textContent = age;
+  document.getElementById('gameoverEpitaph').textContent = epitaph;
+  document.getElementById('gameoverStats').innerHTML = [
+    { label:'名声',   val: G.fame },
+    { label:'所持金', val: G.money + '貫' },
+    { label:'兵力',   val: G.troops },
+    { label:'家臣',   val: G.retainers + '人' },
+    { label:'武力',   val: G.buki },
+    { label:'知略',   val: G.chie },
+    { label:'称号',   val: G.rank },
+    { label:'子供',   val: G.children.length + '人' },
+  ].map(s =>
+    `<div class="gameover-stat">
+      <div class="gameover-stat-label">${s.label}</div>
+      <div class="gameover-stat-val">${s.val}</div>
+    </div>`
+  ).join('');
+
+  // Clear save
+  localStorage.removeItem('sengoku_save');
+  G = null;
+
+  showScreen('gameOverScreen');
+}
+
+// ==================== SAVE / LOAD ====================
+function saveGame() {
+  if(!G) return;
+  try {
+    localStorage.setItem('sengoku_save', JSON.stringify(G));
+  } catch(e) {}
+}
+
+function loadGame() {
+  try {
+    const data = localStorage.getItem('sengoku_save');
+    if(!data) return false;
+    G = JSON.parse(data);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function continueGame() {
+  if(!loadGame()) return;
+  showScreen('gameScreen');
+  switchTab('main');
+  triggerEvent();
+  pickActions();
+  updateUI();
+  showNotification('記録を読み込んだ');
+}
+
+function confirmReset() {
+  if(confirm('本当に最初からやり直しますか？')) {
+    localStorage.removeItem('sengoku_save');
+    G = null;
+    showScreen('titleScreen');
+  }
+}
+
+// ==================== NOTIFICATION ====================
+let notifTimer = null;
+function showNotification(text) {
+  const el = document.getElementById('notification');
+  el.textContent = text;
+  el.classList.add('show');
+  if(notifTimer) clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ==================== INIT ====================
+function init() {
+  rollOrigin();
+
+  // Check if save exists
+  const hasSave = !!localStorage.getItem('sengoku_save');
+  document.getElementById('btnContinue').disabled = !hasSave;
+
+  // Default tab setup for game screen
+  document.getElementById('actionsSection').style.display = '';
+  document.getElementById('eventPanel').style.display = '';
+  document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+}
+
+init();
+</script>
+</body>
+</html>
