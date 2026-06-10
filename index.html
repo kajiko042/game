@@ -258,19 +258,6 @@ body{
   transition:background 1s ease, opacity .5s;
 }
 .ts-char-glow.active{ opacity:.55; }
-/* Full-height character image backdrop */
-.ts-char-backdrop{
-  position:absolute;
-  left:50%;transform:translateX(-50%);
-  bottom:8%;
-  width:min(96%,400px);
-  height:82%;
-  z-index:9;pointer-events:none;
-  display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;
-  transition:opacity .35s;
-}
-.ts-char-backdrop.loaded{ opacity:1; }
 /* The actual <img> inside the backdrop */
 .ts-char-img{
   max-height:100%;width:auto;max-width:100%;
@@ -291,6 +278,24 @@ body{
 .ts-general.has-image .ts-portrait-wrap{
   opacity:0;pointer-events:none;
 }
+/* Hide entire general info text when image already contains it */
+.ts-general.has-image{
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+/* Image backdrop: centered in upper screen for card-style art */
+.ts-char-backdrop{
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  top:2%;
+  width:min(96%,420px);
+  height:72%;
+  z-index:9;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;
+  transition:opacity .35s;
+}
+.ts-char-backdrop.loaded{ opacity:1; }
 
 /* ===== START SCREEN ===== */
 #startScreen{
