@@ -111,10 +111,10 @@ body{
 }
 /* Portrait wrapper */
 .ts-portrait-wrap{
-  width:160px;height:165px;
+  width:190px;height:230px;
   margin:0 auto 6px;
   position:relative;
-  filter:drop-shadow(0 0 15px rgba(201,168,76,0.4)) drop-shadow(0 4px 12px rgba(0,0,0,0.9));
+  filter:drop-shadow(0 0 20px rgba(201,168,76,0.5)) drop-shadow(0 6px 18px rgba(0,0,0,0.95));
   transition:opacity 0.7s ease;
 }
 /* General display */
@@ -2775,184 +2775,653 @@ function showNotification(text) {
 
 // ==================== TITLE SCREEN ====================
 
-// --- Family Crests (mon) SVG strings ---
-const MON_NOBUNAGA = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<path d="M50,8 Q68,8 72,22 Q86,22 90,38 Q95,50 90,62 Q86,78 72,78 Q68,92 50,92 Q32,92 28,78 Q14,78 10,62 Q5,50 10,38 Q14,22 28,22 Q32,8 50,8 Z" fill="none" stroke="currentColor" stroke-width="2"/>
-<circle cx="50" cy="50" r="14" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
+// --- Portraits (high-quality individual SVGs) ---
 
-const MON_HIDEYOSHI = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<line x1="50" y1="88" x2="50" y2="40" stroke="currentColor" stroke-width="2"/>
-<circle cx="50" cy="18" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
-<circle cx="38" cy="26" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
-<circle cx="62" cy="26" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
-<line x1="50" y1="60" x2="28" y2="48" stroke="currentColor" stroke-width="1.5"/>
-<line x1="50" y1="60" x2="72" y2="48" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="22" cy="35" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="78" cy="35" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<line x1="28" y1="48" x2="18" y2="42" stroke="currentColor" stroke-width="1.5"/>
-<line x1="28" y1="48" x2="30" y2="38" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="14" cy="32" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="32" cy="28" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<line x1="72" y1="48" x2="82" y2="42" stroke="currentColor" stroke-width="1.5"/>
-<line x1="72" y1="48" x2="70" y2="38" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="86" cy="32" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="68" cy="28" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<path d="M36,72 Q28,80 36,88 Q50,80 50,88 Q50,80 64,88 Q72,80 64,72 Q50,68 36,72 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
-
-const MON_IEYASU = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<circle cx="50" cy="50" r="5" fill="currentColor"/>
-<path d="M50,45 Q35,30 20,38 Q15,50 25,58 Q38,62 50,50 Z" fill="none" stroke="currentColor" stroke-width="2"/>
-<path d="M50,45 Q65,30 80,38 Q85,50 75,58 Q62,62 50,50 Z" fill="none" stroke="currentColor" stroke-width="2"/>
-<path d="M50,55 Q38,72 35,88 Q50,88 65,88 Q62,72 50,55 Z" fill="none" stroke="currentColor" stroke-width="2"/>`;
-
-const MON_YUKIMURA = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<circle cx="26" cy="36" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="36" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
-<circle cx="50" cy="36" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="36" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
-<circle cx="74" cy="36" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="74" cy="36" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
-<circle cx="26" cy="64" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="26" cy="64" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
-<circle cx="50" cy="64" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="64" r="6" fill="none" stroke="currentColor" stroke-width="1"/>
-<circle cx="74" cy="64" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="74" cy="64" r="6" fill="none" stroke="currentColor" stroke-width="1"/>`;
-
-const MON_MASAMUNE = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<line x1="38" y1="10" x2="38" y2="90" stroke="currentColor" stroke-width="2.5"/>
-<line x1="55" y1="15" x2="55" y2="90" stroke="currentColor" stroke-width="2.5"/>
-<line x1="35" y1="35" x2="41" y2="35" stroke="currentColor" stroke-width="2"/><line x1="35" y1="60" x2="41" y2="60" stroke="currentColor" stroke-width="2"/>
-<line x1="52" y1="42" x2="58" y2="42" stroke="currentColor" stroke-width="2"/><line x1="52" y1="67" x2="58" y2="67" stroke="currentColor" stroke-width="2"/>
-<path d="M38,35 Q52,20 62,22 Q55,30 38,35" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<path d="M38,60 Q25,45 18,50 Q28,55 38,60" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<path d="M55,42 Q70,28 78,32 Q68,40 55,42" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<ellipse cx="70" cy="62" rx="10" ry="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<circle cx="76" cy="58" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<path d="M80,56 L85,52" stroke="currentColor" stroke-width="1.5"/>`;
-
-const MON_KENSHIN = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<path d="M50,4 L50,96" stroke="currentColor" stroke-width="2"/>
-<path d="M50,10 Q72,18 82,35 Q88,50 82,65 Q72,82 50,90 Q28,82 18,65 Q12,50 18,35 Q28,18 50,10 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
-<path d="M50,20 Q65,26 72,40 Q76,50 72,60 Q65,74 50,80 Q35,74 28,60 Q24,50 28,40 Q35,26 50,20 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
-
-const MON_SHINGEN = `<circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2.5"/>
-<polygon points="50,10 64,30 50,50 36,30" fill="none" stroke="currentColor" stroke-width="2"/>
-<polygon points="50,50 64,70 50,90 36,70" fill="none" stroke="currentColor" stroke-width="2"/>
-<polygon points="10,50 30,38 50,50 30,62" fill="none" stroke="currentColor" stroke-width="2"/>
-<polygon points="50,50 70,38 90,50 70,62" fill="none" stroke="currentColor" stroke-width="2"/>`;
-
-// --- Portrait builder ---
-function _buildPortrait(bgColor, armorColor, helmetSVG, monSVG, extraFace) {
-  return `<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-  <circle cx="100" cy="115" r="95" fill="${bgColor}"/>
-  ${helmetSVG}
-  <ellipse cx="100" cy="138" rx="32" ry="36" fill="#c8a060"/>
-  <path d="M68,138 Q70,165 100,172 Q130,165 132,138 Q115,145 100,144 Q85,145 68,138" fill="#a07840" opacity="0.4"/>
-  ${extraFace||''}
-  <ellipse cx="88" cy="128" rx="6" ry="5" fill="#1a1208"/>
-  <ellipse cx="112" cy="128" rx="6" ry="5" fill="#1a1208"/>
-  <circle cx="91" cy="126" r="2" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="115" cy="126" r="2" fill="rgba(255,255,255,0.5)"/>
-  <path d="M80,120 Q88,115 96,119" stroke="#2a1808" stroke-width="2.5" fill="none"/>
-  <path d="M104,119 Q112,115 120,120" stroke="#2a1808" stroke-width="2.5" fill="none"/>
-  <path d="M97,132 L94,143 Q100,146 106,143 L103,132" fill="#a07040" opacity="0.6"/>
-  <path d="M90,153 Q100,158 110,153" stroke="#8a4828" stroke-width="1.5" fill="none"/>
-  <line x1="90" y1="153" x2="110" y2="153" stroke="#6a3820" stroke-width="1"/>
-  <path d="M68,148 Q72,170 100,175 Q128,170 132,148" fill="#c8a060" stroke="#a07840" stroke-width="0.5"/>
-  <path d="M68,128 Q65,138 68,148" fill="#2a1808" opacity="0.5"/>
-  <path d="M132,128 Q135,138 132,148" fill="#2a1808" opacity="0.5"/>
-  <path d="M10,215 L40,185 L160,185 L190,215" fill="${armorColor}"/>
-  <rect x="40" y="183" width="120" height="28" rx="3" fill="${armorColor}"/>
-  <circle cx="100" cy="115" r="95" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
-  <circle cx="100" cy="115" r="88" fill="none" stroke="rgba(201,168,76,0.35)" stroke-width="1"/>
-  <circle cx="168" cy="192" r="20" fill="rgba(0,0,0,0.7)" stroke="#c9a84c" stroke-width="1.5"/>
-  <g transform="translate(148,172) scale(0.4)" color="#c9a84c">${monSVG}</g>
+const PORTRAIT_NOBUNAGA = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="nb_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#220606"/><stop offset="1" stop-color="#050101"/></linearGradient>
+<radialGradient id="nb_sk" cx="46%" cy="38%" r="52%"><stop offset="0" stop-color="#c89060"/><stop offset="1" stop-color="#7a3c22"/></radialGradient>
+<linearGradient id="nb_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#18181f"/><stop offset="1" stop-color="#0c0c12"/></linearGradient>
+<radialGradient id="nb_glow" cx="50%" cy="105%" r="65%"><stop offset="0" stop-color="rgba(200,15,5,0.25)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#nb_bg)"/>
+<rect width="190" height="230" fill="url(#nb_glow)"/>
+<ellipse cx="95" cy="230" rx="85" ry="42" fill="rgba(180,8,4,0.14)"/>
+<!-- ARMOR -->
+<path d="M2,230 L18,162 Q28,136 50,130 L74,125 L95,123 L116,125 L140,130 Q162,136 172,162 L188,230Z" fill="url(#nb_arm)"/>
+<path d="M18,162 Q7,142 11,122 Q20,108 46,112 L70,124Z" fill="#13131c" stroke="#c9a84c" stroke-width="0.8"/>
+<path d="M22,152 Q13,134 16,116 Q24,104 46,108 L66,120Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.7"/>
+<path d="M172,162 Q183,142 179,122 Q170,108 144,112 L120,124Z" fill="#13131c" stroke="#c9a84c" stroke-width="0.8"/>
+<path d="M168,152 Q177,134 174,116 Q166,104 144,108 L124,120Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.7"/>
+<path d="M48,140 L142,140" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<path d="M44,152 L146,152" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<path d="M40,164 L150,164" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<path d="M72,127 Q95,138 118,127 L121,146 Q95,158 69,146Z" fill="#7a0404"/>
+<path d="M74,127 Q95,137 116,127 L119,142 Q95,153 71,142Z" fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="0.5"/>
+<!-- MON on chest -->
+<circle cx="95" cy="185" r="14" fill="none" stroke="#c9a84c" stroke-width="1.2"/>
+<path d="M95,174 Q102,180 95,196 Q88,180 95,174Z" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.6"/>
+<line x1="81" y1="185" x2="109" y2="185" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<line x1="95" y1="171" x2="95" y2="199" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<!-- NECK -->
+<path d="M83,124 Q83,107 95,105 Q107,107 107,124Z" fill="#b07040"/>
+<path d="M85,115 Q95,111 105,115" stroke="#8a4830" stroke-width="1" fill="none" opacity="0.4"/>
+<!-- KABUTO - black angular imposing -->
+<path d="M56,94 Q57,56 95,47 Q133,56 134,94 L130,108 Q114,118 95,120 Q76,118 60,108Z" fill="#0e0e16"/>
+<line x1="95" y1="47" x2="95" y2="94" stroke="#c9a84c" stroke-width="1" opacity="0.5"/>
+<line x1="78" y1="50" x2="73" y2="94" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+<line x1="112" y1="50" x2="117" y2="94" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+<line x1="65" y1="62" x2="60" y2="94" stroke="#c9a84c" stroke-width="0.5" opacity="0.25"/>
+<line x1="125" y1="62" x2="130" y2="94" stroke="#c9a84c" stroke-width="0.5" opacity="0.25"/>
+<!-- Mabizashi (brim) - angular, extended -->
+<path d="M49,96 Q95,88 141,96 L138,105 Q95,97 52,105Z" fill="#0c0c14" stroke="#c9a84c" stroke-width="0.9"/>
+<path d="M57,100 L133,100" stroke="#880000" stroke-width="2.5" opacity="0.85"/>
+<!-- CREST - tall crimson spike -->
+<rect x="92.5" y="24" width="5" height="25" rx="1" fill="#0e0e16"/>
+<path d="M89,24 L95,4 L101,24Z" fill="#cc0000"/>
+<path d="M92.5,9 L95,2 L97.5,9Z" fill="#ff2020"/>
+<circle cx="95" cy="1.5" r="2.2" fill="#c9a84c"/>
+<line x1="95" y1="3.7" x2="95" y2="24" stroke="#c9a84c" stroke-width="0.7" opacity="0.5"/>
+<!-- Shikoro (neck flanges) -->
+<path d="M56,96 Q49,107 51,116 Q57,122 67,120 L63,98Z" fill="#111119" stroke="#c9a84c" stroke-width="0.5" opacity="0.65"/>
+<path d="M134,96 Q141,107 139,116 Q133,122 123,120 L127,98Z" fill="#111119" stroke="#c9a84c" stroke-width="0.5" opacity="0.65"/>
+<!-- FACE -->
+<path d="M63,104 Q61,120 68,132 Q77,143 95,145 Q113,143 122,132 Q129,120 127,104 Q113,113 95,114 Q77,113 63,104Z" fill="url(#nb_sk)"/>
+<path d="M62,106 Q60,98 72,96" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="5"/>
+<path d="M128,106 Q130,98 118,96" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="5"/>
+<!-- Cheekbone shadow -->
+<path d="M63,116 Q65,125 70,132" stroke="rgba(60,20,5,0.28)" stroke-width="4" fill="none"/>
+<path d="M127,116 Q125,125 120,132" stroke="rgba(60,20,5,0.28)" stroke-width="4" fill="none"/>
+<!-- Nose -->
+<path d="M93,108 L91,122 Q95,126 99,122 L97,108" fill="#906030" opacity="0.75"/>
+<ellipse cx="89.5" cy="123" rx="1.8" ry="1.3" fill="#6a3820" opacity="0.65"/>
+<ellipse cx="100.5" cy="123" rx="1.8" ry="1.3" fill="#6a3820" opacity="0.65"/>
+<!-- LEFT EYE -->
+<path d="M65,108 Q74,103 84,106 L82,116 Q74,120 67,116Z" fill="#501808" opacity="0.28"/>
+<path d="M66,110 Q75,105 84,108" stroke="#0a0404" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="75" cy="113" rx="5.5" ry="6" fill="#3a1202"/>
+<ellipse cx="75" cy="113" rx="2.5" ry="3" fill="#080202"/>
+<ellipse cx="77" cy="110.5" rx="2" ry="2.4" fill="rgba(255,255,255,0.82)"/>
+<path d="M67,117 Q75,120 83,117" stroke="#0a0404" stroke-width="1.1" fill="none"/>
+<!-- RIGHT EYE -->
+<path d="M106,106 Q116,103 125,108 L123,116 Q116,120 108,116Z" fill="#501808" opacity="0.28"/>
+<path d="M106,108 Q115,105 124,110" stroke="#0a0404" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="115" cy="113" rx="5.5" ry="6" fill="#3a1202"/>
+<ellipse cx="115" cy="113" rx="2.5" ry="3" fill="#080202"/>
+<ellipse cx="117" cy="110.5" rx="2" ry="2.4" fill="rgba(255,255,255,0.82)"/>
+<path d="M107,117 Q115,120 123,117" stroke="#0a0404" stroke-width="1.1" fill="none"/>
+<!-- EYEBROWS - sharp angled inward -->
+<path d="M64,104 Q75,97 84,101" stroke="#160904" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+<path d="M106,101 Q115,97 126,104" stroke="#160904" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - thin firm -->
+<path d="M82,131 Q88,133 95,132 Q102,133 108,131" stroke="#6a2e15" stroke-width="1.4" fill="none"/>
+<path d="M84,131 Q95,135 106,131" fill="#501a10" opacity="0.5"/>
+<path d="M70,138 Q95,147 120,138" fill="none" stroke="rgba(60,20,5,0.2)" stroke-width="1.8"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
 </svg>`;
-}
 
-// --- Portraits ---
-const PORTRAIT_NOBUNAGA = _buildPortrait(
-  '#1a0202',
-  '#1a1218',
-  `<rect x="84" y="30" width="32" height="58" rx="4" fill="#111"/>
-   <rect x="76" y="50" width="48" height="14" rx="3" fill="#0e0e0e"/>
-   <rect x="96" y="8" width="8" height="26" rx="2" fill="#0a0a0a"/>
-   <rect x="92" y="8" width="16" height="6" rx="2" fill="#cc2020"/>
-   <line x1="100" y1="8" x2="100" y2="2" stroke="#c9a84c" stroke-width="2"/>
-   <polygon points="97,2 100,-4 103,2" fill="#c9a84c"/>
-   <rect x="80" y="44" width="40" height="3" fill="#cc2020" opacity=".7"/>
-   <path d="M68,85 Q76,95 100,97 Q124,95 132,85" fill="#111" stroke="#0a0a0a" stroke-width="1"/>`,
-  MON_NOBUNAGA
-);
+const PORTRAIT_HIDEYOSHI = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="hy_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#221400"/><stop offset="1" stop-color="#060300"/></linearGradient>
+<radialGradient id="hy_sk" cx="50%" cy="42%" r="50%"><stop offset="0" stop-color="#d4a868"/><stop offset="1" stop-color="#8a5028"/></radialGradient>
+<linearGradient id="hy_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#4a3000"/><stop offset="1" stop-color="#2a1800"/></linearGradient>
+<radialGradient id="hy_glow" cx="50%" cy="30%" r="55%"><stop offset="0" stop-color="rgba(220,160,10,0.18)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#hy_bg)"/>
+<rect width="190" height="230" fill="url(#hy_glow)"/>
+<!-- ARMOR - golden -->
+<path d="M2,230 L18,160 Q29,134 52,128 L76,123 L95,121 L114,123 L138,128 Q161,134 172,160 L188,230Z" fill="url(#hy_arm)"/>
+<path d="M18,160 Q7,140 11,120 Q20,106 48,110 L72,122Z" fill="#3a2400" stroke="#c9a84c" stroke-width="0.9"/>
+<path d="M22,150 Q13,132 16,114 Q24,102 48,106 L68,118Z" fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="0.7"/>
+<path d="M172,160 Q183,140 179,120 Q170,106 142,110 L118,122Z" fill="#3a2400" stroke="#c9a84c" stroke-width="0.9"/>
+<path d="M168,150 Q177,132 174,114 Q166,102 142,106 L122,118Z" fill="none" stroke="rgba(201,168,76,0.4)" stroke-width="0.7"/>
+<path d="M50,138 L140,138" stroke="#c9a84c" stroke-width="0.7" opacity="0.5"/>
+<path d="M46,150 L144,150" stroke="#c9a84c" stroke-width="0.7" opacity="0.5"/>
+<path d="M42,162 L148,162" stroke="#c9a84c" stroke-width="0.7" opacity="0.5"/>
+<path d="M74,125 Q95,136 116,125 L119,144 Q95,156 71,144Z" fill="#c89020" opacity="0.8"/>
+<!-- Chest mon - gourd shape -->
+<path d="M95,174 Q88,174 85,180 Q83,186 88,190 Q91,193 95,193 Q99,193 102,190 Q107,186 105,180 Q102,174 95,174Z" fill="none" stroke="#c9a84c" stroke-width="1.3"/>
+<path d="M92,168 Q90,171 90,174" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+<path d="M98,168 Q100,171 100,174" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+<ellipse cx="95" cy="166" rx="4" ry="3.5" fill="none" stroke="#c9a84c" stroke-width="1.2"/>
+<!-- NECK -->
+<path d="M83,122 Q83,105 95,103 Q107,105 107,122Z" fill="#b07848"/>
+<!-- KABUTO - golden round with gourd crest -->
+<path d="M55,96 Q56,58 95,50 Q134,58 135,96 L131,110 Q115,120 95,122 Q75,120 59,110Z" fill="#2a1a00"/>
+<!-- Gold shimmer on helmet -->
+<path d="M65,78 Q95,65 125,78" fill="none" stroke="#c9a84c" stroke-width="0.8" opacity="0.5"/>
+<path d="M60,87 Q95,75 130,87" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.35"/>
+<path d="M57,96 Q95,85 133,96" fill="none" stroke="#c9a84c" stroke-width="0.6" opacity="0.3"/>
+<!-- Helmet front plate - gold colored -->
+<path d="M70,70 Q95,62 120,70 L122,90 Q95,82 68,90Z" fill="#3a2400" stroke="#c9a84c" stroke-width="0.8"/>
+<!-- Helmet brim -->
+<path d="M48,98 Q95,90 142,98 L139,107 Q95,99 51,107Z" fill="#241600" stroke="#c9a84c" stroke-width="0.9"/>
+<path d="M56,102 L134,102" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+<!-- HYOTAN CREST (golden gourd - Hideyoshi signature) -->
+<!-- Bottom gourd ball -->
+<ellipse cx="95" cy="36" rx="9" ry="10" fill="#c89020" stroke="#a07010" stroke-width="0.8"/>
+<ellipse cx="96" cy="33" rx="3.5" ry="4" fill="rgba(255,220,80,0.5)"/>
+<!-- Middle narrow -->
+<rect x="92" y="25.5" width="6" height="5" rx="2" fill="#c89020" stroke="#a07010" stroke-width="0.7"/>
+<!-- Top gourd ball -->
+<ellipse cx="95" cy="20" rx="7" ry="7.5" fill="#c89020" stroke="#a07010" stroke-width="0.8"/>
+<ellipse cx="96" cy="18" rx="2.8" ry="3.2" fill="rgba(255,220,80,0.5)"/>
+<!-- Stem -->
+<line x1="95" y1="12.5" x2="95" y2="8" stroke="#c89020" stroke-width="2"/>
+<circle cx="95" cy="7" r="2" fill="#c9a84c"/>
+<!-- Shikoro -->
+<path d="M55,98 Q48,109 50,118 Q56,124 66,122 L62,100Z" fill="#221400" stroke="#c9a84c" stroke-width="0.5" opacity="0.65"/>
+<path d="M135,98 Q142,109 140,118 Q134,124 124,122 L128,100Z" fill="#221400" stroke="#c9a84c" stroke-width="0.5" opacity="0.65"/>
+<!-- FACE - wider, animated smile -->
+<path d="M64,106 Q62,122 70,134 Q80,145 95,147 Q110,145 120,134 Q128,122 126,106 Q112,115 95,116 Q78,115 64,106Z" fill="url(#hy_sk)"/>
+<path d="M63,108 Q61,100 73,98" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<path d="M127,108 Q129,100 117,98" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<!-- Nose - wider, slightly upturned -->
+<path d="M93,110 L91,124 Q95,128 99,124 L97,110" fill="#906838" opacity="0.7"/>
+<ellipse cx="89.5" cy="125" rx="2.2" ry="1.5" fill="#7a4828" opacity="0.6"/>
+<ellipse cx="100.5" cy="125" rx="2.2" ry="1.5" fill="#7a4828" opacity="0.6"/>
+<!-- Smile creases -->
+<path d="M66,125 Q63,130 66,136" stroke="#7a4028" stroke-width="1.5" fill="none" opacity="0.5"/>
+<path d="M124,125 Q127,130 124,136" stroke="#7a4028" stroke-width="1.5" fill="none" opacity="0.5"/>
+<!-- LEFT EYE - crinkled with smile -->
+<path d="M67,110 Q76,105 86,108 L84,117 Q76,121 69,117Z" fill="#603818" opacity="0.25"/>
+<path d="M68,112 Q77,107 86,110" stroke="#0a0505" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="77" cy="115" rx="5.5" ry="5.8" fill="#4a2808"/>
+<ellipse cx="77" cy="115" rx="2.4" ry="2.8" fill="#0a0402"/>
+<ellipse cx="79" cy="112.5" rx="2" ry="2.3" fill="rgba(255,255,255,0.82)"/>
+<path d="M68,118 Q77,122 85,118" stroke="#0a0505" stroke-width="1.1" fill="none"/>
+<!-- RIGHT EYE -->
+<path d="M104,108 Q114,105 123,110 L121,117 Q114,121 106,117Z" fill="#603818" opacity="0.25"/>
+<path d="M104,110 Q113,107 122,112" stroke="#0a0505" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="113" cy="115" rx="5.5" ry="5.8" fill="#4a2808"/>
+<ellipse cx="113" cy="115" rx="2.4" ry="2.8" fill="#0a0402"/>
+<ellipse cx="115" cy="112.5" rx="2" ry="2.3" fill="rgba(255,255,255,0.82)"/>
+<path d="M105,118 Q113,122 121,118" stroke="#0a0505" stroke-width="1.1" fill="none"/>
+<!-- EYEBROWS - raised, amused -->
+<path d="M67,106 Q77,100 86,104" stroke="#1a0c04" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<path d="M104,104 Q113,100 123,106" stroke="#1a0c04" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - wide smile -->
+<path d="M80,133 Q87,137 95,136 Q103,137 110,133" stroke="#7a3a18" stroke-width="1.4" fill="none"/>
+<path d="M82,133 Q95,139 108,133" fill="#5a2210" opacity="0.55"/>
+<path d="M75,133 Q80,139 80,133" fill="none" stroke="#7a3a18" stroke-width="1" opacity="0.5"/>
+<path d="M110,133 Q115,139 110,133" fill="none" stroke="#7a3a18" stroke-width="1" opacity="0.5"/>
+<!-- Chin -->
+<path d="M72,140 Q95,148 118,140" fill="none" stroke="rgba(70,30,5,0.22)" stroke-width="2"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+</svg>`;
 
-const PORTRAIT_HIDEYOSHI = _buildPortrait(
-  '#1a0e00',
-  '#2a1e08',
-  `<ellipse cx="100" cy="55" rx="30" ry="32" fill="#111"/>
-   <ellipse cx="100" cy="28" rx="14" ry="16" fill="#0f0f0f"/>
-   <ellipse cx="100" cy="12" rx="10" ry="12" fill="#0e0e0e"/>
-   <ellipse cx="68" cy="62" rx="10" ry="15" fill="#111"/>
-   <ellipse cx="132" cy="62" rx="10" ry="15" fill="#111"/>
-   <path d="M70,88 Q85,95 100,96 Q115,95 130,88" fill="#111"/>
-   <rect x="78" y="58" width="44" height="4" fill="#c89020" opacity=".6"/>`,
-  MON_HIDEYOSHI
-);
+const PORTRAIT_IEYASU = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="ie_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#030618"/><stop offset="1" stop-color="#010206"/></linearGradient>
+<radialGradient id="ie_sk" cx="50%" cy="44%" r="50%"><stop offset="0" stop-color="#c89868"/><stop offset="1" stop-color="#80502c"/></radialGradient>
+<linearGradient id="ie_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#0e1828"/><stop offset="1" stop-color="#060d18"/></linearGradient>
+<radialGradient id="ie_glow" cx="50%" cy="10%" r="55%"><stop offset="0" stop-color="rgba(10,40,100,0.2)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#ie_bg)"/>
+<rect width="190" height="230" fill="url(#ie_glow)"/>
+<!-- ARMOR - dark navy -->
+<path d="M2,230 L18,158 Q28,132 52,126 L76,121 L95,119 L114,121 L138,126 Q162,132 172,158 L188,230Z" fill="url(#ie_arm)"/>
+<path d="M18,158 Q7,138 11,118 Q20,104 48,108 L72,120Z" fill="#0c1522" stroke="#4a7aaa" stroke-width="0.8"/>
+<path d="M22,148 Q13,130 16,112 Q24,100 48,104 L68,116Z" fill="none" stroke="rgba(74,122,170,0.3)" stroke-width="0.7"/>
+<path d="M172,158 Q183,138 179,118 Q170,104 142,108 L118,120Z" fill="#0c1522" stroke="#4a7aaa" stroke-width="0.8"/>
+<path d="M168,148 Q177,130 174,112 Q166,100 142,104 L122,116Z" fill="none" stroke="rgba(74,122,170,0.3)" stroke-width="0.7"/>
+<path d="M50,136 L140,136" stroke="#4a7aaa" stroke-width="0.6" opacity="0.45"/>
+<path d="M46,148 L144,148" stroke="#4a7aaa" stroke-width="0.6" opacity="0.45"/>
+<path d="M42,160 L148,160" stroke="#4a7aaa" stroke-width="0.6" opacity="0.45"/>
+<path d="M73,123 Q95,134 117,123 L120,142 Q95,154 70,142Z" fill="#0a1a30"/>
+<!-- Chest mon - hollyhock -->
+<circle cx="95" cy="183" r="13" fill="none" stroke="#4a7aaa" stroke-width="1.2"/>
+<circle cx="95" cy="183" r="7" fill="none" stroke="#4a7aaa" stroke-width="0.8"/>
+<circle cx="95" cy="172" r="4" fill="none" stroke="#4a7aaa" stroke-width="0.8"/>
+<circle cx="84" cy="178" r="4" fill="none" stroke="#4a7aaa" stroke-width="0.8"/>
+<circle cx="106" cy="178" r="4" fill="none" stroke="#4a7aaa" stroke-width="0.8"/>
+<!-- NECK -->
+<path d="M83,120 Q83,103 95,101 Q107,103 107,120Z" fill="#b08050"/>
+<!-- KABUTO - traditional round navy -->
+<path d="M56,94 Q57,56 95,48 Q133,56 134,94 L130,108 Q114,118 95,120 Q76,118 60,108Z" fill="#0e1828"/>
+<!-- Helmet vertical ridges -->
+<line x1="95" y1="48" x2="95" y2="94" stroke="#4a7aaa" stroke-width="0.9" opacity="0.4"/>
+<line x1="78" y1="51" x2="73" y2="94" stroke="#4a7aaa" stroke-width="0.6" opacity="0.3"/>
+<line x1="112" y1="51" x2="117" y2="94" stroke="#4a7aaa" stroke-width="0.6" opacity="0.3"/>
+<line x1="65" y1="62" x2="60" y2="94" stroke="#4a7aaa" stroke-width="0.5" opacity="0.25"/>
+<line x1="125" y1="62" x2="130" y2="94" stroke="#4a7aaa" stroke-width="0.5" opacity="0.25"/>
+<!-- Helmet brim -->
+<path d="M48,96 Q95,88 142,96 L139,105 Q95,97 51,105Z" fill="#0c1522" stroke="#4a7aaa" stroke-width="0.9"/>
+<path d="M56,100 L134,100" stroke="#4a7aaa" stroke-width="1.5" opacity="0.5"/>
+<!-- Kuwagata (horns) - traditional formal style -->
+<path d="M70,62 Q62,46 66,34 Q70,28 76,34 Q80,40 78,52 Q75,60 70,62Z" fill="#0e1828" stroke="#4a7aaa" stroke-width="0.8"/>
+<path d="M120,62 Q128,46 124,34 Q120,28 114,34 Q110,40 112,52 Q115,60 120,62Z" fill="#0e1828" stroke="#4a7aaa" stroke-width="0.8"/>
+<!-- Shikoro -->
+<path d="M56,96 Q49,107 51,116 Q57,122 67,120 L63,98Z" fill="#0c1522" stroke="#4a7aaa" stroke-width="0.5" opacity="0.65"/>
+<path d="M134,96 Q141,107 139,116 Q133,122 123,120 L127,98Z" fill="#0c1522" stroke="#4a7aaa" stroke-width="0.5" opacity="0.65"/>
+<!-- FACE - rounded, patient, heavy-set -->
+<path d="M62,104 Q60,122 68,135 Q78,148 95,150 Q112,148 122,135 Q130,122 128,104 Q114,114 95,115 Q76,114 62,104Z" fill="url(#ie_sk)"/>
+<path d="M61,106 Q59,98 71,96" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<path d="M129,106 Q131,98 119,96" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<!-- Nose - broader -->
+<path d="M92,110 L90,126 Q95,130 100,126 L98,110" fill="#906040" opacity="0.72"/>
+<ellipse cx="88.5" cy="127" rx="2.3" ry="1.6" fill="#6a3820" opacity="0.6"/>
+<ellipse cx="101.5" cy="127" rx="2.3" ry="1.6" fill="#6a3820" opacity="0.6"/>
+<!-- LEFT EYE - slightly heavier lids, patient -->
+<path d="M64,110 Q73,105 84,108 L82,119 Q73,123 66,118Z" fill="#502808" opacity="0.25"/>
+<path d="M65,112 Q74,107 84,110" stroke="#0a0504" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="74.5" cy="116" rx="5.8" ry="5.5" fill="#3a2208"/>
+<ellipse cx="74.5" cy="116" rx="2.6" ry="2.5" fill="#080402"/>
+<ellipse cx="76.5" cy="113.5" rx="2.1" ry="2.2" fill="rgba(255,255,255,0.8)"/>
+<path d="M64,119 Q74" stroke="#0a0504" stroke-width="1.2" fill="none"/>
+<path d="M65,119 Q74,122 83,119" stroke="#0a0504" stroke-width="1.2" fill="none"/>
+<!-- Heavy upper eyelid (drooping slightly) -->
+<path d="M65,112 Q74,109 84,113" stroke="#1a0c08" stroke-width="1.8" fill="none" opacity="0.6"/>
+<!-- RIGHT EYE -->
+<path d="M106,108 Q117,105 126,110 L124,119 Q117,123 108,118Z" fill="#502808" opacity="0.25"/>
+<path d="M106,110 Q115,107 124,112" stroke="#0a0504" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="115.5" cy="116" rx="5.8" ry="5.5" fill="#3a2208"/>
+<ellipse cx="115.5" cy="116" rx="2.6" ry="2.5" fill="#080402"/>
+<ellipse cx="117.5" cy="113.5" rx="2.1" ry="2.2" fill="rgba(255,255,255,0.8)"/>
+<path d="M107,119 Q115,122 123,119" stroke="#0a0504" stroke-width="1.2" fill="none"/>
+<path d="M106,112 Q115,109 124,113" stroke="#1a0c08" stroke-width="1.8" fill="none" opacity="0.6"/>
+<!-- EYEBROWS - calm, level, slightly furrowed in thought -->
+<path d="M63,106 Q74,100 84,104" stroke="#180c06" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+<path d="M106,104 Q116,100 127,106" stroke="#180c06" stroke-width="3.6" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - thin patient firm -->
+<path d="M82,136 Q88,138 95,137 Q102,138 108,136" stroke="#704025" stroke-width="1.4" fill="none"/>
+<path d="M84,136 Q95,140 106,136" fill="#542818" opacity="0.5"/>
+<path d="M70,143 Q95,152 120,143" fill="none" stroke="rgba(60,25,5,0.2)" stroke-width="2"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+</svg>`;
 
-const PORTRAIT_IEYASU = _buildPortrait(
-  '#020510',
-  '#0a1428',
-  `<ellipse cx="100" cy="55" rx="34" ry="30" fill="#111"/>
-   <path d="M60,55 Q42,40 48,70 L64,76 Z" fill="#0f0f0f"/>
-   <path d="M140,55 Q158,40 152,70 L136,76 Z" fill="#0f0f0f"/>
-   <rect x="66" y="48" width="68" height="5" rx="2" fill="#2060a0" opacity=".7"/>
-   <path d="M58,82 Q78,92 100,94 Q122,92 142,82" fill="#111"/>
-   <rect x="86" y="26" width="28" height="6" rx="2" fill="#1a1a1a"/>`,
-  MON_IEYASU
-);
+const PORTRAIT_YUKIMURA = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="yk_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#280404"/><stop offset="1" stop-color="#080101"/></linearGradient>
+<radialGradient id="yk_sk" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#c89060"/><stop offset="1" stop-color="#7a3c20"/></radialGradient>
+<linearGradient id="yk_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#5a0808"/><stop offset="1" stop-color="#300404"/></linearGradient>
+<radialGradient id="yk_fire" cx="50%" cy="105%" r="70%"><stop offset="0" stop-color="rgba(220,60,10,0.3)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#yk_bg)"/>
+<rect width="190" height="230" fill="url(#yk_fire)"/>
+<ellipse cx="95" cy="230" rx="90" ry="50" fill="rgba(200,40,5,0.2)"/>
+<!-- ARMOR - deep crimson kozane -->
+<path d="M2,230 L18,158 Q29,132 52,126 L76,121 L95,119 L114,121 L138,126 Q161,132 172,158 L188,230Z" fill="url(#yk_arm)"/>
+<path d="M18,158 Q7,138 11,118 Q20,104 48,108 L72,120Z" fill="#4a0606" stroke="#cc2010" stroke-width="0.8"/>
+<path d="M22,148 Q13,130 16,112 Q24,100 48,104 L68,116Z" fill="none" stroke="rgba(204,32,16,0.35)" stroke-width="0.7"/>
+<path d="M172,158 Q183,138 179,118 Q170,104 142,108 L118,120Z" fill="#4a0606" stroke="#cc2010" stroke-width="0.8"/>
+<path d="M168,148 Q177,130 174,112 Q166,100 142,104 L122,116Z" fill="none" stroke="rgba(204,32,16,0.35)" stroke-width="0.7"/>
+<!-- Red kozane detail lines -->
+<path d="M50,136 L140,136" stroke="#cc2010" stroke-width="0.7" opacity="0.5"/>
+<path d="M46,148 L144,148" stroke="#cc2010" stroke-width="0.7" opacity="0.5"/>
+<path d="M42,160 L148,160" stroke="#cc2010" stroke-width="0.7" opacity="0.5"/>
+<path d="M74,123 Q95,134 116,123 L119,142 Q95,154 71,142Z" fill="#3a0404"/>
+<!-- Six-coin (Sanada) mon on chest -->
+<circle cx="95" cy="183" r="13" fill="none" stroke="#c9a84c" stroke-width="1.2"/>
+<circle cx="88" cy="179" r="3.5" fill="none" stroke="#c9a84c" stroke-width="1"/>
+<circle cx="95" cy="179" r="3.5" fill="none" stroke="#c9a84c" stroke-width="1"/>
+<circle cx="102" cy="179" r="3.5" fill="none" stroke="#c9a84c" stroke-width="1"/>
+<circle cx="88" cy="187" r="3.5" fill="none" stroke="#c9a84c" stroke-width="1"/>
+<circle cx="95" cy="187" r="3.5" fill="none" stroke="#c9a84c" stroke-width="1"/>
+<circle cx="102" cy="187" r="3.5" fill="none" stroke="#c9a84c" stroke-width="1"/>
+<!-- NECK -->
+<path d="M83,120 Q83,103 95,101 Q107,103 107,120Z" fill="#b07040"/>
+<!-- KABUTO - red with DEER ANTLERS (signature) -->
+<path d="M57,95 Q58,58 95,50 Q132,58 133,95 L129,109 Q113,119 95,121 Q77,119 61,109Z" fill="#4a0808"/>
+<!-- Helmet kozane lines -->
+<path d="M70,72 Q95,65 120,72" stroke="#cc2010" stroke-width="0.8" opacity="0.5"/>
+<path d="M64,82 Q95,75 126,82" stroke="#cc2010" stroke-width="0.7" opacity="0.4"/>
+<path d="M60,92 Q95,85 130,92" stroke="#cc2010" stroke-width="0.6" opacity="0.35"/>
+<!-- Helmet front plate -->
+<path d="M68,68 Q95,60 122,68 L124,88 Q95,80 66,88Z" fill="#380606" stroke="#cc2010" stroke-width="0.7"/>
+<!-- Helmet brim -->
+<path d="M49,97 Q95,89 141,97 L138,106 Q95,98 52,106Z" fill="#380606" stroke="#cc2010" stroke-width="0.9"/>
+<path d="M57,101 L133,101" stroke="#cc2010" stroke-width="1.5" opacity="0.6"/>
+<!-- DEER ANTLERS (鹿角兜) - THE signature feature -->
+<!-- Left antler -->
+<path d="M64,70 Q52,55 44,38 Q40,28 46,22 Q52,18 56,24 Q58,30 54,38 Q58,42 62,38 Q66,32 72,28 Q78,26 80,32 Q80,40 72,50 Q68,58 64,70Z" fill="#8a6030" stroke="#6a4820" stroke-width="1"/>
+<path d="M54,38 Q50,34 48,28" stroke="#6a4820" stroke-width="1.5" fill="none"/>
+<path d="M62,38 Q64,30 68,26" stroke="#6a4820" stroke-width="1.5" fill="none"/>
+<!-- Right antler -->
+<path d="M126,70 Q138,55 146,38 Q150,28 144,22 Q138,18 134,24 Q132,30 136,38 Q132,42 128,38 Q124,32 118,28 Q112,26 110,32 Q110,40 118,50 Q122,58 126,70Z" fill="#8a6030" stroke="#6a4820" stroke-width="1"/>
+<path d="M136,38 Q140,34 142,28" stroke="#6a4820" stroke-width="1.5" fill="none"/>
+<path d="M128,38 Q126,30 122,26" stroke="#6a4820" stroke-width="1.5" fill="none"/>
+<!-- Antler highlight -->
+<path d="M57,28 Q52,22 48,28" fill="none" stroke="rgba(180,130,60,0.5)" stroke-width="1.2"/>
+<path d="M133,28 Q138,22 142,28" fill="none" stroke="rgba(180,130,60,0.5)" stroke-width="1.2"/>
+<!-- Shikoro -->
+<path d="M57,97 Q50,108 52,117 Q58,123 68,121 L64,99Z" fill="#3a0606" stroke="#cc2010" stroke-width="0.5" opacity="0.65"/>
+<path d="M133,97 Q140,108 138,117 Q132,123 122,121 L126,99Z" fill="#3a0606" stroke="#cc2010" stroke-width="0.5" opacity="0.65"/>
+<!-- FACE - young, fierce, intense -->
+<path d="M64,105 Q62,121 70,133 Q80,145 95,147 Q110,145 120,133 Q128,121 126,105 Q112,114 95,115 Q78,114 64,105Z" fill="url(#yk_sk)"/>
+<path d="M63,107 Q61,99 73,97" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<path d="M127,107 Q129,99 117,97" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<!-- Nose - straight, young -->
+<path d="M93,109 L92,123 Q95,127 98,123 L97,109" fill="#906030" opacity="0.72"/>
+<ellipse cx="90.5" cy="124" rx="1.8" ry="1.3" fill="#6a3820" opacity="0.6"/>
+<ellipse cx="99.5" cy="124" rx="1.8" ry="1.3" fill="#6a3820" opacity="0.6"/>
+<!-- LEFT EYE - wide open, fierce -->
+<path d="M65,109 Q74,103 85,107 L83,117 Q74,121 67,117Z" fill="#502008" opacity="0.25"/>
+<path d="M66,111 Q75,105 85,109" stroke="#0a0404" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="75.5" cy="114" rx="5.8" ry="6.5" fill="#3a1002"/>
+<ellipse cx="75.5" cy="114" rx="2.6" ry="3.2" fill="#080202"/>
+<ellipse cx="77.5" cy="111" rx="2.2" ry="2.8" fill="rgba(255,255,255,0.85)"/>
+<path d="M66,119 Q75,122 84,119" stroke="#0a0404" stroke-width="1.1" fill="none"/>
+<!-- RIGHT EYE -->
+<path d="M105,107 Q116,103 125,109 L123,117 Q116,121 107,117Z" fill="#502008" opacity="0.25"/>
+<path d="M105,109 Q114,105 123,111" stroke="#0a0404" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="114.5" cy="114" rx="5.8" ry="6.5" fill="#3a1002"/>
+<ellipse cx="114.5" cy="114" rx="2.6" ry="3.2" fill="#080202"/>
+<ellipse cx="116.5" cy="111" rx="2.2" ry="2.8" fill="rgba(255,255,255,0.85)"/>
+<path d="M106,119 Q115,122 122,119" stroke="#0a0404" stroke-width="1.1" fill="none"/>
+<!-- EYEBROWS - fierce, strong upward angle -->
+<path d="M64,105 Q75,97 85,102" stroke="#160804" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M105,102 Q115,97 126,105" stroke="#160804" stroke-width="4" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - determined, slightly open -->
+<path d="M82,132 Q88,135 95,134 Q102,135 108,132" stroke="#7a3515" stroke-width="1.4" fill="none"/>
+<path d="M84,132 Q95,137 106,132" fill="#5a2010" opacity="0.55"/>
+<!-- Determination crease around mouth -->
+<path d="M79,135 Q77,140 79,144" stroke="#7a3515" stroke-width="1" fill="none" opacity="0.4"/>
+<path d="M111,135 Q113,140 111,144" stroke="#7a3515" stroke-width="1" fill="none" opacity="0.4"/>
+<path d="M72,140 Q95,149 118,140" fill="none" stroke="rgba(60,15,5,0.22)" stroke-width="2"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+</svg>`;
 
-const PORTRAIT_YUKIMURA = _buildPortrait(
-  '#150101',
-  '#3a0808',
-  `<ellipse cx="100" cy="52" rx="28" ry="32" fill="#5a0808"/>
-   <path d="M88,22 Q78,5 70,-10 Q76,-8 80,2 Q86,16 88,22 Z" fill="#4a0606" stroke="#3a0404" stroke-width="1"/>
-   <path d="M88,22 Q75,8 68,-5 Q72,-3 78,6 Q84,16 88,22 Z" fill="#4a0606"/>
-   <path d="M112,22 Q122,5 130,-10 Q124,-8 120,2 Q114,16 112,22 Z" fill="#4a0606" stroke="#3a0404" stroke-width="1"/>
-   <path d="M112,22 Q125,8 132,-5 Q128,-3 122,6 Q116,16 112,22 Z" fill="#4a0606"/>
-   <path d="M80,82 Q90,90 100,91 Q110,90 120,82" fill="#5a0808"/>
-   <rect x="82" y="50" width="36" height="4" fill="#cc1010" opacity=".5"/>`,
-  MON_YUKIMURA
-);
+const PORTRAIT_MASAMUNE = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="ms_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#030510"/><stop offset="1" stop-color="#010103"/></linearGradient>
+<radialGradient id="ms_sk" cx="54%" cy="40%" r="52%"><stop offset="0" stop-color="#c49058"/><stop offset="1" stop-color="#7a4028"/></radialGradient>
+<linearGradient id="ms_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#141420"/><stop offset="1" stop-color="#0a0a14"/></linearGradient>
+<radialGradient id="ms_glow" cx="60%" cy="20%" r="50%"><stop offset="0" stop-color="rgba(180,160,20,0.15)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#ms_bg)"/>
+<rect width="190" height="230" fill="url(#ms_glow)"/>
+<!-- ARMOR - black with gold details -->
+<path d="M2,230 L18,158 Q28,132 52,126 L76,121 L95,119 L114,121 L138,126 Q162,132 172,158 L188,230Z" fill="url(#ms_arm)"/>
+<path d="M18,158 Q7,138 11,118 Q20,104 48,108 L72,120Z" fill="#111120" stroke="#c9a84c" stroke-width="0.8"/>
+<path d="M22,148 Q13,130 16,112 Q24,100 48,104 L68,116Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.7"/>
+<path d="M172,158 Q183,138 179,118 Q170,104 142,108 L118,120Z" fill="#111120" stroke="#c9a84c" stroke-width="0.8"/>
+<path d="M168,148 Q177,130 174,112 Q166,100 142,104 L122,116Z" fill="none" stroke="rgba(201,168,76,0.3)" stroke-width="0.7"/>
+<path d="M50,136 L140,136" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<path d="M46,148 L144,148" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<path d="M42,160 L148,160" stroke="#c9a84c" stroke-width="0.6" opacity="0.4"/>
+<path d="M73,123 Q95,134 117,123 L120,142 Q95,154 70,142Z" fill="#0e0e1a"/>
+<!-- Date clan mon (bamboo on ring) -->
+<circle cx="95" cy="183" r="13" fill="none" stroke="#c9a84c" stroke-width="1.2"/>
+<path d="M88,173 Q88,193 88,193" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+<path d="M95,170 Q95,196 95,196" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+<path d="M102,173 Q102,193 102,193" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+<path d="M85,178 Q95,175 105,178" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+<path d="M85,184 Q95,181 105,184" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+<path d="M85,190 Q95,187 105,190" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+<!-- NECK -->
+<path d="M83,120 Q83,103 95,101 Q107,103 107,120Z" fill="#b07040"/>
+<!-- KABUTO - black with GOLDEN CRESCENT MOON -->
+<path d="M56,94 Q57,57 95,49 Q133,57 134,94 L130,108 Q114,118 95,120 Q76,118 60,108Z" fill="#0e0e18"/>
+<line x1="95" y1="49" x2="95" y2="94" stroke="#c9a84c" stroke-width="0.8" opacity="0.4"/>
+<line x1="78" y1="52" x2="73" y2="94" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+<line x1="112" y1="52" x2="117" y2="94" stroke="#c9a84c" stroke-width="0.5" opacity="0.3"/>
+<!-- Helmet brim -->
+<path d="M48,96 Q95,88 142,96 L139,105 Q95,97 51,105Z" fill="#0c0c16" stroke="#c9a84c" stroke-width="0.9"/>
+<path d="M56,100 L134,100" stroke="#c9a84c" stroke-width="1.2" opacity="0.4"/>
+<!-- CRESCENT MOON (三日月) - gold, large and prominent -->
+<path d="M74,35 Q80,18 95,14 Q85,22 84,35 Q90,28 98,26 Q88,32 88,42 Q80,48 72,44 Q68,38 74,35Z" fill="#c9a84c" stroke="#a07820" stroke-width="0.5"/>
+<path d="M76,38 Q82,22 95,18" fill="none" stroke="rgba(255,220,80,0.5)" stroke-width="1.5"/>
+<!-- Shikoro -->
+<path d="M56,96 Q49,107 51,116 Q57,122 67,120 L63,98Z" fill="#0e0e18" stroke="#c9a84c" stroke-width="0.5" opacity="0.65"/>
+<path d="M134,96 Q141,107 139,116 Q133,122 123,120 L127,98Z" fill="#0e0e18" stroke="#c9a84c" stroke-width="0.5" opacity="0.65"/>
+<!-- FACE - cool, confident, slight 3/4 angle implied -->
+<path d="M64,104 Q62,120 70,132 Q80,145 95,147 Q111,145 120,132 Q127,120 126,104 Q113,113 95,114 Q77,113 64,104Z" fill="url(#ms_sk)"/>
+<path d="M63,106 Q61,98 73,96" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<path d="M127,106 Q129,98 117,96" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<!-- Nose - straight, refined -->
+<path d="M93,108 L92,122 Q95,126 98,122 L97,108" fill="#906038" opacity="0.72"/>
+<ellipse cx="90.5" cy="123" rx="1.8" ry="1.3" fill="#6a3820" opacity="0.6"/>
+<ellipse cx="99.5" cy="123" rx="1.8" ry="1.3" fill="#6a3820" opacity="0.6"/>
+<!-- LEFT EYE - EYEPATCH (right eye from viewer's perspective = character's right = LEFT side) -->
+<!-- His right eye was famously lost - eyepatch over right eye (character's right = viewer's left) -->
+<path d="M64,108 Q74,103 84,107" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="5"/>
+<!-- Eyepatch shape -->
+<path d="M63,107 Q68,102 84,106 L83,116 Q67,118 63,112Z" fill="#080810" stroke="#3a3a40" stroke-width="1"/>
+<path d="M65,109 Q74,105 83,108" stroke="#1a1a22" stroke-width="1" fill="none"/>
+<!-- Eyepatch strap -->
+<path d="M63,110 Q56,106 52,108" stroke="#0a0a12" stroke-width="1.5" fill="none"/>
+<!-- RIGHT EYE (character's left = viewer's right) - sharp, intense, penetrating -->
+<path d="M106,106 Q116,101 126,106 L124,116 Q116,121 108,116Z" fill="#402008" opacity="0.28"/>
+<path d="M107,108 Q116,103 125,108" stroke="#0a0404" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="116" cy="112" rx="6" ry="6.5" fill="#2a1002"/>
+<ellipse cx="116" cy="112" rx="2.8" ry="3.2" fill="#080202"/>
+<ellipse cx="118" cy="109" rx="2.2" ry="2.8" fill="rgba(255,255,255,0.88)"/>
+<path d="M108,116 Q116,119 124,116" stroke="#0a0404" stroke-width="1.1" fill="none"/>
+<!-- EYEBROWS -->
+<!-- Left brow (over eyepatch) -->
+<path d="M63,102 Q74,96 84,100" stroke="#1a0c06" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<!-- Right brow - raised slightly (confident) -->
+<path d="M107,102 Q116,96 125,100" stroke="#1a0c06" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - confident smirk (slightly to right) -->
+<path d="M82,130 Q89,133 97,132 Q104,133 110,131" stroke="#7a3818" stroke-width="1.4" fill="none"/>
+<path d="M84,130 Q96,135 109,131" fill="#542010" opacity="0.5"/>
+<!-- Smirk upward on right side -->
+<path d="M108,131 Q112,129 113,127" stroke="#7a3818" stroke-width="1.2" fill="none"/>
+<path d="M72,138 Q95,147 118,138" fill="none" stroke="rgba(55,20,5,0.2)" stroke-width="2"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+</svg>`;
 
-const PORTRAIT_MASAMUNE = _buildPortrait(
-  '#010308',
-  '#0a0f1e',
-  `<ellipse cx="100" cy="52" rx="28" ry="30" fill="#111"/>
-   <path d="M66,36 Q100,18 134,36 Q112,24 100,22 Q88,24 66,36 Z" fill="#c9a84c" opacity=".9"/>
-   <rect x="72" y="67" width="12" height="24" rx="2" fill="#1a1a1a"/>
-   <rect x="116" y="67" width="12" height="24" rx="2" fill="#1a1a1a"/>
-   <path d="M80,82 Q90,90 100,91 Q110,90 120,82" fill="#111"/>`,
-  MON_MASAMUNE,
-  `<rect x="68" y="118" width="22" height="14" rx="3" fill="#1a1208" opacity=".85"/>
-   <line x1="68" y1="125" x2="90" y2="125" stroke="#0a0a0a" stroke-width="1"/>`
-);
+const PORTRAIT_KENSHIN = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="kn_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#090d14"/><stop offset="1" stop-color="#020408"/></linearGradient>
+<radialGradient id="kn_sk" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#d0a878"/><stop offset="1" stop-color="#8a5830"/></radialGradient>
+<linearGradient id="kn_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#d0ccc0"/><stop offset="1" stop-color="#9a9690"/></linearGradient>
+<radialGradient id="kn_glow" cx="50%" cy="10%" r="60%"><stop offset="0" stop-color="rgba(160,180,200,0.18)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#kn_bg)"/>
+<rect width="190" height="230" fill="url(#kn_glow)"/>
+<ellipse cx="95" cy="10" rx="80" ry="35" fill="rgba(200,210,230,0.08)"/>
+<!-- WHITE ROBE / ARMOR - silver-white Buddhist warrior -->
+<path d="M2,230 L15,155 Q24,128 50,122 L74,117 L95,115 L116,117 L140,122 Q166,128 175,155 L188,230Z" fill="url(#kn_arm)"/>
+<path d="M15,155 Q5,135 9,115 Q18,101 46,105 L70,116Z" fill="#c0bab0" stroke="#888070" stroke-width="0.8"/>
+<path d="M19,145 Q10,127 13,109 Q21,99 46,102 L66,113Z" fill="none" stroke="rgba(136,128,112,0.35)" stroke-width="0.7"/>
+<path d="M175,155 Q185,135 181,115 Q172,101 144,105 L120,116Z" fill="#c0bab0" stroke="#888070" stroke-width="0.8"/>
+<path d="M171,145 Q180,127 177,109 Q169,99 144,102 L124,113Z" fill="none" stroke="rgba(136,128,112,0.35)" stroke-width="0.7"/>
+<!-- Robe drape lines (white garment folds) -->
+<path d="M52,132 L138,132" stroke="#888070" stroke-width="0.6" opacity="0.4"/>
+<path d="M48,144 L142,144" stroke="#888070" stroke-width="0.6" opacity="0.4"/>
+<path d="M44,156 L146,156" stroke="#888070" stroke-width="0.6" opacity="0.4"/>
+<path d="M74,119 Q95,130 116,119 L119,138 Q95,150 71,138Z" fill="#b0a898"/>
+<!-- Prayer beads across chest -->
+<path d="M60,138 Q95,148 130,138" fill="none" stroke="#8a6830" stroke-width="2" stroke-dasharray="3,2" opacity="0.8"/>
+<!-- Uesugi clan mon on chest -->
+<circle cx="95" cy="183" r="13" fill="none" stroke="#888070" stroke-width="1.2"/>
+<path d="M95,172 L95,194" stroke="#888070" stroke-width="1.2" fill="none"/>
+<path d="M82,183 L108,183" stroke="#888070" stroke-width="1.2" fill="none"/>
+<path d="M87,174 Q95,170 103,174" stroke="#888070" stroke-width="0.8" fill="none"/>
+<path d="M87,192 Q95,196 103,192" stroke="#888070" stroke-width="0.8" fill="none"/>
+<!-- NECK -->
+<path d="M83,116 Q83,99 95,97 Q107,99 107,116Z" fill="#b88058"/>
+<!-- WHITE ZUKIN (head cloth) - Buddhist warrior look -->
+<!-- Main white cloth wrap - the most distinctive feature -->
+<path d="M54,92 Q56,55 95,46 Q134,55 136,92 L132,108 Q116,118 95,120 Q74,118 58,108Z" fill="#d8d4cc"/>
+<!-- Cloth texture/folds -->
+<path d="M68,62 Q95,55 122,62" stroke="#b8b4ac" stroke-width="1" opacity="0.6"/>
+<path d="M62,74 Q95,67 128,74" stroke="#b8b4ac" stroke-width="0.8" opacity="0.5"/>
+<path d="M58,84 Q95,77 132,84" stroke="#b8b4ac" stroke-width="0.7" opacity="0.4"/>
+<!-- Top cloth knot/fold -->
+<path d="M80,48 Q95,42 110,48 L108,58 Q95,52 82,58Z" fill="#d0ccc4" stroke="#b0acA4" stroke-width="0.8"/>
+<!-- Crown of zukin -->
+<path d="M82,42 Q95,36 108,42 L106,50 Q95,44 84,50Z" fill="#c8c4bc"/>
+<ellipse cx="95" cy="38" rx="12" ry="6" fill="#c0bcb4" stroke="#a8a49c" stroke-width="0.8"/>
+<!-- Buddhist wrap fold at temples -->
+<path d="M58,90 Q52,80 55,70 Q62,58 70,62 L72,72Z" fill="#ccc8c0" stroke="#a8a49c" stroke-width="0.7"/>
+<path d="M132,90 Q138,80 135,70 Q128,58 120,62 L118,72Z" fill="#ccc8c0" stroke="#a8a49c" stroke-width="0.7"/>
+<!-- Shikoro-like cloth folds -->
+<path d="M56,92 Q50,103 52,112 Q58,118 68,116 L64,94Z" fill="#ccc8c0" stroke="#a8a49c" stroke-width="0.5" opacity="0.7"/>
+<path d="M134,92 Q140,103 138,112 Q132,118 122,116 L126,94Z" fill="#ccc8c0" stroke="#a8a49c" stroke-width="0.5" opacity="0.7"/>
+<!-- FACE - refined, austere, elongated -->
+<path d="M64,102 Q63,119 71,132 Q81,145 95,147 Q109,145 119,132 Q127,119 126,102 Q112,111 95,112 Q78,111 64,102Z" fill="url(#kn_sk)"/>
+<path d="M63,104 Q61,96 74,94" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="5"/>
+<path d="M127,104 Q129,96 116,94" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="5"/>
+<!-- Nose - refined, slim -->
+<path d="M93,108 L92,122 Q95,125 98,122 L97,108" fill="#8a5830" opacity="0.65"/>
+<ellipse cx="91" cy="123" rx="1.6" ry="1.2" fill="#6a3820" opacity="0.55"/>
+<ellipse cx="99" cy="123" rx="1.6" ry="1.2" fill="#6a3820" opacity="0.55"/>
+<!-- LEFT EYE - serene, half-lidded, contemplative -->
+<path d="M65,108 Q74,103 85,107 L83,116 Q74,120 67,116Z" fill="#503018" opacity="0.22"/>
+<path d="M66,110 Q75,105 85,109" stroke="#0a0605" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="75.5" cy="113" rx="5.5" ry="5.5" fill="#3a2010"/>
+<ellipse cx="75.5" cy="113" rx="2.4" ry="2.6" fill="#080402"/>
+<ellipse cx="77.5" cy="110.5" rx="2" ry="2.2" fill="rgba(255,255,255,0.82)"/>
+<!-- Heavy serene upper lid -->
+<path d="M66,111 Q75,107 85,110" stroke="#1a1008" stroke-width="2" fill="none" opacity="0.55"/>
+<path d="M67,116 Q75,119 84,116" stroke="#0a0605" stroke-width="1.1" fill="none"/>
+<!-- RIGHT EYE -->
+<path d="M105,107 Q115,103 125,108 L123,116 Q115,120 107,116Z" fill="#503018" opacity="0.22"/>
+<path d="M105,109 Q114,105 124,110" stroke="#0a0605" stroke-width="3" fill="none" stroke-linecap="round"/>
+<ellipse cx="114.5" cy="113" rx="5.5" ry="5.5" fill="#3a2010"/>
+<ellipse cx="114.5" cy="113" rx="2.4" ry="2.6" fill="#080402"/>
+<ellipse cx="116.5" cy="110.5" rx="2" ry="2.2" fill="rgba(255,255,255,0.82)"/>
+<path d="M105,111 Q114,107 124,110" stroke="#1a1008" stroke-width="2" fill="none" opacity="0.55"/>
+<path d="M106,116 Q114,119 123,116" stroke="#0a0605" stroke-width="1.1" fill="none"/>
+<!-- EYEBROWS - level, noble, not harsh -->
+<path d="M65,105 Q75,100 85,103" stroke="#1a0e06" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<path d="M105,103 Q115,100 125,105" stroke="#1a0e06" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - composed, thin-lipped -->
+<path d="M83,132 Q89,134 95,133 Q101,134 107,132" stroke="#6a3818" stroke-width="1.3" fill="none"/>
+<path d="M85,132 Q95,136 105,132" fill="#4e2210" opacity="0.45"/>
+<path d="M72,139 Q95,148 118,139" fill="none" stroke="rgba(55,25,5,0.2)" stroke-width="1.8"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+</svg>`;
 
-const PORTRAIT_KENSHIN = _buildPortrait(
-  '#060a0f',
-  '#182430',
-  `<path d="M68,85 Q72,50 100,42 Q128,50 132,85" fill="#d8d0c0"/>
-   <path d="M68,85 Q64,70 66,55 Q72,38 100,32 Q128,38 134,55 Q136,70 132,85" fill="none" stroke="#b8b0a0" stroke-width="1.5"/>
-   <path d="M100,32 Q94,25 92,18 Q96,22 100,20 Q104,22 108,18 Q106,25 100,32 Z" fill="#c8c0b0"/>
-   <path d="M68,85 Q72,88 100,90 Q128,88 132,85" fill="#c8c0b0"/>
-   <rect x="82" y="78" width="36" height="8" rx="3" fill="#608090" opacity=".5"/>`,
-  MON_KENSHIN
-);
+const PORTRAIT_SHINGEN = `<svg viewBox="0 0 190 230" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+<defs>
+<linearGradient id="sv_bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0803"/><stop offset="1" stop-color="#060201"/></linearGradient>
+<radialGradient id="sv_sk" cx="50%" cy="44%" r="50%"><stop offset="0" stop-color="#d0a870"/><stop offset="1" stop-color="#8a5030"/></radialGradient>
+<linearGradient id="sv_arm" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#580808"/><stop offset="1" stop-color="#280404"/></linearGradient>
+<radialGradient id="sv_glow" cx="40%" cy="60%" r="65%"><stop offset="0" stop-color="rgba(180,60,10,0.2)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+</defs>
+<rect width="190" height="230" fill="url(#sv_bg)"/>
+<rect width="190" height="230" fill="url(#sv_glow)"/>
+<!-- ARMOR - red and black -->
+<path d="M2,230 L16,152 Q26,124 52,118 L76,113 L95,111 L114,113 L138,118 Q164,124 174,152 L188,230Z" fill="url(#sv_arm)"/>
+<path d="M16,152 Q6,132 10,112 Q19,98 48,102 L72,112Z" fill="#480606" stroke="#cc2010" stroke-width="0.8"/>
+<path d="M20,142 Q11,124 14,106 Q22,96 48,100 L68,110Z" fill="none" stroke="rgba(204,32,16,0.3)" stroke-width="0.7"/>
+<path d="M174,152 Q184,132 180,112 Q171,98 142,102 L118,112Z" fill="#480606" stroke="#cc2010" stroke-width="0.8"/>
+<path d="M170,142 Q179,124 176,106 Q168,96 142,100 L122,110Z" fill="none" stroke="rgba(204,32,16,0.3)" stroke-width="0.7"/>
+<path d="M52,128 L138,128" stroke="#cc2010" stroke-width="0.7" opacity="0.5"/>
+<path d="M48,140 L142,140" stroke="#cc2010" stroke-width="0.7" opacity="0.5"/>
+<path d="M44,152 L146,152" stroke="#cc2010" stroke-width="0.7" opacity="0.5"/>
+<path d="M73,115 Q95,126 117,115 L120,134 Q95,146 70,134Z" fill="#380404"/>
+<!-- WAR FAN (gumbai) held in front -->
+<path d="M58,148 Q60,138 65,128 L130,128 Q135,138 137,148Z" fill="#1a1008" stroke="#c9a84c" stroke-width="1"/>
+<!-- Fan spines -->
+<line x1="95" y1="128" x2="95" y2="148" stroke="#c9a84c" stroke-width="0.8" opacity="0.6"/>
+<line x1="78" y1="128" x2="72" y2="148" stroke="#c9a84c" stroke-width="0.6" opacity="0.5"/>
+<line x1="112" y1="128" x2="118" y2="148" stroke="#c9a84c" stroke-width="0.6" opacity="0.5"/>
+<line x1="64" y1="130" x2="62" y2="148" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+<line x1="126" y1="130" x2="128" y2="148" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+<!-- Fan rim -->
+<path d="M58,148 Q95,158 137,148" stroke="#c9a84c" stroke-width="1.2" fill="none"/>
+<!-- Fan decorative diamond (Takeda mon) -->
+<polygon points="95,131 101,137 95,143 89,137" fill="none" stroke="#c9a84c" stroke-width="0.8"/>
+<!-- Handle grip showing below fan -->
+<rect x="92" y="148" width="6" height="16" rx="2" fill="#4a2808" stroke="#c9a84c" stroke-width="0.6"/>
+<!-- Takeda mon on chest (diamond) -->
+<polygon points="95,170 105,180 95,190 85,180" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+<polygon points="95,174 101,180 95,186 89,180" fill="none" stroke="#c9a84c" stroke-width="0.8"/>
+<!-- NECK -->
+<path d="M83,112 Q83,95 95,93 Q107,95 107,112Z" fill="#b07848"/>
+<!-- JIN-GASA (campaign hat) - wide brimmed military hat -->
+<!-- Hat brim -->
+<path d="M36,88 Q95,78 154,88 L150,98 Q95,88 40,98Z" fill="#2a1808" stroke="#8a5020" stroke-width="1"/>
+<!-- Hat body (dome) -->
+<path d="M52,88 Q56,62 95,54 Q134,62 138,88Z" fill="#241408"/>
+<!-- Hat texture lines -->
+<path d="M65,70 Q95,63 125,70" stroke="#8a5020" stroke-width="0.7" opacity="0.5"/>
+<path d="M60,78 Q95,71 130,78" stroke="#8a5020" stroke-width="0.6" opacity="0.4"/>
+<!-- Hat top (tehen) - reinforced point -->
+<path d="M87,54 Q95,46 103,54 L100,60 Q95,56 90,60Z" fill="#3a2010"/>
+<circle cx="95" cy="46" r="4" fill="#c9a84c" stroke="#a07820" stroke-width="0.8"/>
+<!-- Hat band -->
+<path d="M52,88 L138,88" stroke="#8a5020" stroke-width="2" opacity="0.7"/>
+<path d="M54,92 L136,92" stroke="#8a5020" stroke-width="1" opacity="0.5"/>
+<!-- Shikoro from hat brim down to face sides -->
+<path d="M40,98 Q34,108 36,118 Q42,124 52,122 L50,100Z" fill="#201008" stroke="#8a5020" stroke-width="0.5" opacity="0.65"/>
+<path d="M150,98 Q156,108 154,118 Q148,124 138,122 L140,100Z" fill="#201008" stroke="#8a5020" stroke-width="0.5" opacity="0.65"/>
+<!-- FACE - heavy, powerful, strategic -->
+<path d="M60,106 Q58,124 67,138 Q78,152 95,154 Q112,152 123,138 Q132,124 130,106 Q115,116 95,117 Q75,116 60,106Z" fill="url(#sv_sk)"/>
+<path d="M59,108 Q57,100 70,98" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<path d="M131,108 Q133,100 120,98" fill="none" stroke="rgba(0,0,0,0.45)" stroke-width="5"/>
+<!-- Heavy jowl/chin definition (powerful face) -->
+<path d="M60,118 Q58,128 62,138" stroke="rgba(60,25,5,0.3)" stroke-width="5" fill="none"/>
+<path d="M130,118 Q132,128 128,138" stroke="rgba(60,25,5,0.3)" stroke-width="5" fill="none"/>
+<!-- Nose - broad, strong -->
+<path d="M92,112 L90,128 Q95,133 100,128 L98,112" fill="#8a5830" opacity="0.75"/>
+<ellipse cx="88" cy="130" rx="2.5" ry="1.8" fill="#6a3820" opacity="0.65"/>
+<ellipse cx="102" cy="130" rx="2.5" ry="1.8" fill="#6a3820" opacity="0.65"/>
+<!-- LEFT EYE - calculating, heavy-lidded -->
+<path d="M63,112 Q73,107 84,111 L82,121 Q73,125 65,121Z" fill="#502808" opacity="0.25"/>
+<path d="M64,114 Q73,109 84,113" stroke="#0a0504" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="74" cy="118" rx="6" ry="5.8" fill="#3a1808"/>
+<ellipse cx="74" cy="118" rx="2.7" ry="2.6" fill="#080302"/>
+<ellipse cx="76" cy="115.5" rx="2.2" ry="2.3" fill="rgba(255,255,255,0.8)"/>
+<!-- Heavy upper lid -->
+<path d="M64,115 Q74,110 84,114" stroke="#1a0c06" stroke-width="2.2" fill="none" opacity="0.6"/>
+<path d="M65,122 Q74,125 83,122" stroke="#0a0504" stroke-width="1.2" fill="none"/>
+<!-- RIGHT EYE -->
+<path d="M106,111 Q117,107 126,112 L124,121 Q117,125 108,121Z" fill="#502808" opacity="0.25"/>
+<path d="M106,113 Q115,109 124,115" stroke="#0a0504" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+<ellipse cx="116" cy="118" rx="6" ry="5.8" fill="#3a1808"/>
+<ellipse cx="116" cy="118" rx="2.7" ry="2.6" fill="#080302"/>
+<ellipse cx="118" cy="115.5" rx="2.2" ry="2.3" fill="rgba(255,255,255,0.8)"/>
+<path d="M106,115 Q116,110 124,115" stroke="#1a0c06" stroke-width="2.2" fill="none" opacity="0.6"/>
+<path d="M107,122 Q116,125 123,122" stroke="#0a0504" stroke-width="1.2" fill="none"/>
+<!-- EYEBROWS - thick, commanding -->
+<path d="M61,107 Q73,101 84,106" stroke="#1c0c04" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<path d="M106,106 Q117,101 129,107" stroke="#1c0c04" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<!-- MOUTH - firm command expression -->
+<path d="M80,138 Q87,141 95,140 Q103,141 110,138" stroke="#7a3818" stroke-width="1.5" fill="none"/>
+<path d="M82,138 Q95,143 108,138" fill="#562010" opacity="0.55"/>
+<!-- Chin definition (strong jaw) -->
+<path d="M68,148 Q95,158 122,148" fill="none" stroke="rgba(60,22,5,0.25)" stroke-width="2.5"/>
+<!-- GOLD FRAME -->
+<rect x="1" y="1" width="188" height="228" rx="3" fill="none" stroke="#c9a84c" stroke-width="2"/>
+<rect x="4" y="4" width="182" height="222" rx="2" fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.8"/>
+<path d="M1,18 L1,1 L18,1" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,1 L189,1 L189,18" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M1,212 L1,229 L18,229" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+<path d="M172,229 L189,229 L189,212" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+</svg>`;
 
-const PORTRAIT_SHINGEN = _buildPortrait(
-  '#0e0602',
-  '#2a1808',
-  `<path d="M64,88 Q68,60 100,50 Q132,60 136,88" fill="#2a1a0a"/>
-   <path d="M64,88 Q60,70 62,55 Q70,35 100,28 Q130,35 138,55 Q140,70 136,88" fill="none" stroke="#3a2a18" stroke-width="1.5"/>
-   <rect x="76" y="28" width="48" height="8" rx="3" fill="#3a2010"/>
-   <rect x="74" y="56" width="52" height="5" rx="2" fill="#803010" opacity=".6"/>
-   <path d="M100,28 L100,15" stroke="#5a3010" stroke-width="3"/>
-   <path d="M70,50 Q65,42 100,38 Q135,42 130,50" fill="#2a1a0a"/>`,
-  MON_SHINGEN
-);
 
 // --- Generals data ---
 const GENERALS = [
@@ -2963,7 +3432,6 @@ const GENERALS = [
     quote: '是非に及ばず',
     accent: '#cc2020',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #3a0505 0%, #1e0202 45%, #050001 100%)',
-    mon: MON_NOBUNAGA,
     portrait: PORTRAIT_NOBUNAGA
   },
   {
@@ -2973,7 +3441,6 @@ const GENERALS = [
     quote: '人の一生は夢のごとし',
     accent: '#c89020',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 40% 0%, #2a1800 0%, #180d00 45%, #050200 100%)',
-    mon: MON_HIDEYOSHI,
     portrait: PORTRAIT_HIDEYOSHI
   },
   {
@@ -2983,7 +3450,6 @@ const GENERALS = [
     quote: '不自由を常と思えば不足なし',
     accent: '#2060a0',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 60% 0%, #050a20 0%, #020510 45%, #000102 100%)',
-    mon: MON_IEYASU,
     portrait: PORTRAIT_IEYASU
   },
   {
@@ -2993,7 +3459,6 @@ const GENERALS = [
     quote: '我に七難八苦を与えたまえ',
     accent: '#cc1010',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #350505 0%, #200303 45%, #080101 100%)',
-    mon: MON_YUKIMURA,
     portrait: PORTRAIT_YUKIMURA
   },
   {
@@ -3003,7 +3468,6 @@ const GENERALS = [
     quote: '馬上少年過ぐ',
     accent: '#203860',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 70% 0%, #030815 0%, #020510 45%, #000108 100%)',
-    mon: MON_MASAMUNE,
     portrait: PORTRAIT_MASAMUNE
   },
   {
@@ -3013,7 +3477,6 @@ const GENERALS = [
     quote: '義を以て志を立てよ',
     accent: '#608090',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #0a1018 0%, #060b12 45%, #020408 100%)',
-    mon: MON_KENSHIN,
     portrait: PORTRAIT_KENSHIN
   },
   {
@@ -3023,7 +3486,6 @@ const GENERALS = [
     quote: '人は城、人は石垣、人は堀',
     accent: '#803010',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 30% 0%, #1e0e04 0%, #120802 45%, #040200 100%)',
-    mon: MON_SHINGEN,
     portrait: PORTRAIT_SHINGEN
   }
 ];
