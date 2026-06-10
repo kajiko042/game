@@ -244,6 +244,53 @@ body{
   text-shadow:0 1px 3px rgba(0,0,0,0.9);
   font-family:'Noto Sans JP',sans-serif;
 }
+/* ---- Character image system ---- */
+/* Accent glow orb behind the character */
+.ts-char-glow{
+  position:absolute;
+  bottom:6%;left:50%;
+  transform:translateX(-50%);
+  width:75%;height:55%;
+  z-index:6;pointer-events:none;
+  border-radius:50%;
+  filter:blur(55px);
+  opacity:0;
+  transition:background 1s ease, opacity .5s;
+}
+.ts-char-glow.active{ opacity:.55; }
+/* Full-height character image backdrop */
+.ts-char-backdrop{
+  position:absolute;
+  left:50%;transform:translateX(-50%);
+  bottom:8%;
+  width:min(96%,400px);
+  height:82%;
+  z-index:9;pointer-events:none;
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;
+  transition:opacity .35s;
+}
+.ts-char-backdrop.loaded{ opacity:1; }
+/* The actual <img> inside the backdrop */
+.ts-char-img{
+  max-height:100%;width:auto;max-width:100%;
+  object-fit:contain;object-position:bottom center;
+  animation:charReveal .75s cubic-bezier(.18,.89,.32,1.08);
+  filter:
+    drop-shadow(0 0 32px var(--cAccent,rgba(201,168,76,0.6)))
+    drop-shadow(0 0 80px var(--cAccent,rgba(201,168,76,0.3)))
+    drop-shadow(0 8px 24px rgba(0,0,0,1));
+}
+@keyframes charReveal{
+  0%  {opacity:0;transform:scale(.84) translateY(28px);}
+  55% {opacity:1;}
+  78% {transform:scale(1.03) translateY(-5px);}
+  100%{transform:scale(1) translateY(0);}
+}
+/* When PNG is active, hide the small SVG portrait */
+.ts-general.has-image .ts-portrait-wrap{
+  opacity:0;pointer-events:none;
+}
 
 /* ===== START SCREEN ===== */
 #startScreen{
@@ -891,6 +938,11 @@ body{
     <!-- Vignette -->
     <div class="ts-vignette"></div>
 
+    <!-- Character accent glow (below image) -->
+    <div class="ts-char-glow" id="tsCharGlow"></div>
+    <!-- Character PNG backdrop (z-index 9, above vignette, behind text) -->
+    <div class="ts-char-backdrop" id="tsCharBackdrop"></div>
+
     <!-- GENERAL DISPLAY (top half) -->
     <div class="ts-general" id="tsGeneral">
       <!-- Portrait: large circular illustration -->
@@ -932,7 +984,7 @@ body{
       <button class="ts-bgm" id="tsBgmBtn" onclick="toggleBGM()">BGM オフ</button>
 
       <!-- Copyright - visible version -->
-      <div class="ts-copyright">&copy; 2026 Kodai Kajitani25</div>
+      <div class="ts-copyright">Created by Kodai Kajitani</div>
     </div>
   </div>
 
@@ -3431,7 +3483,9 @@ const GENERALS = [
     title: '第六天魔王',
     quote: '是非に及ばず',
     accent: '#cc2020',
+    accentRgb: '200,10,10',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #3a0505 0%, #1e0202 45%, #050001 100%)',
+    imageFile: 'images/nobunaga.png',
     portrait: PORTRAIT_NOBUNAGA
   },
   {
@@ -3440,7 +3494,9 @@ const GENERALS = [
     title: '天下人',
     quote: '人の一生は夢のごとし',
     accent: '#c89020',
+    accentRgb: '200,144,20',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 40% 0%, #2a1800 0%, #180d00 45%, #050200 100%)',
+    imageFile: 'images/hideyoshi.png',
     portrait: PORTRAIT_HIDEYOSHI
   },
   {
@@ -3449,7 +3505,9 @@ const GENERALS = [
     title: '江戸幕府初代将軍',
     quote: '不自由を常と思えば不足なし',
     accent: '#2060a0',
+    accentRgb: '32,96,160',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 60% 0%, #050a20 0%, #020510 45%, #000102 100%)',
+    imageFile: 'images/ieyasu.png',
     portrait: PORTRAIT_IEYASU
   },
   {
@@ -3458,7 +3516,9 @@ const GENERALS = [
     title: '日本一の兵',
     quote: '我に七難八苦を与えたまえ',
     accent: '#cc1010',
+    accentRgb: '200,16,16',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #350505 0%, #200303 45%, #080101 100%)',
+    imageFile: 'images/yukimura.png',
     portrait: PORTRAIT_YUKIMURA
   },
   {
@@ -3467,7 +3527,9 @@ const GENERALS = [
     title: '奥州の独眼竜',
     quote: '馬上少年過ぐ',
     accent: '#203860',
+    accentRgb: '32,56,96',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 70% 0%, #030815 0%, #020510 45%, #000108 100%)',
+    imageFile: 'images/masamune.png',
     portrait: PORTRAIT_MASAMUNE
   },
   {
@@ -3476,7 +3538,9 @@ const GENERALS = [
     title: '軍神',
     quote: '義を以て志を立てよ',
     accent: '#608090',
+    accentRgb: '96,128,144',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 50% 0%, #0a1018 0%, #060b12 45%, #020408 100%)',
+    imageFile: 'images/kenshin.png',
     portrait: PORTRAIT_KENSHIN
   },
   {
@@ -3485,7 +3549,9 @@ const GENERALS = [
     title: '甲斐の虎',
     quote: '人は城、人は石垣、人は堀',
     accent: '#803010',
+    accentRgb: '128,48,16',
     skyGrad: 'radial-gradient(ellipse 110% 55% at 30% 0%, #1e0e04 0%, #120802 45%, #040200 100%)',
+    imageFile: 'images/shingen.png',
     portrait: PORTRAIT_SHINGEN
   }
 ];
@@ -3531,26 +3597,63 @@ function _buildFire() {
 function _showGeneral(idx) {
   _curGeneral = idx;
   const g = GENERALS[idx];
+
+  // Background sky
   const bg = document.getElementById('tsBg');
   if (bg) bg.style.background = g.skyGrad;
-  const nameEl = document.getElementById('tsGeneralName');
+
+  // Text elements
+  const nameEl  = document.getElementById('tsGeneralName');
   const titleEl = document.getElementById('tsGeneralTitle');
-  const portraitEl = document.getElementById('tsPortraitWrap');
   const quoteEl = document.getElementById('tsQuote');
-  if (nameEl) { nameEl.style.animation='none'; void nameEl.offsetWidth; nameEl.style.animation=''; nameEl.textContent = g.name; }
+  if (nameEl)  { nameEl.style.animation='none';  void nameEl.offsetWidth;  nameEl.style.animation='';  nameEl.textContent  = g.name; }
   if (titleEl) { titleEl.style.animation='none'; void titleEl.offsetWidth; titleEl.style.animation=''; titleEl.textContent = g.title; }
-  if (portraitEl) portraitEl.innerHTML = g.portrait;
   if (quoteEl) { quoteEl.style.animation='none'; void quoteEl.offsetWidth; quoteEl.style.animation=''; quoteEl.textContent = g.quote; }
+
+  // Accent glow orb
+  const glowEl = document.getElementById('tsCharGlow');
+  if (glowEl) {
+    glowEl.style.background = `radial-gradient(circle, rgba(${g.accentRgb},0.9) 0%, transparent 70%)`;
+    glowEl.classList.add('active');
+  }
+
+  // Portrait: show SVG immediately as fallback
+  const portraitEl  = document.getElementById('tsPortraitWrap');
+  const backdropEl  = document.getElementById('tsCharBackdrop');
+  const generalEl   = document.getElementById('tsGeneral');
+  if (portraitEl) portraitEl.innerHTML = g.portrait;
+  if (generalEl)  generalEl.classList.remove('has-image');
+  if (backdropEl) { backdropEl.classList.remove('loaded'); backdropEl.innerHTML = ''; }
+
+  // Try to load PNG image (with fallback)
+  if (g.imageFile) {
+    const img = new Image();
+    img.onload = () => {
+      if (_curGeneral !== idx) return; // stale
+      img.className = 'ts-char-img';
+      img.alt = g.name;
+      img.style.setProperty('--cAccent', g.accent);
+      if (backdropEl) { backdropEl.innerHTML = ''; backdropEl.appendChild(img); backdropEl.classList.add('loaded'); }
+      if (generalEl) generalEl.classList.add('has-image');
+    };
+    img.onerror = () => { /* SVG fallback already shown */ };
+    img.src = g.imageFile;
+  }
+
   document.querySelectorAll('.ts-dot').forEach((d,i) => d.classList.toggle('active', i === idx));
 }
 
 function _cycleGeneral(idx) {
-  const gEl = document.getElementById('tsGeneral');
-  if (gEl) { gEl.style.transition='opacity .5s'; gEl.style.opacity='0'; }
+  const gEl      = document.getElementById('tsGeneral');
+  const bdEl     = document.getElementById('tsCharBackdrop');
+  const glowEl   = document.getElementById('tsCharGlow');
+  if (gEl)    { gEl.style.transition='opacity .5s';   gEl.style.opacity='0'; }
+  if (bdEl)   bdEl.classList.remove('loaded');
+  if (glowEl) glowEl.classList.remove('active');
   setTimeout(() => {
     _showGeneral(idx);
-    if (gEl) gEl.style.opacity='1';
-  }, 600);
+    if (gEl) { gEl.style.transition='opacity .5s'; gEl.style.opacity='1'; }
+  }, 550);
 }
 
 function _buildDots() {
